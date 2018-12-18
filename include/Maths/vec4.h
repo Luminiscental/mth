@@ -1,6 +1,10 @@
 #ifndef __Maths_vec4_h__
 #define __Maths_vec4_h__
 
+#include <cmath>
+#include <ostream>
+#include <functional>
+
 #ifndef __Maths_vec3_h__
 #include <Maths/vec3.h>
 #endif
@@ -11,7 +15,7 @@
 
 namespace m {
 
-    template <typename T> // requires T + T, T - T, -T, T * T, T / T, static_cast<double>(T), std::ostream << T
+    template <typename T> // requires 0, T + T, T - T, -T, T * T, T / T, static_cast<double>(T), std::ostream << T
     struct tvec4 {
 
         T x, y, z, w;
@@ -32,6 +36,9 @@ namespace m {
 
         tvec3<T> xyz() const;
         tvec3<T> yzw() const;
+
+        void forEach(std::function<void(const T&)> action) const;
+        void forEach(std::function<void(T&)> action);
 
         T magnSqr() const;
         double magn() const;
@@ -73,6 +80,20 @@ namespace m {
 }
 
 // Template implementation
+
+template <typename T>
+void m::tvec4<T>::forEach(std::function<void(const T&)> action) const { 
+
+    xyz().forEach(action);
+    action(w);
+}
+
+template <typename T>
+void m::tvec4<T>::forEach(std::function<void(T&)> action) {
+
+    xyz().forEach(action);
+    action(w);
+}
 
 template <typename T>
 m::tvec2<T> m::tvec4<T>::xy() const {

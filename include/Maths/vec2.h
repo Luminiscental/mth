@@ -3,10 +3,11 @@
 
 #include <cmath>
 #include <ostream>
+#include <functional>
 
 namespace m {
 
-    template <typename T> // requires T + T, T - T, -T, T * T, T / T, static_cast<double>(T), std::ostream << T
+    template <typename T> // requires 0, T + T, T - T, -T, T * T, T / T, static_cast<double>(T), std::ostream << T
     struct tvec2 {
 
         T x, y;
@@ -14,6 +15,9 @@ namespace m {
         tvec2() :x(0), y(0) {}
         tvec2(T x, T y) :x(x), y(y) {}
         tvec2(const tvec2 &other) :x(other.x), y(other.y) {}
+
+        void forEach(std::function<void(const T&)> action) const;
+        void forEach(std::function<void(T&)> action);
 
         T magnSqr() const;
         double magn() const;
@@ -57,6 +61,20 @@ namespace m {
 }
 
 // Template implementation
+
+template <typename T>
+void m::tvec2<T>::forEach(std::function<void(T&)> action) {
+
+    action(x);
+    action(y);
+}
+
+template <typename T>
+void m::tvec2<T>::forEach(std::function<void(const T&)> action) const {
+
+    action(x);
+    action(y);
+}
 
 template <typename T>
 T m::tvec2<T>::magnSqr() const {
