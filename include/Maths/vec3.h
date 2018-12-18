@@ -25,9 +25,6 @@ namespace m {
         tvec2<T> xy() const;
         tvec2<T> yz() const;
 
-        void forEach(std::function<void(const T&)> action) const;
-        void forEach(std::function<void(T&)> action);
-
         T magnSqr() const;
         double magn() const;
 
@@ -69,20 +66,6 @@ namespace m {
 }
 
 // Template implementation
-
-template <typename T>
-void m::tvec3<T>::forEach(std::function<void(const T&)> action) const {
-
-    xy().forEach(action);
-    action(z);
-}
-
-template <typename T>
-void m::tvec3<T>::forEach(std::function<void(T&)> action) {
-
-    xy().forEach(action);
-    action(z);
-}
 
 template <typename T>
 m::tvec2<T> m::tvec3<T>::xy() const {
