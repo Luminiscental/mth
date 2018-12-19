@@ -20,6 +20,16 @@ namespace m {
 
         T x, y, z, w;
 
+        tvec2<T> xy() const;
+        tvec2<T> yz() const;
+        tvec2<T> zw() const;
+
+        tvec3<T> xyz() const;
+        tvec3<T> yzw() const;
+
+        const T &get(size_t i) const;
+        T &get(size_t i);
+
         tvec4() :x(0), y(0), z(0), w(0) {}
         tvec4(T x, T y, T z, T w) :x(x), y(y), z(z), w(w) {}
         tvec4(const tvec4 &other) :x(other.x), y(other.y), z(other.z), w(other.w) {}
@@ -29,13 +39,6 @@ namespace m {
         tvec4(const tvec2<T> &xy, T z, T w) :x(xy.x), y(xy.y), z(z), w(w) {}
         tvec4(T x, T y, const tvec2<T> &zw) :x(x), y(y), z(zw.x), w(zw.y) {}
         tvec4(T x, const tvec2<T> &yz, T w) :x(x), y(yz.x), z(yz.y), w(w) {}
-
-        tvec2<T> xy() const;
-        tvec2<T> yz() const;
-        tvec2<T> zw() const;
-
-        tvec3<T> xyz() const;
-        tvec3<T> yzw() const;
 
         T magnSqr() const;
         double magn() const;
@@ -106,6 +109,28 @@ template <typename T>
 m::tvec3<T> m::tvec4<T>::yzw() const {
 
     return m::tvec3<T>(y, z, w);
+}
+
+template <typename T>
+const T &m::tvec4<T>::get(size_t i) const {
+
+    if (i > 4) throw std::invalid_argument("vec4 only has 4 values!");
+
+    return i == 0 ? x
+           :    i == 1 ? y
+                :   i == 2 ? z
+                    :   w;
+}
+
+template <typename T>
+T &m::tvec4<T>::get(size_t i) {
+
+    if (i > 4) throw std::invalid_argument("vec4 only has 4 values!");
+
+    return i == 0 ? x
+           :    i == 1 ? y
+                :   i == 2 ? z
+                    :   w;
 }
 
 template <typename T>

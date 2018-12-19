@@ -11,6 +11,9 @@ namespace m {
 
         T x, y;
 
+        const T &get(size_t i) const;
+        T &get(size_t i);
+
         tvec2() :x(0), y(0) {}
         tvec2(T x, T y) :x(x), y(y) {}
         tvec2(const tvec2 &other) :x(other.x), y(other.y) {}
@@ -57,6 +60,22 @@ namespace m {
 }
 
 // Template implementation
+
+template <typename T>
+const T &m::tvec2<T>::get(size_t i) const {
+
+    if (i > 2) throw std::invalid_argument("vec2 only has 2 values!");
+
+    return i == 0 ? x : y;
+}
+
+template <typename T>
+T &m::tvec2<T>::get(size_t i) {
+
+    if (i > 2) throw std::invalid_argument("vec2 only has 2 values!");
+
+    return i == 0 ? x : y;
+}
 
 template <typename T>
 T m::tvec2<T>::magnSqr() const {

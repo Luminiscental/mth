@@ -16,6 +16,9 @@ namespace m {
 
         T x, y, z;
 
+        const T &get(size_t i) const;
+        T &get(size_t i);
+
         tvec3() :x(0), y(0), z(0) {}
         tvec3(T x, T y, T z) :x(x), y(y), z(z) {}
         tvec3(const tvec3 &other) :x(other.x), y(other.y), z(other.z) {}
@@ -66,6 +69,26 @@ namespace m {
 }
 
 // Template implementation
+
+template <typename T>
+const T &m::tvec3<T>::get(size_t i) const {
+
+    if (i > 3) throw std::invalid_argument("vec3 only has 3 values!");
+
+    return i == 0 ? x 
+           :    i == 1 ? y
+                :   z;
+}
+
+template <typename T>
+T &m::tvec3<T>::get(size_t i) {
+
+    if (i > 3) throw std::invalid_argument("vec3 only has 3 values!");
+
+    return i == 0 ? x 
+           :    i == 1 ? y
+                :   z;
+}
 
 template <typename T>
 m::tvec2<T> m::tvec3<T>::xy() const {

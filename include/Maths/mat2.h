@@ -9,21 +9,25 @@
 #include <Maths/vec2.h>
 #endif
 
+#define N 2
+
 namespace m {
 
     template <typename T> // requires 0, 1, T + T, T - T, T * T, T / T, std::abs(T), std::numeric_limits<T>::epsilon(), std::ostream << T
     struct tmat2 {
 
-        T values[4]; // column-major
+        T values[N * N]; // column-major
 
         static size_t getIndex(size_t x, size_t y);
 
+        const T &get(size_t x, size_t y) const;
+        T &get(size_t x, size_t y);
         tvec2<T> getRow(size_t y) const;
         tvec2<T> getColumn(size_t x) const;
 
-        tmat2() :values( {1, 0, 0, 1} ) {}
-        tmat2(tvec2<T> c1, tvec2<T> c2) :values( {c1.x, c1.y, c2.x, c2.y} ) {}
-        tmat2(T values[4]) :values( {values[0], values[1], values[2], values[3]} ) {}
+        tmat2() :tmat2{1, 0, 0, 1} {}
+        tmat2(tvec2<T> c1, tvec2<T> c2) :tmat2{c1.x, c1.y, c2.x, c2.y} {}
+        tmat2(T values[N * N]) :tmat2{values[0], values[1], values[2], values[3]} {}
         tmat2(std::initializer_list<T> values);
 
         T det() const;
@@ -62,6 +66,9 @@ namespace m {
     tmat2<T> operator/(const tmat2<T> &a, const tmat2<T> &b);
 
     template <typename T>
+    tvec2<T> operator*(const tmat2<T> &matrix, const tvec2<T> &vector);
+
+    template <typename T>
     std::ostream &operator<<(std::ostream &stream, const tmat2<T> &matrix);
 }
 
@@ -74,31 +81,42 @@ m::tmat2<T>::tmat2(std::initializer_list<T> init) {
 
     for (auto v : init) {
 
-        if (i > 3) break;
+        if (i > N * N - 1) break;
         values[i++] = v;
     }
 }
 
 template <typename T>
+const T &m::tmat2<T>::get(size_t x, size_t y) const {
+
+    return values[getIndex(x, y)];
+}
+
+template <typename T>
+T &m::tmat2<T>::get(size_t x, size_t y) {
+
+    return values[getIndex(x, y)];
+}
+
+template <typename T>
 size_t m::tmat2<T>::getIndex(size_t x, size_t y) {
 
-    return x * 2 + y;
+    if (x > N - 1) throw std::invalid_argument("mat2 only has 2 columns!");
+    if (y > N - 1) throw std::invalid_argument("mat2 only has 2 rows!");
+
+    return x * N + y;
 }
 
 template <typename T>
 m::tvec2<T> m::tmat2<T>::getRow(size_t y) const {
 
-    if (y > 1) throw std::invalid_argument("mat2 only has 2 rows!");
-
-    return m::tvec2<T>(values[getIndex(0, y)], values[getIndex(1, y)]);
+    return tvec2<T>(get(0, y), get(1, y));
 }
 
 template <typename T>
 m::tvec2<T> m::tmat2<T>::getColumn(size_t x) const {
 
-    if (x > 1) throw std::invalid_argument("mat2 only has 2 columns!");
-
-    return m::tvec2<T>(values[getIndex(x, 0)], values[getIndex(x, 1)]);
+    return tvec2<T>(get(x, 0), get(x, 1));
 }
 
 template <typename T>
@@ -110,13 +128,13 @@ T m::tmat2<T>::det() const {
 template <typename T>
 m::tmat2<T> m::tmat2<T>::cofactors() const {
 
-    return m::tmat2<T>( {values[3], -values[2], -values[1], values[0]} );
+    return tmat2<T>{values[3], -values[2], -values[1], values[0]};
 }
 
 template <typename T>
 m::tmat2<T> m::tmat2<T>::transpose() const {
 
-    return m::tmat2<T>( {values[0], values[2], values[1], values[3]} );
+    return tmat2<T>{values[0], values[2], values[1], values[3]};
 }
 
 template <typename T>
@@ -130,9 +148,9 @@ m::tmat2<T> m::tmat2<T>::inverse() const {
 
     T determinant = det();
 
-    if (std::abs(determinant) < Maths_EPSILON(T)) throw std::invalid_argument("Singular matrix can't be inverted");
+    if (util::checkZero(determinant)) throw std::invalid_argument("Singular matrix can't be inverted");
 
-    m::tmat2<T> adj = adjoint();
+    tmat2<T> adj = adjoint();
 
     return adj / determinant;
 }
@@ -140,15 +158,15 @@ m::tmat2<T> m::tmat2<T>::inverse() const {
 template <typename T>
 m::tmat2<T> m::tmat2<T>::identity() {
 
-    return m::tmat2<T>();
+    return tmat2<T>();
 }
 
 template <typename T>
 m::tmat2<T> m::operator+(const m::tmat2<T> &a, const m::tmat2<T> &b) {
 
-    m::tmat2<T> result(a);
+    tmat2<T> result(a);
 
-    for (int i = 0; i < 4; i++)
+    for (size_t i = 0; i < N * N; i++)
         result.values[i] += b.values[i];
 
     return result;
@@ -157,9 +175,9 @@ m::tmat2<T> m::operator+(const m::tmat2<T> &a, const m::tmat2<T> &b) {
 template <typename T>
 m::tmat2<T> m::operator-(const tmat2<T> &a, const m::tmat2<T> &b) {
 
-    m::tmat2<T> result(a);
+    tmat2<T> result(a);
 
-    for (int i = 0; i < 4; i++)
+    for (size_t i = 0; i < N * N; i++)
         result.values[i] -= b.values[i];
 
     return result;
@@ -168,9 +186,9 @@ m::tmat2<T> m::operator-(const tmat2<T> &a, const m::tmat2<T> &b) {
 template <typename T>
 m::tmat2<T> m::operator*(T scalar, const m::tmat2<T> &matrix) {
 
-    m::tmat2<T> result(matrix);
+    tmat2<T> result(matrix);
 
-    for (int i = 0; i < 4; i++)
+    for (size_t i = 0; i < N * N; i++)
         result.values[i] *= scalar;
 
     return result;
@@ -185,9 +203,9 @@ m::tmat2<T> m::operator*(const m::tmat2<T> &matrix, T scalar) {
 template <typename T>
 m::tmat2<T> m::operator/(const m::tmat2<T> &matrix, T scalar) {
 
-    m::tmat2<T> result(matrix);
+    tmat2<T> result(matrix);
 
-    for (int i = 0; i < 4; i++)
+    for (size_t i = 0; i < N * N; i++)
         result.values[i] /= scalar;
 
     return result;
@@ -196,13 +214,13 @@ m::tmat2<T> m::operator/(const m::tmat2<T> &matrix, T scalar) {
 template <typename T>
 m::tmat2<T> m::operator*(const m::tmat2<T> &a, const tmat2<T> &b) {
 
-    m::tmat2<T> result;
+    tmat2<T> result;
 
-    for (int x = 0; x < 2; x++) {
+    for (size_t x = 0; x < N; x++) {
 
-        for (int y = 0; y < 2; y++) {
+        for (size_t y = 0; y < N; y++) {
 
-            result.values[m::tmat2<T>::getIndex(x, y)] = tvec2<T>::dot(a.getRow(y), b.getColumn(x));
+            result.get(x, y) = tvec2<T>::dot(a.getRow(y), b.getColumn(x));
         }
     }
 
@@ -216,6 +234,22 @@ m::tmat2<T> m::operator/(const m::tmat2<T> &a, const m::tmat2<T> &b) {
 }
 
 template <typename T>
+m::tvec2<T> m::operator*(const m::tmat2<T> &matrix, const m::tvec2<T> &vector) {
+
+    tvec2<T> result;
+
+    for (size_t x = 0; x < N; x++) {
+
+        for (size_t y = 0; y < N; y++) {
+
+            result.get(y) = tvec2<T>::dot(matrix.getRow(y), vector);
+        }
+    }
+
+    return result;
+}
+
+template <typename T>
 std::ostream &m::operator<<(std::ostream &stream, const m::tmat2<T> &matrix) {
 
     return stream << std::endl << "__\t\t\t\b \b__" << std::endl
@@ -223,5 +257,7 @@ std::ostream &m::operator<<(std::ostream &stream, const m::tmat2<T> &matrix) {
                                << "|\t" << matrix.values[1] << "\t" << matrix.values[3] << "\t|" << std::endl
                                << "--\t\t\t\b \b--";
 }
+
+#undef N
 
 #endif
