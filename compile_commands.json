@@ -1,12 +1,12 @@
 [
 {
-  "directory": "/home/calum/code/projects/Maths/build",
-  "command": "/usr/bin/c++   -I/home/calum/code/projects/Maths/Maths -I/home/calum/code/projects/Maths/include    -o CMakeFiles/testing.dir/src/main.cpp.o -c /home/calum/code/projects/Maths/src/main.cpp",
-  "file": "/home/calum/code/projects/Maths/src/main.cpp"
+  "directory": "/home/luminiscental/code/projects/Maths/build",
+  "command": "/usr/bin/c++   -I/home/luminiscental/code/projects/Maths/Maths -I/home/luminiscental/code/projects/Maths/include    -o CMakeFiles/testing.dir/src/main.cpp.o -c /home/luminiscental/code/projects/Maths/src/main.cpp",
+  "file": "/home/luminiscental/code/projects/Maths/src/main.cpp"
 },
 {
-  "directory": "/home/calum/code/projects/Maths/build",
-  "command": "/usr/bin/c++   -I/home/calum/code/projects/Maths/Maths -I/home/calum/code/projects/Maths/include    -o CMakeFiles/Maths.dir/src/main.cpp.o -c /home/calum/code/projects/Maths/src/main.cpp",
-  "file": "/home/calum/code/projects/Maths/src/main.cpp"
+  "directory": "/home/luminiscental/code/projects/Maths/build",
+  "command": "/usr/bin/c++   -I/home/luminiscental/code/projects/Maths/Maths -I/home/luminiscental/code/projects/Maths/include    -o CMakeFiles/Maths.dir/src/main.cpp.o -c /home/luminiscental/code/projects/Maths/src/main.cpp",
+  "file": "/home/luminiscental/code/projects/Maths/src/main.cpp"
 }
 ]

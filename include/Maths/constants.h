@@ -5,6 +5,9 @@
 
 #define Maths_EPSILON(T) std::numeric_limits<T>::epsilon()
 
+#define Maths_PI(T)  static_cast<T>(3.14159265358979323846264338327950288419716939937510582097494459230781640629)
+#define Maths_TAU(T) static_cast<T>(6.28318530717958647692528676655900576839433879875021164194988918461563281257)
+
 namespace m {
 
     namespace util {

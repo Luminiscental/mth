@@ -3,7 +3,6 @@
 
 #include <cmath>
 #include <ostream>
-#include <functional>
 
 #ifndef __Maths_vec2_h__
 #include <Maths/vec2.h>
