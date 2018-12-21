@@ -1,5 +1,7 @@
 #!/bin/sh
 
+mkdir -p build
+
 pushd build
 
 flag_cmake=false

@@ -1,3 +1,4 @@
 #!/bin/sh
 
-git add src/ include/
+git add src/ include/ build.sh ga.sh
+
