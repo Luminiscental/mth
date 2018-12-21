@@ -43,6 +43,7 @@ namespace m {
 
         static tmat3 identity();
         static tmat3 scale(T x, T y, T z);
+        static tmat3 scale(tvec3<T> v);
     };
 
     typedef tmat3<int>    imat3;
@@ -182,6 +183,8 @@ m::tmat3<T> m::tmat3<T>::cofactors() const {
             result.get(x, y) = s * getMinor(x, y).det();
             s *= -1;
         }
+
+        s *= -1 * ((N + 1) % 2);
     }
 
     return result;
@@ -231,6 +234,12 @@ template <typename T>
 m::tmat3<T> m::tmat3<T>::scale(T x, T y, T z) {
 
     return tmat3<T>{x, 0, 0, 0, y, 0, 0, 0, z};
+}
+
+template <typename T>
+m::tmat3<T> m::tmat3<T>::scale(tvec3<T> v) {
+
+    return scale(v.x, v.y, v.z);
 }
 
 template <typename T>

@@ -8,8 +8,7 @@
 #include <Maths/vec4.h>
 #include <Maths/mat2.h>
 #include <Maths/mat3.h>
-
-//TODO: mat4
+#include <Maths/mat4.h>
 
 int main(int argc, const char **argv) {
 
@@ -46,6 +45,26 @@ int main(int argc, const char **argv) {
     std::cout << "scaleTest = " << scaleTest << std::endl;
 
     std::cout << "123 scaled = " << scaleTest * m::vec3(1, 2, 3) << std::endl;
+
+    m::mat4 test4{2, 3, 4, 5, 1, 6, -3, 4, 1, 5, 5, 1, 1, 1, 0, 1};
+
+    std::cout << "test4 = " << test4 << std::endl;
+
+    std::cout << "minors(2, 2) = " << test4.getMinor(2, 2) << std::endl;
+
+    std::cout << "det(test4) = " << test4.det() << std::endl;
+
+    std::cout << "inverse(test4) = " << test4.inverse() << std::endl;
+
+    std::cout << "test4^2 = " << test4 * test4 << std::endl;
+
+    std::cout << "test4 * inverse(test4) = " << test4 * test4.inverse() << std::endl;
+
+    m::mat4 projTest = m::mat4::perspectiveProjection(60.0f, 60.0f, 1.0f, 10.0f);
+
+    std::cout << "projTest = " << projTest << std::endl;
+
+    std::cout << "513 projected = " << projTest * m::vec4(m::vec3(5, 1, 3), 1) << std::endl;
 
     return 0;
 }
