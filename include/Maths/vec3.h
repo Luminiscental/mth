@@ -10,7 +10,8 @@
 
 namespace m {
 
-    template <typename T> // requires 0, T + T, T - T, -T, T * T, T / T, static_cast<double>(T), std::ostream << T
+    // requires 0, T + T, T - T, -T, T * T, T / T, static_cast<double>(T), static_cast<T>(double), std::ostream << T
+    template <typename T> 
     struct tvec3 {
 
         T x, y, z;
@@ -29,6 +30,7 @@ namespace m {
 
         T magnSqr() const;
         double magn() const;
+        tvec3 unit() const;
 
         static T dot(const tvec3 &a, const tvec3 &b);
         static tvec3 cross(const tvec3 &a, const tvec3 &b);
@@ -111,6 +113,12 @@ template <typename T>
 double m::tvec3<T>::magn() const {
 
     return std::sqrt(static_cast<double>(magnSqr()));
+}
+
+template <typename T>
+m::tvec3<T> m::tvec3<T>::unit() const {
+
+    return *this / static_cast<T>(magn());
 }
 
 template <typename T>

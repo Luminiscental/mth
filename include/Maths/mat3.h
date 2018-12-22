@@ -17,7 +17,8 @@
 
 namespace m {
 
-    template <typename T> // requires 0, 1, -1, T + T, T - T, T * T, T / T, std::abs(T), std::numeric_limits<T>::epsilon(), std::ostream << T
+    // requires 0, 1, -1, T + T, T - T, T * T, T / T, std::abs(T), std::numeric_limits<T>::epsilon(), std::ostream << T
+    template <typename T> 
     struct tmat3 {
 
         T values[N * N]; // column-major
@@ -40,8 +41,9 @@ namespace m {
         tmat3 transpose() const;
         tmat3 adjoint() const;
         tmat3 inverse() const;
+        tmat3 unit() const;
 
-        static tmat3 identity();
+        inline static tmat3 identity() { return tmat3(); }
         static tmat3 scale(T x, T y, T z);
         static tmat3 scale(tvec3<T> v);
     };
@@ -225,9 +227,9 @@ m::tmat3<T> m::tmat3<T>::inverse() const {
 }
 
 template <typename T>
-m::tmat3<T> m::tmat3<T>::identity() {
+m::tmat3<T> m::tmat3<T>::unit() const {
 
-    return tmat3<T>();
+    return *this / det();
 }
 
 template <typename T>

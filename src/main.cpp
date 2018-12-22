@@ -9,8 +9,7 @@
 #include <Maths/mat2.h>
 #include <Maths/mat3.h>
 #include <Maths/mat4.h>
-
-// TODO: quaternions
+#include <Maths/quat.h>
 
 int main(int argc, const char **argv) {
 
@@ -67,6 +66,29 @@ int main(int argc, const char **argv) {
     std::cout << "projTest = " << projTest << std::endl;
 
     std::cout << "513 projected = " << projTest * m::vec4(m::vec3(5, 1, 3), 1) << std::endl;
+
+    m::quat rotation = m::quat::rotation(Maths_PI(float) / 2, m::vec3(1, 0, 0));
+
+    std::cout << "Rotation quaternion for a right angle around the x axis is " << rotation << " whose length is " << rotation.magn() << std::endl;
+
+    m::vec3 vectorToRotate(0.5f, 0.5f, 0.0f);
+
+    std::cout << "The vector " << vectorToRotate << " rotated by that is " << rotation.rotate(vectorToRotate) << std::endl;
+
+    m::quat quat1;
+    m::quat quat2 = 2.0f;
+
+    std::cout << "2 * 1 = " << quat1 << " * " << quat2 << " = " << quat1 * quat2 << std::endl;
+
+    m::quat testQuat(1, 2, 3, 4);
+
+    std::cout << "The unit quaternion of " << testQuat << " is " << testQuat.unit() << std::endl;
+
+    std::cout << testQuat << " * " << rotation << " = " << testQuat * rotation << std::endl;
+
+    std::cout << rotation << " * " << testQuat << " = " << rotation * testQuat << std::endl;
+
+    std::cout << "[" << testQuat << ", " << rotation << "] = " << testQuat * rotation - rotation * testQuat << std::endl;
 
     return 0;
 }

@@ -13,7 +13,8 @@
 
 namespace m {
 
-    template <typename T> // requires 0, 1, T + T, T - T, T * T, T / T, std::abs(T), std::numeric_limits<T>::epsilon(), std::ostream << T
+    // requires 0, 1, T + T, T - T, T * T, T / T, std::abs(T), std::numeric_limits<T>::epsilon(), std::ostream << T
+    template <typename T> 
     struct tmat2 {
 
         T values[N * N]; // column-major
@@ -35,8 +36,9 @@ namespace m {
         tmat2 transpose() const;
         tmat2 adjoint() const;
         tmat2 inverse() const;
+        tmat2 unit() const;
 
-        static tmat2 identity();
+        inline static tmat2 identity() { return tmat2(); }
     };
 
     typedef tmat2<int>    imat2;
@@ -156,9 +158,9 @@ m::tmat2<T> m::tmat2<T>::inverse() const {
 }
 
 template <typename T>
-m::tmat2<T> m::tmat2<T>::identity() {
+m::tmat2<T> m::tmat2<T>::unit() const {
 
-    return tmat2<T>();
+    return *this / det();
 }
 
 template <typename T>

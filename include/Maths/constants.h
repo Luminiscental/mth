@@ -12,7 +12,8 @@ namespace m {
 
     namespace util {
 
-        template <typename T> // requires std::abs(T)
+        // requires std::abs(T), std::numeric_limits<T>::epsilon()
+        template <typename T>
         bool checkZero(T x);
     }
 }

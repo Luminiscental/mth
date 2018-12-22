@@ -6,7 +6,8 @@
 
 namespace m {
 
-    template <typename T> // requires 0, T + T, T - T, -T, T * T, T / T, static_cast<double>(T), std::ostream << T
+    // requires 0, T + T, T - T, -T, T * T, T / T, static_cast<double>(T), static_cast<T>(double), std::ostream << T
+    template <typename T> 
     struct tvec2 {
 
         T x, y;
@@ -20,8 +21,8 @@ namespace m {
 
         T magnSqr() const;
         double magn() const;
-
         double arg() const; // (-pi, pi]
+        tvec2 unit() const;
 
         static T dot(const tvec2 &a, const tvec2 &b);
     };
@@ -93,6 +94,12 @@ template <typename T>
 double m::tvec2<T>::arg() const {
 
     return std::atan2(y, x);
+}
+
+template <typename T>
+m::tvec2<T> m::tvec2<T>::unit() const {
+
+    return *this / static_cast<T>(magn());
 }
 
 template <typename T>

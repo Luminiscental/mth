@@ -17,7 +17,8 @@
 
 namespace m {
 
-    template <typename T> // requires 0, 1, -1, 2, -2, T + T, T - T, T * T, T / T, static_cast<double>(T), static_cast<T>(double), std::abs(T), std::numeric_limits<T>::epsilon(), std::ostream << T
+    // requires 0, 1, -1, 2, -2, T + T, T - T, T * T, T / T, static_cast<double>(T), static_cast<T>(double), std::abs(T), std::numeric_limits<T>::epsilon(), std::ostream << T
+    template <typename T> 
     struct tmat4 {
 
         T values[N * N]; // column-major
@@ -40,8 +41,9 @@ namespace m {
         tmat4 transpose() const;
         tmat4 adjoint() const;
         tmat4 inverse() const;
+        tmat4 unit() const;
 
-        static tmat4 identity();
+        inline static tmat4 identity() { return tmat4(); }
         static tmat4 scale(T x, T y, T z);
         static tmat4 scale(tvec3<T> v);
         static tmat4 translate(T x, T y, T z);
@@ -228,9 +230,9 @@ m::tmat4<T> m::tmat4<T>::inverse() const {
 }
 
 template <typename T>
-m::tmat4<T> m::tmat4<T>::identity() {
+m::tmat4<T> m::tmat4<T>::unit() const {
 
-    return tmat4<T>();
+    return *this / det();
 }
 
 template <typename T>
@@ -383,7 +385,5 @@ std::ostream &m::operator<<(std::ostream &stream, const m::tmat4<T> &matrix) {
 }
 
 #undef N
-
-
 
 #endif
