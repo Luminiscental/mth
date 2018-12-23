@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <iomanip>
 
 #include <Maths/vec.h>
 #include <Maths/mat.h>
@@ -33,11 +34,14 @@ int main(int argc, const char **argv) {
 
     m::vec4 solution = system.solve();
 
-    std::cout << " -> x = " << solution.x() << ", y = " << solution.y() << ", z = " << solution.z() << ", w = " << solution.w() << std::endl << std::endl;
+    std::cout << std::fixed << std::setprecision(2) << " -> x = " << solution.x()
+                                                    << ",   y = " << solution.y()
+                                                    << ",   z = " << solution.z()
+                                                    << ",   w = " << solution.w() << std::endl << std::endl;
 
     // (1 + i) + (2 - i)x + (3 + i)x^2 = 0
     
-    m::cvec3 quadraticCoeffs{std::complex<double>(1, 1), std::complex<double>(2, -1), std::complex<double>(3, 1)};
+    m::cvec3 quadraticCoeffs{1.0 + m::i, 2.0 - m::i, 3.0 + m::i};
 
     m::eq::Polynomial<2> quadratic(quadraticCoeffs);
 
@@ -63,6 +67,10 @@ int main(int argc, const char **argv) {
     m::vec3 rotatedVector = netRotation.rotate(m::vec3{1, 1, 2});
 
     std::cout << "(1, 1, 2) rotated 45 degrees around the X-axis and then 30 degrees around the Y-axis = " << rotatedVector << std::endl << std::endl;
+
+    std::cout << "The combined rotation can be represented by the quaternion " << netRotation << std::endl;
+
+    std::cout << "Or following matrix:" << m::mat::rotate(netRotation) << std::endl << std::endl;
     
     return 0;
 }

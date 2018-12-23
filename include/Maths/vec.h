@@ -203,7 +203,7 @@ namespace m {
 
         friend std::ostream &operator<<(std::ostream &stream, const tvec<T, N> &vector) {
 
-            stream << "(";
+            stream << std::fixed << std::setprecision(2) << "(";
 
             for (size_t i = 0; i < N - 1; i++) {
 
@@ -214,21 +214,14 @@ namespace m {
         }
     };
 
-    template <typename T>
-    tvec<T, 3> x_axis{1, 0, 0};
-
-    template <typename T>
-    tvec<T, 3> y_axis{0, 1, 0};
-
-    template <typename T>
-    tvec<T, 3> z_axis{0, 0, 1};
-    
 #define TYPEDEF_VEC(n) typedef tvec<int, n>    ivec ## n; \
                        typedef tvec<long, n>   lvec ## n; \
                        typedef tvec<float, n>   vec ## n; \
                        typedef tvec<double, n> dvec ## n; \
                        typedef tvec<std::complex<double>, n> cvec ## n;
 
+    // TODO: Maybe move to double as default
+    
     TYPEDEF_VEC(2)
     TYPEDEF_VEC(3)
     TYPEDEF_VEC(4)

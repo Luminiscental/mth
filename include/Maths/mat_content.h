@@ -1,9 +1,10 @@
 
 #ifdef __Maths_mat_content_toggle__
 
-T values[N * N]; // column-major
+T values[N * N]; // NOTE: column-major
 
-static size_t getIndex(size_t x, size_t y) { // TODO: Maybe generalize between row and column-major
+// TODO: Maybe generalize between row and column-major
+static size_t getIndex(size_t x, size_t y) { // NOTE: 0,0 is top left
 
     if (x > N - 1) throw std::out_of_range("column index out of bounds");
     if (y > N - 1) throw std::out_of_range("row index out of bounds");
@@ -64,6 +65,21 @@ tmat(const tmat<T, N> &other) {
 
             get(x, y) = other.get(x, y);
         }
+    }
+}
+
+tmat(std::initializer_list<tvec<T, N>> init) {
+
+    size_t x = 0;
+
+    for (auto value : init) {
+
+        for (size_t y = 0; y < N; y++) {
+
+            get(x, y) = value.get(y);
+        }
+
+        if (x++ == N) break;
     }
 }
 
@@ -304,6 +320,8 @@ friend tvec<T, N> operator*(const tmat<T, N> &matrix, const tvec<T, N> &vector) 
 
 // TODO: Either make this less crappy or remove it
 friend std::ostream &operator<<(std::ostream &stream, const tmat<T, N> &matrix) {
+
+    stream << std::fixed << std::setprecision(2);
 
     stream << std::endl << "__";
     

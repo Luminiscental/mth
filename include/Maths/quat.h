@@ -1,5 +1,5 @@
-#ifndef __Maths_tquat_h__
-#define __Maths_tquat_h__
+#ifndef __Maths_quat_h__
+#define __Maths_quat_h__
 
 #include <cmath>
 #include <ostream>
@@ -168,7 +168,7 @@ namespace m {
 
             bool nonZero = false;
 
-            stream << "(";
+            stream << std::fixed << std::setprecision(2) << "(";
 
             if (!util::checkZero(quaternion.w)) {
 
@@ -178,22 +178,49 @@ namespace m {
 
             if (!util::checkZero(quaternion.x)) {
 
-                if (nonZero) stream << " + ";
-                stream << quaternion.x << "i";
-                nonZero = true;
+                if (nonZero) {
+
+                    stream << (quaternion.x > 0 ? " + " : " - ");
+                    stream << std::abs(quaternion.x);
+
+                } else {
+
+                    stream << quaternion.x;
+                    nonZero = true;
+                }
+
+                stream << "i";
             }
 
             if (!util::checkZero(quaternion.y)) {
+                
+                if (nonZero) {
 
-                if (nonZero) stream << " + ";
-                stream << quaternion.y << "j";
-                nonZero = true;
+                    stream << (quaternion.y > 0 ? " + " : " - ");
+                    stream << std::abs(quaternion.y);
+
+                } else {
+
+                    stream << quaternion.y;
+                    nonZero = true;
+                }
+
+                stream << "j";
             }
 
             if (!util::checkZero(quaternion.z)) {
+                
+                if (nonZero) {
 
-                if (nonZero) stream << " + ";
-                stream << quaternion.z << "k";
+                    stream << (quaternion.z > 0 ? " + " : " - ");
+                    stream << std::abs(quaternion.z);
+
+                } else {
+
+                    stream << quaternion.z;
+                }
+
+                stream << "k";
             }
 
             if (!nonZero) stream << "0";
