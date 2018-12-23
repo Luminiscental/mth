@@ -54,6 +54,15 @@ int main(int argc, const char **argv) {
     }
 
     std::cout << std::endl << std::endl;
+
+    m::quat xRotation = m::quat::rotation(Maths_PI(float) / 4, m::x_axis<float>);
+    m::quat yRotation = m::quat::rotation(Maths_PI(float) / 6, m::y_axis<float>);
+
+    m::quat netRotation = yRotation * xRotation;
+
+    m::vec3 rotatedVector = netRotation.rotate(m::vec3{1, 1, 2});
+
+    std::cout << "(1, 1, 2) rotated 45 degrees around the X-axis and then 30 degrees around the Y-axis = " << rotatedVector << std::endl << std::endl;
     
     return 0;
 }

@@ -214,6 +214,15 @@ namespace m {
         }
     };
 
+    template <typename T>
+    tvec<T, 3> x_axis{1, 0, 0};
+
+    template <typename T>
+    tvec<T, 3> y_axis{0, 1, 0};
+
+    template <typename T>
+    tvec<T, 3> z_axis{0, 0, 1};
+    
 #define TYPEDEF_VEC(n) typedef tvec<int, n>    ivec ## n; \
                        typedef tvec<long, n>   lvec ## n; \
                        typedef tvec<float, n>   vec ## n; \

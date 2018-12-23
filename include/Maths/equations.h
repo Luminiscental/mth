@@ -83,6 +83,9 @@ namespace m {
 
                 std::set<std::complex<double>, ComplexComparator> result;
 
+                // TODO: Numerical solution for higher degrees
+                // TODO: Cubics and quartics
+
                 return result;
             }
         };

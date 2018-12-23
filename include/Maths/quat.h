@@ -37,14 +37,15 @@ namespace m {
 
         tvec<T, 3> imaginary() const {
             
-            return tvec<T, 3>(i(), j(), k()); 
+            return tvec<T, 3>{i(), j(), k()}; 
         }
 
         tquat() : x(0), y(0), z(0), w(1) {}
         tquat(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
         tquat(const tquat &other) : x(other.x), y(other.y), z(other.z), w(other.w) {}
         tquat(T real) : x(0), y(0), z(0), w(real) {}
-        tquat(const tvec<T, 3> &imaginary) : x(imaginary.x), y(imaginary.y), z(imaginary.z), w(0) {}
+        tquat(const tvec<T, 3> &imaginary) : x(imaginary.x()), y(imaginary.y()), z(imaginary.z()), w(0) {}
+        tquat(const tvec<T, 3> &imaginary, T real) : x(imaginary.x()), y(imaginary.y()), z(imaginary.z()), w(real) {}
 
         T magnSqr() const {
 
@@ -63,7 +64,11 @@ namespace m {
 
         tquat<T> inverse() const {
 
-            return conjugate() / magnSqr();
+            T ls = magnSqr();
+
+            if (util::checkZero(ls)) throw std::invalid_argument("zero quaternion has no inverse");
+
+            return conjugate() / ls;
         }
 
         tquat<T> unit() const {
@@ -84,9 +89,9 @@ namespace m {
             
             return tquat(); 
         }
-
-        static tquat rotation(T angle, const tvec<T, 3> &axis) {
-
+                                                                 //                  /-
+        static tquat rotation(T angle, const tvec<T, 3> &axis) { // Right-handed: ---|--> axis
+                                                                 //                  \-> rotation
             double halfAngle = static_cast<double>(angle) / 2.0;
             return static_cast<T>(std::cos(halfAngle)) + static_cast<T>(std::sin(halfAngle)) * tquat<T>(axis);
         }
@@ -156,7 +161,7 @@ namespace m {
 
         friend tquat<T> operator/(const tquat<T> &quaternion, T scalar) {
 
-            return quaternion / tquat<T>(scalar);
+            return tquat<T>(quaternion.imaginary() / scalar, quaternion.real() / scalar);
         }
 
         friend std::ostream &operator<<(std::ostream &stream, const tquat<T> &quaternion) {
