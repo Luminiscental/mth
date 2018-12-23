@@ -1,94 +1,59 @@
 
-#include <cmath>
 #include <iostream>
 
-#include <Maths/constants.h>
-#include <Maths/vec2.h>
-#include <Maths/vec3.h>
-#include <Maths/vec4.h>
-#include <Maths/mat2.h>
-#include <Maths/mat3.h>
-#include <Maths/mat4.h>
+#include <Maths/vec.h>
+#include <Maths/mat.h>
 #include <Maths/quat.h>
+
+#include <Maths/constants.h>
+#include <Maths/equations.h>
 
 int main(int argc, const char **argv) {
 
-    std::cout << "EPSILON(float) = " << Maths_EPSILON(float) << std::endl;
+    std::cout << std::endl;
 
-    std::cout << "dot(12, 74) = " << m::ivec2::dot(m::ivec2(1, 2), m::ivec2(7, 4)) << std::endl;
+    // x + 3y - 2z + w = 12
+    // 2x - 6y + 13z - 2w = 1
+    // x + y + z + 2w = 0
+    // x - 2y + 3z - 4w = -3
 
-    std::cout << "cross(123, 712) = " << m::ivec3::cross(m::ivec3(1, 2, 3), m::ivec3(7, 1, 2)) << std::endl;
+    m::mat4 systemCoeffs{ 1,  2,  1,  1, // x
+                          3, -6,  1, -2, // y
+                         -2, 13,  1,  3, // z
+                          1, -2,  2, -4};// w
 
-    std::cout << "magn(1234) = " << m::ivec4(1, 2, 3, 4).magn() << std::endl;
+    m::vec4 systemOutput{12, 1, 0, -3};
 
-    std::cout << "inverse(1234) = " << m::mat2{1, 2, 3, 4}.inverse() << std::endl;
+    m::eq::LinearSystem<float, 4> system(systemCoeffs, systemOutput);
+
+    std::cout << "x + 3y - 2z + w = 12" << std::endl
+              << "2x - 6y + 13z - 2w = 1" << std::endl
+              << "x + y + z + 2w = 0" << std::endl
+              << "x - 2y + 3z - 4w = -3" << std::endl << std::endl;
+
+    m::vec4 solution = system.solve();
+
+    std::cout << " -> x = " << solution.x() << ", y = " << solution.y() << ", z = " << solution.z() << ", w = " << solution.w() << std::endl << std::endl;
+
+    // (1 + i) + (2 - i)x + (3 + i)x^2 = 0
+    
+    m::cvec3 quadraticCoeffs{std::complex<double>(1, 1), std::complex<double>(2, -1), std::complex<double>(3, 1)};
+
+    m::eq::Polynomial<2> quadratic(quadraticCoeffs);
+
+    std::cout << "(1 + i) + (2 - i)x + (3 + i)x^2 = 0" << std::endl << std::endl
+              << " -> x = ";
+
+    auto quadraticSolutions = quadratic.solve();
+    
+    for (std::complex<double> root : quadraticSolutions) {
+
+        std::cout << root.real() << " + " << root.imag() << "i"; // TODO: Replace std::complex
+
+        if (root != *quadraticSolutions.end()) std::cout << " or ";
+    }
 
     std::cout << std::endl << std::endl;
-
-    m::mat3 test{4, 2, 3, 4, 5, 6, 7, 8, 9};
-
-    std::cout << "test = " << test << std::endl;
-
-    std::cout << "minors(0, 1) = " << test.getMinor(0, 1) << std::endl;
-
-    std::cout << "det(test) = " << test.det() << std::endl;
-
-    std::cout << "cofactors(test) = " << test.cofactors() << std::endl;
-
-    std::cout << "inverse(test) = " << test.inverse() << std::endl;
-
-    std::cout << "test * test = " << test * test << std::endl;
-
-    std::cout << "test * inverse(test) = " << test * test.inverse() << std::endl;
-
-    m::mat3 scaleTest = m::mat3::scale(1, 3, 2);
-
-    std::cout << "scaleTest = " << scaleTest << std::endl;
-
-    std::cout << "123 scaled = " << scaleTest * m::vec3(1, 2, 3) << std::endl;
-
-    m::mat4 test4{2, 3, 4, 5, 1, 6, -3, 4, 1, 5, 5, 1, 1, 1, 0, 1};
-
-    std::cout << "test4 = " << test4 << std::endl;
-
-    std::cout << "minors(2, 2) = " << test4.getMinor(2, 2) << std::endl;
-
-    std::cout << "det(test4) = " << test4.det() << std::endl;
-
-    std::cout << "inverse(test4) = " << test4.inverse() << std::endl;
-
-    std::cout << "test4^2 = " << test4 * test4 << std::endl;
-
-    std::cout << "test4 * inverse(test4) = " << test4 * test4.inverse() << std::endl;
-
-    m::mat4 projTest = m::mat4::perspectiveProjection(60.0f, 60.0f, 1.0f, 10.0f);
-
-    std::cout << "projTest = " << projTest << std::endl;
-
-    std::cout << "513 projected = " << projTest * m::vec4(m::vec3(5, 1, 3), 1) << std::endl;
-
-    m::quat rotation = m::quat::rotation(Maths_PI(float) / 2, m::vec3(1, 0, 0));
-
-    std::cout << "Rotation quaternion for a right angle around the x axis is " << rotation << " whose length is " << rotation.magn() << std::endl;
-
-    m::vec3 vectorToRotate(0.5f, 0.5f, 0.0f);
-
-    std::cout << "The vector " << vectorToRotate << " rotated by that is " << rotation.rotate(vectorToRotate) << std::endl;
-
-    m::quat quat1;
-    m::quat quat2 = 2.0f;
-
-    std::cout << "2 * 1 = " << quat1 << " * " << quat2 << " = " << quat1 * quat2 << std::endl;
-
-    m::quat testQuat(1, 2, 3, 4);
-
-    std::cout << "The unit quaternion of " << testQuat << " is " << testQuat.unit() << std::endl;
-
-    std::cout << testQuat << " * " << rotation << " = " << testQuat * rotation << std::endl;
-
-    std::cout << rotation << " * " << testQuat << " = " << rotation * testQuat << std::endl;
-
-    std::cout << "[" << testQuat << ", " << rotation << "] = " << testQuat * rotation - rotation * testQuat << std::endl;
-
+    
     return 0;
 }

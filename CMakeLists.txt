@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 2.8)
 project (Maths)
 
 # YCM config
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fbuiltin -g")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 IF(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json")
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
