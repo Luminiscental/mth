@@ -1,4 +1,6 @@
 
+#ifdef __Maths_mat_content_toggle__
+
 T values[N * N]; // column-major
 
 static size_t getIndex(size_t x, size_t y) { // TODO: Maybe generalize between row and column-major
@@ -333,4 +335,6 @@ friend std::ostream &operator<<(std::ostream &stream, const tmat<T, N> &matrix) 
 
     return stream << "\b \b--";
 }
+
+#endif
 

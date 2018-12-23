@@ -13,6 +13,8 @@
 #include <Maths/constants.h>
 #endif
 
+#define __Maths_mat_content_toggle__ // Safeguard so mat_content.h doesn't get included anywhere else
+
 namespace m {
 
     template <typename T, size_t N>
@@ -53,5 +55,7 @@ namespace m {
 #undef TYPEDEF_MAT
 
 }
+
+#undef __Maths_mat_content_toggle__
 
 #endif
