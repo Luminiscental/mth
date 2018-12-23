@@ -125,7 +125,7 @@ namespace m {
         public:
             Polynomial(tvec<std::complex<double>, 3> coeffs) : coeffs(coeffs) {
 
-                descriminant = coeffs.get(1) * coeffs.get(1) - coeffs.get(2) * coeffs.get(0);
+                descriminant = coeffs.get(1) * coeffs.get(1) - 4.0 * coeffs.get(2) * coeffs.get(0);
             }
 
             std::complex<double> value(std::complex<double> x) {
