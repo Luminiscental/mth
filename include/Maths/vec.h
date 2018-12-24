@@ -1,10 +1,14 @@
 #ifndef __Maths_vec_h__
 #define __Maths_vec_h__
 
-#include <memory>
 #include <complex>
 #include <cmath>
-#include <ostream>
+
+#include <iostream>
+#include <iomanip>
+
+#include <array>
+#include <type_traits>
 
 #ifndef __Maths_constants_h__
 #include <Maths/constants.h>
@@ -13,42 +17,34 @@
 namespace m {
 
     template <typename T, size_t N>
-    struct tvec {
+    class tvec {
 
-        T values[N * N];
+    private:
+        std::array<T, N> values;
 
+    public:
         tvec() {
 
-            for (size_t i = 0; i < N; i++) {
-
-                values[i] = 0;
-            }
+            values.fill(0);
         }
 
-        tvec(const tvec<T, N> &other) {
+        tvec(const std::array<T, N> &values) : values(values) {} 
 
-            for (size_t i = 0; i < N; i++) {
+        tvec(const tvec<T, N> &other) : tvec(other.values) {}
 
-                values[i] = other.get(i);
-            }
-        }
-
-        tvec(std::initializer_list<T> init) {
-                                                              
-            size_t i = 0;
-                                                              
-            for (T value : init) {
-                                                              
-                values[i++] = value;
-            }
-        }
+        template <typename ...Q, typename std::enable_if<sizeof...(Q) == N, int>::type = 0>
+        tvec(Q... args) : values{static_cast<T>(args)...} {}
 
         T &get(size_t index) {
+
+            if (index > N - 1) throw std::out_of_range("m::exception: vector accessed out of range");
 
             return values[index];
         }
 
         const T &get(size_t index) const {
+
+            if (index > N - 1) throw std::out_of_range("m::exception: vector accessed out of range");
 
             return values[index];
         }
@@ -112,7 +108,11 @@ namespace m {
 
         double magn() const {
 
-            return std::sqrt(static_cast<double>(magnSqr()));
+            double ls = static_cast<double>(magnSqr());
+
+            if (util::checkZero(ls)) return 0.0;
+
+            return std::sqrt(ls);
         }
         
         T dot(const tvec<T, N> &other) {
@@ -131,7 +131,7 @@ namespace m {
 
             T l = static_cast<T>(magn());
 
-            if (util::checkZero(l)) throw std::invalid_argument("zero vector has no unit equivalent");
+            if (util::checkZero(l)) throw std::invalid_argument("m::exception: unit() called on zero vector");
 
             return *this / l;
         }

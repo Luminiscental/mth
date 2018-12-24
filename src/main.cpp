@@ -18,12 +18,12 @@ int main(int argc, const char **argv) {
     // x + y + z + 2w = 0
     // x - 2y + 3z - 4w = -3
 
-    m::mat4 systemCoeffs{ 1,  2,  1,  1, // x
-                          3, -6,  1, -2, // y
-                         -2, 13,  1,  3, // z
-                          1, -2,  2, -4};// w
+    m::mat4 systemCoeffs( 1,  2,  1,  1,  // x
+                          3, -6,  1, -2,  // y
+                         -2, 13,  1,  3,  // z
+                          1, -2,  2, -4);// w
 
-    m::vec4 systemOutput{12, 1, 0, -3};
+    m::vec4 systemOutput(12, 1, 0, -3);
 
     m::eq::LinearSystem<float, 4> system(systemCoeffs, systemOutput);
 
@@ -41,7 +41,7 @@ int main(int argc, const char **argv) {
 
     // (1 + i) + (2 - i)x + (3 + i)x^2 = 0
     
-    m::cvec3 quadraticCoeffs{1.0 + m::i, 2.0 - m::i, 3.0 + m::i};
+    m::cvec3 quadraticCoeffs(1.0 + m::i, 2.0 - m::i, 3.0 + m::i);
 
     m::eq::Polynomial<2> quadratic(quadraticCoeffs);
 
@@ -64,13 +64,13 @@ int main(int argc, const char **argv) {
 
     m::quat netRotation = yRotation * xRotation;
 
-    m::vec3 rotatedVector = netRotation.rotate(m::vec3{1, 1, 2});
+    m::vec3 rotatedVector = netRotation.rotate(m::vec3(1, 1, 2));
 
     std::cout << "(1, 1, 2) rotated 45 degrees around the X-axis and then 30 degrees around the Y-axis = " << rotatedVector << std::endl << std::endl;
 
     std::cout << "The combined rotation can be represented by the quaternion " << netRotation << std::endl;
 
-    std::cout << "Or following matrix:" << m::mat::rotate(netRotation) << std::endl << std::endl;
+    std::cout << "Or the following matrix:" << m::mat::rotate(netRotation) << std::endl << std::endl;
     
     return 0;
 }

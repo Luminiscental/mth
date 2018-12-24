@@ -11,10 +11,12 @@
 namespace m {
 
     template <typename T>
-    struct tquat {
+    class tquat {
 
+    private:
         T x, y, z, w; // w + ix + jy + kz
 
+    public:
         T real() const {
             
             return w; 
@@ -37,7 +39,7 @@ namespace m {
 
         tvec<T, 3> imaginary() const {
             
-            return tvec<T, 3>{i(), j(), k()}; 
+            return tvec<T, 3>(i(), j(), k()); 
         }
 
         tquat() : x(0), y(0), z(0), w(1) {}

@@ -1,11 +1,14 @@
 #ifndef __Maths_mat_h__
 #define __Maths_mat_h__
 
-#include <string>
 #include <complex>
-#include <memory>
+#include <cmath>
+
 #include <iostream>
 #include <iomanip>
+
+#include <array>
+#include <type_traits>
 
 #ifndef __Maths_vec_h__
 #include <Maths/vec.h>
@@ -26,7 +29,7 @@ namespace m {
     // TODO: Non-square matrices
     
     template <typename T, size_t N>
-    struct tmat;
+    class tmat;
 
     // tmat<T, 2>
 
@@ -35,7 +38,7 @@ namespace m {
 #define N 2
 
     template <typename T>
-    struct tmat<T, 2> {
+    class tmat<T, 2> {
 
 #include <Maths/mat_content.h>
 
@@ -48,7 +51,7 @@ namespace m {
     // tmat<T, N> for N > 2
 
     template <typename T, size_t N>
-    struct tmat {
+    class tmat {
 
 #include <Maths/mat_content.h>
 
@@ -61,25 +64,29 @@ namespace m {
         template <typename T>
         tmat<T, 4> scale(const tvec<T, 3> &factors) {
 
-            return tmat<T, 4>{factors.get(0), 0,              0,              0,
+            return tmat<T, 4>(factors.get(0), 0,              0,              0,
                               0,              factors.get(1), 0,              0,
                               0,              0,              factors.get(2), 0,
-                              0,              0,              0,              1};
+                              0,              0,              0,              1);
         }
 
         template <typename T>
         tmat<T, 4> scale(T factor) {
 
-            return scale(tvec<T, 3>{factor, factor, factor});
+            return scale(tvec<T, 3>(factor, factor, factor));
         }
 
         template <typename T>
         tmat<T, 4> translate(const tvec<T, 3> &offset) {
 
-            return tmat<T, 4>{1, 0, 0, 0, // NOTE: Layout transposed because column-major
+            return tmat<T, 4>(1, 0, 0, 0, // NOTE: Layout transposed because column-major
                               0, 1, 0, 0,
                               0, 0, 1, 0,
-                              offset.x(), offset.y(), offset.z(), 1};
+                              offset.x(), offset.y(), offset.z(), 1)
+#ifdef Maths_ROW_MAJOR
+            .transpose()
+#endif
+            ;
         }
 
         template <typename T>
@@ -95,10 +102,14 @@ namespace m {
             tvec<T, 3> rotatedY = rep.rotate(m::y_axis<T>);
             tvec<T, 3> rotatedZ = rep.rotate(m::z_axis<T>);
 
-            return tmat<T, 4>{rotatedX.x(), rotatedX.y(), rotatedX.z(), 0, // NOTE: Layout transposed because column-major
+            return tmat<T, 4>(rotatedX.x(), rotatedX.y(), rotatedX.z(), 0, // NOTE: Layout transposed because column-major
                               rotatedY.x(), rotatedY.y(), rotatedY.z(), 0,
                               rotatedZ.x(), rotatedZ.y(), rotatedZ.z(), 0,
-                              0,            0,            0,            1};
+                              0,            0,            0,            1)
+#ifdef Maths_ROW_MAJOR
+            .transpose()
+#endif
+            ;
         }
 
         // TODO: Ortho and perspective projections

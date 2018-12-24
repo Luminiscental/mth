@@ -21,13 +21,13 @@ namespace m {
     std::complex<double> i(0, 1);
 
     template <typename T>
-    tvec<T, 3> x_axis{1, 0, 0};
+    tvec<T, 3> x_axis(1, 0, 0);
                                 
     template <typename T>
-    tvec<T, 3> y_axis{0, 1, 0};
+    tvec<T, 3> y_axis(0, 1, 0);
                                 
     template <typename T>
-    tvec<T, 3> z_axis{0, 0, 1};
+    tvec<T, 3> z_axis(0, 0, 1);
 
     namespace util {
 
