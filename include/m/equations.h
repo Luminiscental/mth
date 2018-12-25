@@ -40,7 +40,7 @@ namespace m {
             }
         };
         
-        // Linear system of equations in N variables (finding solution)
+        // NOTE: Linear system of equations in N variables (finding solution)
         
         template <typename T, size_t N>
         class LinearSystem : public System<std::set<tvec<T, N>, VectorComparator<T, N>>> {
@@ -80,7 +80,7 @@ namespace m {
             }
         };
 
-        // Nth degree polynomial over C (finding roots)
+        // NOTE: Nth degree polynomial over C (finding roots)
 
         template <size_t N>
         class Polynomial : public System<std::set<std::complex<double>, ComplexComparator>> {

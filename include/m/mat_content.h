@@ -213,7 +213,7 @@ public:
 
         T result = 0;
         T s = 1;
-        size_t row = 0; // can be any row
+        size_t row = 0; // NOTE: can be any row
 
         for (size_t x = 0; x < N; x++) {
 

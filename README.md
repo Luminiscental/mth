@@ -24,12 +24,15 @@ m is a maths library built around template classes to work with objects such as 
 
 ### Planned features:
 
+* Non-square matrices
 * Complex numbers because redundancy is my middle name
 * Numeric methods for finding roots of arbitrary functions
 * Analytic calculus on polynomials and numeric on arbitrary functions
 * Numerical series expansions
 
 ### Example code:
+
+main.cpp:
 
 ```c
 
@@ -63,19 +66,60 @@ int main() {
 
     std::cout << std::endl << "Went from " << initialPosition << " to " << transformedPosition << std::endl;
 
+    m::tmat<double, 8> bigMatrix(0.0, 3.0, -1.0, 5.0, 7.0, 6.0, 2.0, -3.0,
+                                 1.0, 5.0, 2.0, -3.0, 2.0, -2.0, -2.0, 5.0,
+                                 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0,
+                                 3.0, 2.0, -1.0, 3.0, -5.0, -6.0, -1.0, 1.0,
+                                 5.0, 3.0, 4.0, 3.0, 5.0, -2.0, -3.0, 1.0,
+                                 6.0, 4.0, 3.0, 2.0, 7.0, -5.0, -7.0, 11.0,
+                                 0.0, 2.0, 0.0, 1.5, 2.5, -3.0, 5.0, 4.0,
+                                 2.0, 4.0, 8.0, 12.0, -11.0, 2.0, 5.0, -6.0);
+
+    std::cout << std::endl << "A : " << std::endl;
+    std::cout << std::endl << bigMatrix << std::endl;
+
+    std::cout << std::endl << "A^{-1} : " << std::endl;
+    std::cout << std::endl << bigMatrix.inverse() << std::endl;
+
+    std::cout << std::endl;
+
     return 0;
 }
+```
 
-/* Output:
+Output:
 
-    Transformation matrix:
+```
 
-    |   -0.784  -0.557  0.190   0.000   |
-    |   0.027   -0.207  0.416   0.000   |
-    |   -0.442  0.255   -0.702  0.000   |
-    |   1.000   13.000  -2.000  1.000   |
+Transformation matrix:
 
-    Went from (1.000, 2.000, 1.000) to (-0.657, -0.073, -0.634)
+|	-0.78	-0.56	0.19	0.00	|
+|	0.03	-0.21	0.42	0.00	|
+|	-0.44	0.26	-0.70	0.00	|
+|	1.00	13.00	-2.00	1.00	|
 
- */
+Went from (1.00, 2.00, 1.00) to (-0.66, -0.07, -0.63)
+
+A :
+
+|	0.00	1.00	7.00	3.00	5.00	6.00	0.00	2.00	|
+|	3.00	5.00	6.00	2.00	3.00	4.00	2.00	4.00	|
+|	-1.00	2.00	5.00	-1.00	4.00	3.00	0.00	8.00	|
+|	5.00	-3.00	4.00	3.00	3.00	2.00	1.50	12.00	|
+|	7.00	2.00	3.00	-5.00	5.00	7.00	2.50	-11.00	|
+|	6.00	-2.00	2.00	-6.00	-2.00	-5.00	-3.00	2.00	|
+|	2.00	-2.00	1.00	-1.00	-3.00	-7.00	5.00	5.00	|
+|	-3.00	5.00	0.00	1.00	1.00	11.00	4.00	-6.00	|
+
+A^{-1} :
+
+|	-0.07	0.09	-0.08	0.07	0.03	0.02	-0.04	-0.02	|
+|	-0.13	0.18	0.03	-0.06	-0.00	-0.03	-0.04	-0.03	|
+|	0.20	-0.02	-0.04	-0.07	-0.04	0.10	0.08	0.04	|
+|	0.05	0.08	-0.13	0.02	-0.03	-0.06	-0.02	-0.05	|
+|	-0.08	-0.00	0.13	-0.00	0.12	-0.19	-0.03	-0.17	|
+|	0.02	-0.05	-0.02	0.07	-0.03	0.07	-0.04	0.12	|
+|	-0.02	-0.03	0.03	0.01	0.05	-0.07	0.12	0.03	|
+|	-0.06	0.01	0.06	0.05	-0.02	0.01	-0.01	0.02	|
+
 ```

@@ -23,7 +23,7 @@
 #include <m/quat.h>
 #endif
 
-#define __m_mat_content_toggle__ // Safeguard so mat_content.h doesn't get included anywhere else
+#define __m_mat_content_toggle__ // NOTE: Safeguard so mat_content.h doesn't get included anywhere else
 
 namespace m {
 
@@ -32,7 +32,7 @@ namespace m {
     template <typename T, size_t N>
     class tmat;
 
-    // Forward declaration of tmat_aug so that it (and its members) can be used in tmat::inverse
+    // NOTE: Forward declaration of tmat_aug so that it (and its members) can be used in tmat::inverse
 
     template <typename T, size_t N, typename A>
     class tmat_aug {
@@ -105,14 +105,14 @@ namespace m {
         }
     };   
 
-    // tmat<T, 2>
+    // NOTE: tmat<T, 2> as base case for minor() template recursion
 
 #define __m_mat_basecaseimpl__
 
 #define N 2
 
     template <typename T>
-    class tmat<T, 2> {
+    class tmat<T, N> {
 
 #include <m/mat_content.h>
 
@@ -122,7 +122,7 @@ namespace m {
 
 #undef __m_mat_basecaseimpl__
 
-    // tmat<T, N> for N > 2
+    // NOTE: tmat<T, N> for N > 2
 
     template <typename T, size_t N>
     class tmat {
@@ -131,7 +131,7 @@ namespace m {
 
     };
 
-    // Implementation of tmat_aug
+    // NOTE: Implementation of tmat_aug
 
     template <typename T, size_t N, typename A>
     inline tmat_aug<T, N, A>::tmat_aug() {}
@@ -357,7 +357,7 @@ namespace m {
         return result;
     }
 
-    // transformations
+    // NOTE: transformations as tmat<T, 4> representations (e.g. for 3d rendering)
     
     namespace mat {
 

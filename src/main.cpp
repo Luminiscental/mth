@@ -29,6 +29,23 @@ int main() {
 
     std::cout << std::endl << "Went from " << initialPosition << " to " << transformedPosition << std::endl;
 
+    m::tmat<double, 8> bigMatrix(0.0, 3.0, -1.0, 5.0, 7.0, 6.0, 2.0, -3.0,
+                                 1.0, 5.0, 2.0, -3.0, 2.0, -2.0, -2.0, 5.0,
+                                 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0,
+                                 3.0, 2.0, -1.0, 3.0, -5.0, -6.0, -1.0, 1.0,
+                                 5.0, 3.0, 4.0, 3.0, 5.0, -2.0, -3.0, 1.0,
+                                 6.0, 4.0, 3.0, 2.0, 7.0, -5.0, -7.0, 11.0,
+                                 0.0, 2.0, 0.0, 1.5, 2.5, -3.0, 5.0, 4.0,
+                                 2.0, 4.0, 8.0, 12.0, -11.0, 2.0, 5.0, -6.0);
+
+    std::cout << std::endl << "A : " << std::endl;
+    std::cout << std::endl << bigMatrix << std::endl;
+
+    std::cout << std::endl << "A^{-1} : " << std::endl;
+    std::cout << std::endl << bigMatrix.inverse() << std::endl;
+
+    std::cout << std::endl;
+
     return 0;
 }
 
