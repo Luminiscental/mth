@@ -1,6 +1,4 @@
 
-#define M_PRECISION 3
-
 #include <iostream>
 
 #include <m/constants.h>

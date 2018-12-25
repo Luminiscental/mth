@@ -36,8 +36,6 @@ main.cpp:
 
 ```c
 
-#define M_PRECISION 3
-
 #include <iostream>
 
 #include <m/constants.h>
@@ -47,7 +45,8 @@ main.cpp:
 
 int main() {
 
-    m::mat4 transformation = m::mat::rotate(m::PI<float> / 3, m::X_AXIS<float>) * m::mat::translate(m::vec3(1.0f, 13.0f, -2.0f));
+    m::mat4 transformation = m::mat::rotate(m::PI<float> / 3, m::X_AXIS<float>)
+                             * m::mat::translate(m::vec3(1.0f, 13.0f, -2.0f));
 
     m::vec3 initialPosition(1, 2, 1);
     m::vec4 positionHandle(initialPosition.x(), initialPosition.y(), initialPosition.z(), 1);
