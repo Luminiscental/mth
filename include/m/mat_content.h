@@ -136,7 +136,21 @@ public:
     tmat(const tmat<T, N> &other) : values(other.values) {}
 
     template <typename ...Q, typename std::enable_if<sizeof...(Q) == N * N, int>::type = 0>
-    tmat(Q... args) : values{static_cast<T>(args)...} {}
+    tmat(Q... args) : values{static_cast<T>(args)...} {
+
+#ifndef m_ROW_MAJOR
+
+        for (size_t y = 0; y < N; y++) { // NOTE: literals are always row major
+
+            for (size_t x = 0; x < N; x++) {
+
+                get(x, y) = get(y, x);
+            }
+        }
+
+#endif
+
+    }
 
     std::array<tvec<T, N>, N> rows() const {
 
