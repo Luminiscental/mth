@@ -89,39 +89,31 @@ public:
         }
     }
 
-#ifdef m_ROW_MAJOR
-
+    // NOTE: Constructors take a list of rows, never a list of columns for consistency with value lists
     tmat(std::array<tvec<T, N>, N> rows) {
 
-        for (size_t y = 0; y < N; y++) {
+        for (size_t i = 0; i < N; i++) {
 
-            for (size_t x = 0; x < N; x++) {
-
-                get(x, y) = rows[y].get(x);
-            }
+            setRow(i, rows[i]);
         }
     }
 
-#else
+    template <typename ...Q, typename std::enable_if<sizeof...(Q) == N, int>::type = 0>
+    tmat(Q... args) {
 
-    tmat(std::array<tvec<T, N>, N> columns) {
+        std::array<tvec<T, N>, N> rows{static_cast<tvec<T, N>>(args)...};
 
-        for (size_t x = 0; x < N; x++) {
+        for (size_t i = 0; i < N; i++) {
 
-            for (size_t y = 0; y < N; y++) {
-
-                get(x, y) = columns[x].get(y);
-            }
+            setRow(i, rows[i]);
         }
     }
-
-#endif
 
     tmat(const std::array<T, N * N> &values) : values(values) {
 
 #ifndef m_ROW_MAJOR
 
-        *this = transpose(); // NOTE: Literals are row major
+        *this = transpose(); // NOTE: Value lists are row major
 
 #endif
 
@@ -134,7 +126,7 @@ public:
 
 #ifndef m_ROW_MAJOR
 
-        *this = transpose(); // NOTE: Literals are row major
+        *this = transpose();
 
 #endif
 
