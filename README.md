@@ -7,9 +7,9 @@ m is a maths library built around template classes to work with objects such as 
 
 ### Optional preprocessor flags:
 
-* `M_ROW_MAJOR` - When set the values of matrices are stored row major rather than column-major. This isn't relevant for specifying values in constructors as they are always interpreted as row-major but it means that a list of vectors is interpreted as rows rather than columns.
-* `M_ELIMINATION` - When set the `inverse` method of `tmat` uses Gaussian elimination instead of recursing on minor matrices to find the adjoint.
-* `M_PRECISION` - If set this is passed to `std::setprecision` in pretty-print functions; it's the number of decimal places displayed.
+* `m_ROW_MAJOR` - When set the values of matrices are stored row major rather than column-major. This isn't relevant for specifying values in constructors as they are always interpreted as row-major but it means that a list of vectors is interpreted as rows rather than columns.
+* `m_ELIMINATION` - When set the `inverse` method of `tmat` uses Gaussian elimination instead of recursing on minor matrices to find the adjoint.
+* `m_PRECISION` - If set this is passed to `std::setprecision` in pretty-print functions; it's the number of decimal places displayed.
 * More - soon tm
 
 ### Features:
