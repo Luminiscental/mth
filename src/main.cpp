@@ -1,76 +1,34 @@
 
+#define M_PRECISION 3
+
 #include <iostream>
-#include <iomanip>
 
-#include <Maths/vec.h>
-#include <Maths/mat.h>
-#include <Maths/quat.h>
+#include <m/constants.h>
+#include <m/vec.h>
+#include <m/mat.h>
+#include <m/quat.h>
 
-#include <Maths/constants.h>
-#include <Maths/equations.h>
+int main() {
 
-int main(int argc, const char **argv) {
+    m::mat4 transformation = m::mat::rotate(m::PI<float> / 3, m::X_AXIS<float>) * m::mat::translate(m::vec3(1.0f, 13.0f, -2.0f));
 
-    std::cout << std::endl;
-
-    // x + 3y - 2z + w = 12
-    // 2x - 6y + 13z - 2w = 1
-    // x + y + z + 2w = 0
-    // x - 2y + 3z - 4w = -3
-
-    m::mat4 systemCoeffs( 1,  2,  1,  1,  // x
-                          3, -6,  1, -2,  // y
-                         -2, 13,  1,  3,  // z
-                          1, -2,  2, -4);// w
-
-    m::vec4 systemOutput(12, 1, 0, -3);
-
-    m::eq::LinearSystem<float, 4> system(systemCoeffs, systemOutput);
-
-    std::cout << "x + 3y - 2z + w = 12" << std::endl
-              << "2x - 6y + 13z - 2w = 1" << std::endl
-              << "x + y + z + 2w = 0" << std::endl
-              << "x - 2y + 3z - 4w = -3" << std::endl << std::endl;
-
-    m::vec4 solution = system.solve();
-
-    std::cout << std::fixed << std::setprecision(2) << " -> x = " << solution.x()
-                                                    << ",   y = " << solution.y()
-                                                    << ",   z = " << solution.z()
-                                                    << ",   w = " << solution.w() << std::endl << std::endl;
-
-    // (1 + i) + (2 - i)x + (3 + i)x^2 = 0
+    m::vec3 initialPosition(1, 2, 1);
+    m::vec4 positionHandle(initialPosition.x(), initialPosition.y(), initialPosition.z(), 1);
     
-    m::cvec3 quadraticCoeffs(1.0 + m::i, 2.0 - m::i, 3.0 + m::i);
+    m::vec3 transformedPosition = (transformation * positionHandle).xyz();
 
-    m::eq::Polynomial<2> quadratic(quadraticCoeffs);
+    m::quat additionalRotation = m::quat::rotation(m::TAU<float> / 12, m::vec3(0.5f, 0.5f, -0.1f));
 
-    std::cout << "(1 + i) + (2 - i)x + (3 + i)x^2 = 0" << std::endl << std::endl
-              << " -> x = ";
+    additionalRotation *= m::quat(2, 3, 1, 5);
+    additionalRotation.real() -= 4;
 
-    auto quadraticSolutions = quadratic.solve();
-    
-    for (std::complex<double> root : quadraticSolutions) {
+    transformedPosition = additionalRotation.rotate(transformedPosition);
 
-        std::cout << root.real() << " + " << root.imag() << "i"; // TODO: Replace std::complex
+    std::cout << std::endl << "Transformation matrix:" << std::endl;
+    std::cout << std::endl << m::mat::rotate(additionalRotation) * transformation << std::endl;
 
-        if (root != *quadraticSolutions.end()) std::cout << " or ";
-    }
+    std::cout << std::endl << "Went from " << initialPosition << " to " << transformedPosition << std::endl;
 
-    std::cout << std::endl << std::endl;
-
-    m::quat xRotation = m::quat::rotation(Maths_PI(float) / 4, m::x_axis<float>);
-    m::quat yRotation = m::quat::rotation(Maths_PI(float) / 6, m::y_axis<float>);
-
-    m::quat netRotation = yRotation * xRotation;
-
-    m::vec3 rotatedVector = netRotation.rotate(m::vec3(1, 1, 2));
-
-    std::cout << "(1, 1, 2) rotated 45 degrees around the X-axis and then 30 degrees around the Y-axis = " << rotatedVector << std::endl << std::endl;
-
-    std::cout << "The combined rotation can be represented by the quaternion " << netRotation << std::endl;
-
-    std::cout << "Or the following matrix:" << m::mat::rotate(netRotation) << std::endl << std::endl;
-    
     return 0;
 }
+

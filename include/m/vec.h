@@ -1,5 +1,5 @@
-#ifndef __Maths_vec_h__
-#define __Maths_vec_h__
+#ifndef __m_vec_h__
+#define __m_vec_h__
 
 #include <complex>
 #include <cmath>
@@ -10,8 +10,8 @@
 #include <array>
 #include <type_traits>
 
-#ifndef __Maths_constants_h__
-#include <Maths/constants.h>
+#ifndef __m_constants_h__
+#include <m/constants.h>
 #endif
 
 namespace m {
@@ -20,20 +20,27 @@ namespace m {
     class tvec {
 
     private:
+
         std::array<T, N> values;
 
     public:
+
         tvec() {
 
             values.fill(0);
         }
 
-        tvec(const std::array<T, N> &values) : values(values) {} 
+        tvec(const std::array<T, N> &values) : values(values) {}
 
-        tvec(const tvec<T, N> &other) : tvec(other.values) {}
+        tvec(const tvec<T, N> &other) : values(other.values) {}
 
         template <typename ...Q, typename std::enable_if<sizeof...(Q) == N, int>::type = 0>
-        tvec(Q... args) : values{static_cast<T>(args)...} {}
+        constexpr tvec(Q... args) : values{static_cast<T>(args)...} {}
+
+        operator std::array<T, N>() {
+
+            return values;
+        }
 
         T &get(size_t index) {
 
@@ -49,25 +56,15 @@ namespace m {
             return values[index];
         }
 
-        T x() const {
+#define BINDING(name, value) const T & name () const { return value ; } \
+                                   T & name ()       { return value; }
 
-            return get(0);
-        }
+        BINDING(x, this->get(0))
+        BINDING(y, this->get(1))
+        BINDING(z, this->get(2))
+        BINDING(w, this->get(3))
 
-        T y() const {
-
-            return get(1);
-        }
-
-        T z() const {
-
-            return get(2);
-        }
-        
-        T w() const {
-
-            return get(3);
-        }
+#undef BINDING
 
         tvec<T, 2> xy() const {
 
@@ -136,6 +133,46 @@ namespace m {
             return *this / l;
         }
 
+        tvec<T, N> &operator+=(const tvec<T, N> &other) {
+
+            for (size_t i = 0; i < N; i++) {
+
+                this->get(i) += other.get(i);
+            }
+
+            return *this;
+        }
+
+        tvec<T, N> &operator-=(const tvec<T, N> &other) {
+
+            for (size_t i = 0; i < N; i++) {
+
+                this->get(i) -= other.get(i);
+            }
+
+            return *this;
+        }
+
+        tvec<T, N> &operator*=(T other) {
+
+            for (size_t i = 0; i < N; i++) {
+
+                this->get(i) *= other;
+            }
+
+            return *this;
+        }
+
+        tvec<T, N> &operator/=(T other) {
+
+            for (size_t i = 0; i < N; i++) {
+
+                this->get(i) /= other;
+            }
+
+            return *this;
+        }
+
         friend tvec<T, N> operator+(const tvec<T, N> &a, const tvec<T, N> &b) {
 
             tvec<T, N> result = a;
@@ -166,7 +203,7 @@ namespace m {
 
             for (size_t i = 0; i < N; i++) {
 
-                vector.get(i) = -vector.get(i);
+                result.get(i) = -vector.get(i);
             }
 
             return result;
@@ -203,7 +240,19 @@ namespace m {
 
         friend std::ostream &operator<<(std::ostream &stream, const tvec<T, N> &vector) {
 
-            stream << std::fixed << std::setprecision(2) << "(";
+            stream << std::fixed << std::setprecision(
+
+#ifdef m_PRECISION
+
+            m_PRECISION
+
+#else
+
+            2
+
+#endif
+
+            ) << "(";
 
             for (size_t i = 0; i < N - 1; i++) {
 

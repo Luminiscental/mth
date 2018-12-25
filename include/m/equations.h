@@ -1,48 +1,74 @@
-#ifndef __Maths_equations_h__
-#define __Maths_equations_h__
-
-#ifndef __Maths_vec_h__
-#include <Maths/vec.h>
-#endif
-
-#ifndef __Maths_mat_h__
-#include <Maths/mat.h>
-#endif 
-
-#ifndef __Maths_constants_h__
-#include <Maths/constants.h>
-#endif
+#ifndef __m_equations_h__
+#define __m_equations_h__
 
 #include <set>
 #include <cmath>
 #include <complex>
 
+#ifndef __m_vec_h__
+#include <m/vec.h>
+#endif
+
+#ifndef __m_mat_h__
+#include <m/mat.h>
+#endif 
+
+#ifndef __m_constants_h__
+#include <m/constants.h>
+#endif
+
 namespace m {
 
     namespace eq {
+
+        // TODO: Degenerate cases
 
         template <typename Solution>
         class System {
 
         public:
+
             virtual Solution solve() = 0;
+        };
+
+        template <typename T, size_t N>
+        struct VectorComparator {
+
+            bool operator() (const tvec<T, N> &a, const tvec<T, N> &b) {
+
+                return (a.x() < b.x()) || (a.x() == b.x() && a.y() < b.y());
+            }
         };
         
         // Linear system of equations in N variables (finding solution)
         
         template <typename T, size_t N>
-        class LinearSystem : public System<tvec<T, N>> {
+        class LinearSystem : public System<std::set<tvec<T, N>, VectorComparator<T, N>>> {
 
         private:
-            tvec<T, N> aux;
-            tmat<T, N> coeffs;
+
+            const tvec<T, N> aux;
+            const tmat<T, N> coeffs;
+            const bool singular;
 
         public:
-            LinearSystem(tmat<T, N> coeffs, tvec<T, N> aux) : coeffs(coeffs), aux(aux) {}
 
-            tvec<T, N> solve() override {
+            LinearSystem(tmat<T, N> coeffs, tvec<T, N> aux) : coeffs(coeffs), aux(aux), singular(util::checkZero(coeffs.det())) {}
 
-                return coeffs.inverse() * aux;
+            std::set<tvec<T, N>, VectorComparator<T, N>> solve() override {
+
+                std::set<tvec<T, N>, VectorComparator<T, N>> result;
+
+                if (!singular) {
+
+                    result.insert(coeffs.inverse() * aux);
+
+                } else {
+
+
+                }
+
+                return result;
             }
         };
 
@@ -60,9 +86,11 @@ namespace m {
         class Polynomial : public System<std::set<std::complex<double>, ComplexComparator>> {
 
         private:
+
             tvec<std::complex<double>, N + 1> coeffs;
 
         public:
+
             Polynomial(tvec<std::complex<double>, N + 1> coeffs) : coeffs(coeffs) {}
 
             std::complex<double> value(std::complex<double> x) {
@@ -94,10 +122,12 @@ namespace m {
         class Polynomial<1> : public System<std::set<std::complex<double>, ComplexComparator>> {
 
         private:
+
             tvec<std::complex<double>, 2> coeffs;
             std::complex<double> root;
         
         public:
+
             Polynomial(tvec<std::complex<double>, 2> coeffs) : coeffs(coeffs) {
 
                 root = -coeffs.get(0) / coeffs.get(1);
@@ -122,10 +152,12 @@ namespace m {
         class Polynomial<2> : public System<std::set<std::complex<double>, ComplexComparator>> {
 
         private:
+
             tvec<std::complex<double>, 3> coeffs;
             std::complex<double> descriminant;
 
         public:
+
             Polynomial(tvec<std::complex<double>, 3> coeffs) : coeffs(coeffs) {
 
                 descriminant = coeffs.get(1) * coeffs.get(1) - 4.0 * coeffs.get(2) * coeffs.get(0);
@@ -148,7 +180,7 @@ namespace m {
                 std::complex<double> denom = 2.0 * coeffs.get(2);
 
                 result.insert(lesser / denom);
-                result.insert(greater / denom);
+                if (!util::checkEqual(lesser, greater)) result.insert(greater / denom);
 
                 return result;
             }

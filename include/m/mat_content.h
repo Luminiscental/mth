@@ -1,10 +1,11 @@
 
-#ifdef __Maths_mat_content_toggle__
+#ifdef __m_mat_content_toggle__
 
 // template <typename T, size_t N>
 // class tmat {
 
 private:
+
     std::array<T, N * N> values;
 
     static size_t getIndex(size_t x, size_t y) { // NOTE: 0,0 is top left
@@ -12,14 +13,20 @@ private:
         if (x > N - 1) throw std::out_of_range("m::exception: column index out of bounds");
         if (y > N - 1) throw std::out_of_range("m::exception: row index out of bounds");
 
-#ifdef Maths_ROW_MAJOR // TODO: Maybe make this choosable per-object or have a different class for row-major matrices
+#ifdef m_ROW_MAJOR // TODO: Maybe make this choosable per-object or have a different class for row-major matrices
+
         return x + y * N;
+
 #else
+
         return x * N + y;   
+
 #endif
+
     }
 
 public:
+
     const T &get(size_t x, size_t y) const {
 
         return values[getIndex(x, y)];
@@ -30,6 +37,7 @@ public:
         return values[getIndex(x, y)];
     }
 
+    // TODO: Look into getting references here
     tvec<T, N> getRow(size_t y) const {
 
         tvec<T, N> result;
@@ -54,6 +62,22 @@ public:
         return result;
     }
 
+    void setRow(size_t y, const tvec<T, N> &value) {
+
+        for (size_t x = 0; x < N; x++) {
+
+            get(x, y) = value.get(x);
+        }
+    }
+
+    void setColumn(size_t x, const tvec<T, N> &value) {
+
+        for (size_t y = 0; y < N; y++) {
+
+            get(x, y) = value.get(y);
+        }
+    }
+
     tmat() {
 
         for (size_t x = 0; x < N; x++) {
@@ -65,13 +89,13 @@ public:
         }
     }
 
-#ifdef Maths_ROW_MAJOR
+#ifdef m_ROW_MAJOR
 
     tmat(std::array<tvec<T, N>, N> rows) {
 
         for (size_t y = 0; y < N; y++) {
 
-            for (size_t x = 0; x < N: x++) {
+            for (size_t x = 0; x < N; x++) {
 
                 get(x, y) = rows[y].get(x);
             }
@@ -93,14 +117,53 @@ public:
 
 #endif
 
-    tmat(const std::array<T, N * N> &values) : values(values) {}
+    tmat(const std::array<T, N * N> &values) : values(values) {
 
-    tmat(const tmat<T, N> &other) : tmat(other.values) {}
+#ifndef m_ROW_MAJOR
+
+        for (size_t y = 0; y < N; y++) { // NOTE: literals are always row major
+
+            for (size_t x = 0; x < N; x++) {
+
+                get(x, y) = get(y, x);
+            }
+        }
+
+#endif
+
+    }
+
+    tmat(const tmat<T, N> &other) : values(other.values) {}
 
     template <typename ...Q, typename std::enable_if<sizeof...(Q) == N * N, int>::type = 0>
     tmat(Q... args) : values{static_cast<T>(args)...} {}
 
-#ifndef __Maths_mat_basecaseimpl__
+    std::array<tvec<T, N>, N> rows() const {
+
+        std::array<tvec<T, N>, N> result;
+
+        for (size_t y = 0; y < N; y++) {
+
+            result[y] = getRow(y);
+        }
+
+        return result;
+    }
+
+    std::array<tvec<T, N>, N> columns() const {
+
+        std::array<tvec<T, N>, N> result;
+
+        for (size_t x = 0; x < N; x++) {
+
+            result[x] = getColumn(x);
+        }
+
+        return result;
+    }
+
+#ifndef __m_mat_basecaseimpl__
+
     tmat<T, N - 1> minor(size_t x, size_t y) const {
 
         if (x > N - 1) throw std::out_of_range("m::exception: column index out of bounds");
@@ -132,7 +195,9 @@ public:
 
         return result;
     }
+
 #else
+
     T minor(size_t x, size_t y) const {
 
         if (x > 1) throw std::out_of_range("m::exception: column index out of bounds");
@@ -140,8 +205,10 @@ public:
 
         return get((x + 1) % 2, (y + 1) % 2);
     }
+
 #endif
 
+    // TODO: Update tmat_aug to store determinant multipliers so that echelon form can be used for this
     T det() const {
 
         T result = 0;
@@ -150,16 +217,26 @@ public:
 
         for (size_t x = 0; x < N; x++) {
 
-#ifndef __Maths_mat_basecaseimpl__
-            T c = minor(x, row).det();
-#else
-            T c = minor(x, row);
+            T c = minor(x, row)
+
+#ifndef __m_mat_basecaseimpl__
+
+            .det()
+
 #endif
+
+            ;
+
             result += s * get(x, row) * c;
             s *= -1;
         }
 
         return result;
+    }
+
+    bool singular() const {
+
+        return util::checkZero(det());
     }
 
     tmat<T, N> cofactors() const {
@@ -171,11 +248,16 @@ public:
 
             for (size_t y = 0; y < N; y++) {
 
-#ifndef __Maths_mat_basecaseimpl__
-                T c = minor(x, y).det();
-#else
-                T c = minor(x, y);
+                T c = minor(x, y)
+
+#ifndef __m_mat_basecaseimpl__
+
+                .det()
+
 #endif
+
+                ;
+
                 result.get(x, y) = s * c;
                 s *= -1;
             }
@@ -208,11 +290,34 @@ public:
 
     tmat<T, N> inverse() const {
 
+#ifdef m_ELIMINATION
+
+        if (singular()) throw std::invalid_argument("m::exception: inverse() called on singular matrix");
+
+        std::array<tvec<T, N>, N> id = identity().rows();
+
+        tmat_aug<T, N, tvec<T, N>> augmented(*this, id);
+
+        return tmat<T, N>(augmented.reducedRowEchelon().auxilary())
+
+#ifndef m_ROW_MAJOR
+
+        .transpose()
+
+#endif
+
+        ;
+
+#else
+
         T determinant = det();
 
         if (util::checkZero(determinant)) throw std::invalid_argument("m::exception: inverse() called on singular matrix");
 
         return adjoint() / determinant;
+
+#endif 
+
     }
 
     tmat<T, N> unit() const {
@@ -332,16 +437,19 @@ public:
     // TODO: Either make this less crappy or remove it
     friend std::ostream &operator<<(std::ostream &stream, const tmat<T, N> &matrix) {
 
-        stream << std::fixed << std::setprecision(2);
+        stream << std::fixed << std::setprecision(
 
-        stream << std::endl << "__";
-        
-        for (size_t i = 0; i < N + 1; i++) {
+#ifdef m_PRECISION
 
-            stream << "\t";
-        }
+        m_PRECISION
 
-        stream << "\b \b__" << std::endl;
+#else
+
+        2
+
+#endif
+
+        );
 
         for (size_t y = 0; y < N; y++) {
 
@@ -352,18 +460,42 @@ public:
                 stream << matrix.get(x, y) << "\t";
             }
 
-            stream << matrix.get(N - 1, y) << "\t|" << std::endl;
+            stream << matrix.get(N - 1, y) << "\t|";
+
+            if (y < N - 1) stream << std::endl;
         }
 
-        stream << "¯¯";
-
-        for (size_t i = 0; i < N + 1; i++) {
-
-            stream << "\t";
-        }
-
-        return stream << "\b \b¯¯";
+        return stream;
     }
+
+    tmat<T, N> &operator+=(const tmat<T, N> &other) {
+
+        *this = *this + other;
+
+        return *this;
+    }
+
+    tmat<T, N> &operator-=(const tmat<T, N> &other) {
+
+        *this = *this - other;
+
+        return *this;
+    }
+
+    tmat<T, N> &operator*=(T other) {
+
+        *this = *this * other;
+
+        return *this;
+    }
+
+    tmat<T, N> &operator/=(T other) {
+
+        *this = *this / other;
+
+        return *this;
+    }
+
 // };
 
 #endif
