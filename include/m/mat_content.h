@@ -121,13 +121,7 @@ public:
 
 #ifndef m_ROW_MAJOR
 
-        for (size_t y = 0; y < N; y++) { // NOTE: literals are always row major
-
-            for (size_t x = 0; x < N; x++) {
-
-                get(x, y) = get(y, x);
-            }
-        }
+        *this = transpose(); // NOTE: Literals are row major
 
 #endif
 
@@ -140,13 +134,7 @@ public:
 
 #ifndef m_ROW_MAJOR
 
-        for (size_t y = 0; y < N; y++) { // NOTE: literals are always row major
-
-            for (size_t x = 0; x < N; x++) {
-
-                get(x, y) = get(y, x);
-            }
-        }
+        *this = transpose(); // NOTE: Literals are row major
 
 #endif
 
