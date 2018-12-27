@@ -5,6 +5,7 @@
 #include <m/vec.h>
 #include <m/mat.h>
 #include <m/quat.h>
+#include <m/polynomial.h>
 
 int main() {
 
@@ -43,6 +44,19 @@ int main() {
     std::cout << std::endl << bigMatrix.inverse() << std::endl;
 
     std::cout << std::endl;
+
+    m::Polynomial<5> quintic(1, 2, 3, 4, 5, 6);
+
+    std::cout << "P(z) = " << quintic << std::endl;
+    std::cout << "P(2 + i) = " << quintic.value(2.0 + m::i) << std::endl;
+
+    std::cout << std::endl;
+
+    m::Polynomial<2> quadratic(1, 2, 3);
+    m::ComplexSolutions roots = quadratic.solve();
+
+    std::cout << "Q(z) = " << quadratic << " = 0" << std::endl;
+    std::cout << roots << std::endl;
 
     return 0;
 }

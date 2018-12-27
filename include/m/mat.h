@@ -42,6 +42,8 @@ namespace m {
         tmat<T, N> matrix;
         std::array<A, N> aux;
 
+        void eliminate(size_t x, size_t y);
+
     public:
 
         tmat_aug();
@@ -49,6 +51,9 @@ namespace m {
 
         const tmat<T, N> &coefficients() const; 
         const std::array<A, N> &auxilary() const;
+
+        // TODO: degenerate solution cases
+        std::array<A, N> solve() const;
 
         // NOTE: returns N on empty rows
         size_t leadingIndex(size_t row) const;
@@ -60,11 +65,10 @@ namespace m {
         bool hasZeroRow() const;
         bool singular() const;
 
-        void eliminate(size_t x, size_t y);
-
         void swapRows(size_t a, size_t b); 
         void scaleRow(size_t index, T scalar);
         void addRow(size_t targetRow, size_t sourceRow, T scalar = 1); 
+
         void setRow(size_t index, const tvec<T, N> &val, A auxVal); 
 
         tmat_aug<T, N, A> ordered() const;
@@ -149,6 +153,14 @@ namespace m {
     inline const std::array<A, N> &tmat_aug<T, N, A>::auxilary() const {
 
         return aux;
+    }
+
+    template <typename T, size_t N, typename A>
+    inline std::array<A, N> tmat_aug<T, N, A>::solve() const {
+
+        if (singular()) throw std::invalid_argument("m::exception: solve() called on singular system");
+
+        return reducedRowEchelon().auxilary();
     }
 
     template <typename T, size_t N, typename A>
