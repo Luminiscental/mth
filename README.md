@@ -19,7 +19,7 @@ m is a maths library built around template classes to work with objects such as 
 * N-dimensional square matrix of any given scalar type (same as above) for N = 2, 3, 4, ...
 * Augmentations of square matrices with any type that supports addition and scalar multiplication (e.g. `float`, `std::complex`, `tvec`), with row operations and functions to convert to echelon / reduced echelon form.
 * Quaternions of any given scalar type (you get the idea) with arithmetic operators and functions for representing rotations in 3-space (and converting to the equivalent matrices).
-* Classes for solving certain types of equations, e.g. linear systems, polynomials for given scalar types (currently incomplete / WIP).
+* Polynomials with a `solve()` method for quadratic and below and a `value()` method for evaluating.
 * Somewhat pretty printing.
 
 ### Planned features:
