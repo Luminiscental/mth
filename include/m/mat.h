@@ -27,8 +27,8 @@
 
 namespace m {
 
-    // TODO: Non-square matrices
-    
+#define M N
+
     template <typename T, size_t N>
     class tmat;
 
@@ -430,6 +430,8 @@ namespace m {
     TYPEDEF_MAT(4)
 
 #undef TYPEDEF_MAT
+
+#undef M
 
 }
 
