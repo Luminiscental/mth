@@ -3,10 +3,9 @@
 
 #include <complex>
 #include <cmath>
-
 #include <iostream>
 #include <iomanip>
-
+#include <mutex>
 #include <array>
 #include <type_traits>
 
@@ -25,39 +24,94 @@ namespace m {
 
     public:
 
-        tvec() {
+        constexpr tvec() noexcept {
 
             values.fill(0);
         }
 
-        tvec(const std::array<T, N> &values) : values(values) {}
-
-        tvec(const tvec<T, N> &other) : values(other.values) {}
+        tvec(const std::array<T, N> &values) noexcept
+            :values(values) {}
 
         template <typename ...Q, typename std::enable_if<sizeof...(Q) == N, int>::type = 0>
-        constexpr tvec(Q... args) : values{static_cast<T>(args)...} {}
+        constexpr tvec(Q... args) noexcept
+            :values{static_cast<T>(args)...} {}
 
-        operator std::array<T, N>() {
+        operator std::array<T, N>() noexcept {
 
             return values;
         }
 
-        T &get(size_t index) {
+        auto begin() {
+
+            return values.begin();
+        }
+
+        auto begin() const {
+
+            return cbegin();
+        }
+
+        auto end() {
+
+            return values.end();
+        }
+
+        auto end() const {
+
+            return cend();
+        }
+
+        auto cbegin() const {
+
+            return values.cbegin();
+        }
+
+        auto cend() const {
+
+            return values.cend();
+        }
+
+        auto rbegin() { 
+
+            return values.rbegin();
+        }
+
+        auto rend() {
+
+            return values.rend();
+        }
+
+        auto crbegin() const {
+
+            return values.crbegin();
+        }
+
+        auto crend() const {
+
+            return values.crend();
+        }
+
+        constexpr size_t size() const noexcept {
+
+            return N;
+        }
+
+        auto &get(size_t index) {
 
             if (index > N - 1) throw std::out_of_range("m::exception: vector accessed out of range");
 
             return values[index];
         }
 
-        const T &get(size_t index) const {
+        const auto &get(size_t index) const {
 
             if (index > N - 1) throw std::out_of_range("m::exception: vector accessed out of range");
 
             return values[index];
         }
 
-#define BINDING(name, value) const T & name () const { return value ; } \
-                                   T & name ()       { return value; }
+#define BINDING(name, value) const auto & name () const { return value ; } \
+                                   auto & name ()       { return value; }
 
         BINDING(x, this->get(0))
         BINDING(y, this->get(1))
@@ -65,6 +119,8 @@ namespace m {
         BINDING(w, this->get(3))
 
 #undef BINDING
+
+        // TODO: There should be a better way of doing this
 
         tvec<T, 2> xy() const {
 
@@ -91,191 +147,183 @@ namespace m {
             return tvec<T, 3>(y(), z(), w());
         }
 
-        T magnSqr() const {
+        auto magnSqr() const noexcept {
 
-            T result = 0;
+            auto result = static_cast<T>(0);
 
-            for (size_t i = 0; i < N; i++) {
+            for (const auto &value : *this) {
 
-                result += this->get(i) * this->get(i);
+                result += value * value;
             }
 
             return result;
         }
 
-        double magn() const {
+        auto magn() const noexcept {
 
-            double ls = static_cast<double>(magnSqr());
+            auto ls = static_cast<double>(magnSqr());
 
             if (util::checkZero(ls)) return 0.0;
 
             return std::sqrt(ls);
         }
         
-        T dot(const tvec<T, N> &other) {
+        auto dot(const tvec<T, N> &rhs) const {
 
             T result = 0;
 
             for (size_t i = 0; i < N; i++) {
 
-                result += this->get(i) * other.get(i);
+                result += this->get(i) * rhs.get(i);
             }
 
             return result;
         }
 
-        tvec<T, N> unit() const {
+        auto unit() const {
 
-            T l = static_cast<T>(magn());
+            auto l = static_cast<T>(magn());
 
             if (util::checkZero(l)) throw std::invalid_argument("m::exception: unit() called on zero vector");
 
             return *this / l;
         }
 
-        tvec<T, N> &operator+=(const tvec<T, N> &other) {
+        auto &operator+=(const tvec<T, N> &rhs) {
 
             for (size_t i = 0; i < N; i++) {
 
-                this->get(i) += other.get(i);
+                this->get(i) += rhs.get(i);
             }
 
             return *this;
         }
 
-        tvec<T, N> &operator-=(const tvec<T, N> &other) {
+        auto &operator-=(const tvec<T, N> &rhs) {
 
             for (size_t i = 0; i < N; i++) {
 
-                this->get(i) -= other.get(i);
+                this->get(i) -= rhs.get(i);
             }
 
             return *this;
         }
 
-        tvec<T, N> &operator*=(T other) {
+        auto &operator*=(const T &rhs) {
 
             for (size_t i = 0; i < N; i++) {
 
-                this->get(i) *= other;
+                this->get(i) *= rhs;
             }
 
             return *this;
         }
 
-        tvec<T, N> &operator/=(T other) {
+        auto &operator/=(const T &rhs) {
 
             for (size_t i = 0; i < N; i++) {
 
-                this->get(i) /= other;
+                this->get(i) /= rhs;
             }
 
             return *this;
         }
 
-        friend tvec<T, N> operator+(const tvec<T, N> &a, const tvec<T, N> &b) {
+        friend auto operator+(const tvec<T, N> &lhs, const tvec<T, N> &rhs) {
 
-            tvec<T, N> result = a;
+            auto result = lhs;
+
+            return result += rhs;
+        }
+
+        friend auto operator-(const tvec<T, N> &lhs, const tvec<T, N> &rhs) {
+
+            auto result = lhs;
+
+            return result -= rhs;
+        }
+
+        friend auto operator-(const tvec<T, N> &rhs) {
+
+            auto result = rhs;
 
             for (size_t i = 0; i < N; i++) {
 
-                result.get(i) += b.get(i);
+                result.get(i) = -rhs.get(i);
             }
 
             return result;
         }
 
-        friend tvec<T, N> operator-(const tvec<T, N> &a, const tvec<T, N> &b) {
+        friend auto operator*(const T &lhs, const tvec<T, N> &rhs) {
 
-            tvec<T, N> result = a;
+            auto result = rhs;
 
-            for (size_t i = 0; i < N; i++) {
-
-                result.get(i) -= b.get(i);
-            }
-
-            return result;
+            return result *= lhs;
         }
 
-        friend tvec<T, N> operator-(const tvec<T, N> &vector) {
+        friend auto operator*(const tvec<T, N> &lhs, const T &rhs) {
 
-            tvec<T, N> result = vector;
-
-            for (size_t i = 0; i < N; i++) {
-
-                result.get(i) = -vector.get(i);
-            }
-
-            return result;
+            return rhs * lhs;
         }
 
-        friend tvec<T, N> operator*(T scalar, const tvec<T, N> &vector) {
+        friend auto operator/(const tvec<T, N> &lhs, const T &rhs) {
 
-            tvec<T, N> result = vector;
+            tvec<T, N> result = lhs;
 
-            for (size_t i = 0; i < N; i++) {
-
-                result.get(i) *= scalar;
-            }
-
-            return result;
+            return result /= rhs;
         }
 
-        friend tvec<T, N> operator*(const tvec<T, N> &vector, T scalar) {
+        friend auto &operator<<(std::ostream &lhs, const tvec<T, N> &rhs) {
 
-            return scalar * vector;
-        }
-
-        friend tvec<T, N> operator/(const tvec<T, N> &vector, T scalar) {
-
-            tvec<T, N> result = vector;
-
-            for (size_t i = 0; i < N; i++) {
-
-                result.get(i) /= scalar;
-            }
-
-            return result;
-        }
-
-        friend std::ostream &operator<<(std::ostream &stream, const tvec<T, N> &vector) {
-
-            stream << std::fixed << std::setprecision(
-
-#ifdef m_PRECISION
-
-            m_PRECISION
-
-#else
-
-            2
-
-#endif
-
-            ) << "(";
+            lhs << std::fixed << std::setprecision(m_PRECISION) << "(";
 
             for (size_t i = 0; i < N - 1; i++) {
 
-                stream << vector.get(i) << ", ";
+                lhs << rhs.get(i) << ", ";
             }
 
-            return stream << vector.get(N - 1) << ")";
+            return lhs << rhs.get(N - 1) << ")";
         }
     };
 
-#define TYPEDEF_VEC(n) typedef tvec<int, n>    ivec ## n; \
-                       typedef tvec<long, n>   lvec ## n; \
-                       typedef tvec<float, n>   vec ## n; \
-                       typedef tvec<double, n> dvec ## n; \
-                       typedef tvec<std::complex<double>, n> cvec ## n;
+    // NOTE: Static functions for vectors
+
+    namespace vec {
+
+        template <typename T, size_t N>
+        auto dot(const tvec<T, N> &lhs, const tvec<T, N> &rhs) {
+
+            return lhs.dot(rhs);
+        }
+
+        template <typename T>
+        auto cross(const tvec<T, 3> &lhs, const tvec<T, 3> &rhs) {
+
+            return tvec<T, 3>(lhs.get(2) * rhs.get(3) - lhs.get(3) * rhs.get(2),
+                              lhs.get(3) * rhs.get(1) - lhs.get(1) * rhs.get(3),
+                              lhs.get(1) * rhs.get(2) - lhs.get(2) * rhs.get(1));
+        }
+    }
 
     // TODO: Maybe move to double as default
     
-    TYPEDEF_VEC(2)
-    TYPEDEF_VEC(3)
-    TYPEDEF_VEC(4)
+#define CREATE_ALIASES(n) using ivec ## n = tvec<int, n>; \
+                          using lvec ## n = tvec<long, n>; \
+                          using  vec ## n = tvec<float, n>; \
+                          using dvec ## n = tvec<double, n>; \
+                          using cvec ## n = tvec<std::complex<double>, n>;
 
-#undef TYPEDEF_VEC
+    CREATE_ALIASES(2)
+    CREATE_ALIASES(3)
+    CREATE_ALIASES(4)
+    CREATE_ALIASES(5)
+    CREATE_ALIASES(6)
+    CREATE_ALIASES(7)
+    CREATE_ALIASES(8)
+    CREATE_ALIASES(9)
+
+#undef CREATE_ALIASES
 
 }
 

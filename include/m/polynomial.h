@@ -35,38 +35,26 @@ namespace m {
         std::unordered_set<std::complex<double>> solutionSet;
         bool inf;
 
-        ComplexSolutions() : inf(false) {}
-        ComplexSolutions(std::unordered_set<std::complex<double>> finiteSet) : solutionSet(finiteSet), inf(false) {}
+        ComplexSolutions() noexcept;
+        ComplexSolutions(std::unordered_set<std::complex<double>> finiteSet) noexcept;
 
     public:
 
-        static ComplexSolutions empty();
+        static ComplexSolutions empty() noexcept;
 
-        static ComplexSolutions finite(std::unordered_set<std::complex<double>> finiteSet);
+        static ComplexSolutions finite(std::unordered_set<std::complex<double>> finiteSet) noexcept;
         
         template <typename ...Q>
-        static ComplexSolutions finite(Q... args) {
+        static ComplexSolutions finite(Q... args) noexcept {
 
             return ComplexSolutions(std::unordered_set<std::complex<double>>({args...}));
         }
 
-        static ComplexSolutions infinite();
+        static ComplexSolutions infinite() noexcept;
 
-        friend std::ostream &operator<<(std::ostream &stream, const ComplexSolutions &solutions) {
+        friend auto &operator<<(std::ostream &stream, const ComplexSolutions &solutions) {
 
-            stream << std::fixed << std::setprecision(
-
-#ifdef m_PRECISION
-
-            m_PRECISION
-
-#else
-
-            2
-
-#endif
-
-            );
+            stream << std::fixed << std::setprecision(m_PRECISION);
 
             if (solutions.inf) {
 
@@ -98,6 +86,8 @@ namespace m {
         }
     };
 
+    // TODO: Polynomial arithmetic
+
     template <size_t N>
     class Polynomial;
 
@@ -107,46 +97,40 @@ namespace m {
     private:
 
         std::complex<double> coeff;
+        ComplexSolutions roots;
+        bool rootsValid;
 
     public:
 
         template <size_t M, typename std::enable_if<(M > 0), int>::type = 0>
-        Polynomial(std::array<std::complex<double>, M> coeffs) {
+        Polynomial(std::array<std::complex<double>, M> coeffs) noexcept
+            :rootsValid(false), roots(ComplexSolutions::empty()) {
             
             coeff = coeffs[0];
         }
 
-        Polynomial(std::complex<double> value) : coeff(value) {}
+        Polynomial(std::complex<double> value) noexcept
+            :coeff(value), rootsValid(false), roots(ComplexSolutions::empty()) {}
 
-        std::complex<double> value(std::complex<double> x) {
+        auto value(std::complex<double> x) {
 
             return coeff;
         }
 
-        ComplexSolutions solve() {
+        auto solve() {
 
-            if (util::checkZero(coeff)) return ComplexSolutions::infinite();
+            if (rootsValid) return roots;
 
-            return ComplexSolutions::empty();
+            rootsValid = true;
+
+            if (util::checkZero(coeff)) return roots = ComplexSolutions::infinite();
+
+            return roots = ComplexSolutions::empty();
         }
 
-        friend std::ostream &operator<<(std::ostream &stream, const Polynomial<0> &polynomial) {
+        friend auto &operator<<(std::ostream &stream, const Polynomial<0> &polynomial) {
 
-            stream << std::fixed << std::setprecision(
-
-#ifdef m_PRECISION
-
-            m_PRECISION
-
-#else
-
-            2
-
-#endif
-
-            );
-
-            return stream << polynomial.coeff;
+            return stream << std::fixed << std::setprecision(m_PRECISION) << polynomial.coeff;
         }
     };
 
@@ -156,19 +140,23 @@ namespace m {
     private:
 
         std::array<std::complex<double>, N + 1> coeffs;
+        ComplexSolutions roots;
+        bool rootsValid;
 
     public:
 
         template <size_t M, typename std::enable_if<(M > N), int>::type = 0>
-        Polynomial(std::array<std::complex<double>, M> coeffs) {
+        Polynomial(std::array<std::complex<double>, M> coeffs)
+            :rootsValid(false), roots(ComplexSolutions::empty()) {
 
             for (size_t i = 0; i < N + 1; i++) this->coeffs[i] = coeffs[i];
         }
 
         template <typename ...Q, typename std::enable_if<sizeof...(Q) == N + 1, int>::type = 0>
-        Polynomial(Q... args) : Polynomial(std::array<std::complex<double>, N + 1> {args...}) {}
+        Polynomial(Q... args)
+            :Polynomial(std::array<std::complex<double>, N + 1> {args...}) {}
 
-        std::complex<double> value(std::complex<double> x) {
+        auto value(std::complex<double> x) {
 
             std::complex<double> result = 0;
             std::complex<double> v = 1;
@@ -182,33 +170,37 @@ namespace m {
             return result;
         }
 
-        ComplexSolutions solve() {
+        auto solve() {
+
+            if (rootsValid) return roots;
+
+            rootsValid = true;
 
             if (util::checkZero(coeffs[N])) {
 
-                return Polynomial<N - 1>(coeffs).solve();
+                return roots = Polynomial<N - 1>(coeffs).solve();
             }
 
             switch (N) {
 
                 case 1: {
 
-                    return ComplexSolutions::finite(-coeffs[0] / coeffs[1]);
+                    return roots = ComplexSolutions::finite(-coeffs[0] / coeffs[1]);
                 }
 
                 case 2: {
 
-                        std::complex<double> descriminant = coeffs[1] * coeffs[1] - 4.0 * coeffs[2] * coeffs[0];
-                        std::complex<double> offset = std::sqrt(descriminant);
+                        auto descriminant = coeffs[1] * coeffs[1] - 4.0 * coeffs[2] * coeffs[0];
+                        auto offset = std::sqrt(descriminant);
 
-                        std::complex<double> lesser = -coeffs[1] - offset;
-                        std::complex<double> greater = -coeffs[1] + offset;
+                        auto lesser = -coeffs[1] - offset;
+                        auto greater = -coeffs[1] + offset;
 
-                        std::complex<double> denom = 2.0 * coeffs[2];
+                        auto denom = 2.0 * coeffs[2];
 
-                        if (util::checkEqual(lesser, greater)) return ComplexSolutions::finite(lesser / denom);
+                        if (util::checkEqual(lesser, greater)) return roots = ComplexSolutions::finite(lesser / denom);
 
-                        return ComplexSolutions::finite(lesser / denom, greater / denom);
+                        return roots = ComplexSolutions::finite(lesser / denom, greater / denom);
                 }
 
                 default: {
@@ -216,39 +208,26 @@ namespace m {
                     // TODO: Numerical solution for higher degrees
                     // TODO: Cubics and quartics
                     
-                    return ComplexSolutions::empty();
+                    return roots = ComplexSolutions::empty();
                 }
             }
         }
 
-        friend std::ostream &operator<<(std::ostream &stream, const Polynomial<N> &polynomial) {
+        friend auto &operator<<(std::ostream &lhs, const Polynomial<N> &rhs) {
 
-            stream << std::fixed << std::setprecision(
+            lhs << std::fixed << std::setprecision(m_PRECISION) << rhs.coeffs[0];
 
-#ifdef m_PRECISION
-
-            m_PRECISION
-
-#else
-
-            2
-
-#endif
-
-            );
-
-            stream << polynomial.coeffs[0];
-            if (N == 0) return stream;
+            if (N == 0) return lhs;
             
-            stream << " + " << polynomial.coeffs[1] << "z";
+            lhs << " + " << rhs.coeffs[1] << "z";
 
             for (size_t i = 2; i < N + 1; i++) {
 
-                stream << " + " << polynomial.coeffs[i];
-                stream << "z^" << i;
+                lhs << " + " << rhs.coeffs[i];
+                lhs << "z^" << i;
             }
 
-            return stream;
+            return lhs;
         }
 
     };

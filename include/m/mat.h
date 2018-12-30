@@ -3,13 +3,12 @@
 
 #include <complex>
 #include <cmath>
-
 #include <iostream>
 #include <iomanip>
-
 #include <array>
 #include <type_traits>
 #include <algorithm>
+#include <numeric>
 
 #ifndef __m_vec_h__
 #include <m/vec.h>
@@ -27,8 +26,6 @@
 
 namespace m {
 
-#define M N
-
     template <typename T, size_t N>
     class tmat;
 
@@ -39,26 +36,26 @@ namespace m {
 
     private:
 
-        tmat<T, N> matrix;
         std::array<A, N> aux;
+        tmat<T, N> matrix;
 
         void eliminate(size_t x, size_t y);
 
     public:
 
-        tmat_aug();
-        tmat_aug(const tmat<T, N> &matrix, const std::array<A, N> &aux);
+        tmat_aug() noexcept;
+        tmat_aug(const tmat<T, N> &matrix, const std::array<A, N> &aux) noexcept;
 
-        const tmat<T, N> &coefficients() const; 
-        const std::array<A, N> &auxilary() const;
+        auto coefficients() const; 
+        auto auxilary() const;
 
         // TODO: degenerate solution cases
-        std::array<A, N> solve() const;
+        auto solve() const;
 
         // NOTE: returns N on empty rows
-        size_t leadingIndex(size_t row) const;
+        auto leadingIndex(size_t row) const;
         // NOTE: returns zero on empty rows
-        T leadingValue(size_t row) const;
+        auto leadingValue(size_t row) const;
 
         bool columnIsZero(size_t x) const;
         bool rowIsZero(size_t y) const;
@@ -71,41 +68,29 @@ namespace m {
 
         void setRow(size_t index, const tvec<T, N> &val, A auxVal); 
 
-        tmat_aug<T, N, A> ordered() const;
-        tmat_aug<T, N, A> rowEchelon() const; 
-        tmat_aug<T, N, A> reducedRowEchelon() const; 
+        auto ordered() const;
+        auto rowEchelon() const; 
+        auto reducedRowEchelon() const; 
 
-        friend std::ostream &operator<<(std::ostream &stream, const tmat_aug<T, N, A> &augMatrix) {
+        friend auto &operator<<(std::ostream &lhs, const tmat_aug<T, N, A> &rhs) {
 
-            stream << std::fixed << std::setprecision(
-
-#ifdef m_PRECISION
-
-            m_PRECISION
-
-#else
-
-            2
-
-#endif
-
-            );
+            lhs << std::fixed << std::setprecision(m_PRECISION);
 
             for (size_t y = 0; y < N; y++) {
 
-                stream << "|\t";
+                lhs << "|\t";
 
                 for (size_t x = 0; x < N - 1; x++) {
 
-                    stream << augMatrix.matrix.get(x, y) << "\t";
+                    lhs << rhs.matrix.get(x, y) << "\t";
                 }
 
-                stream << augMatrix.matrix.get(N - 1, y) << "\t|\t" << augMatrix.aux[y] << "\t|";
+                lhs << rhs.matrix.get(N - 1, y) << "\t|\t" << rhs.aux[y] << "\t|";
 
-                if (y < N - 1) stream << std::endl;
+                if (y < N - 1) lhs << std::endl;
             }
             
-            return stream;
+            return lhs;
         }
     };   
 
@@ -138,25 +123,26 @@ namespace m {
     // NOTE: Implementation of tmat_aug
 
     template <typename T, size_t N, typename A>
-    inline tmat_aug<T, N, A>::tmat_aug() {}
+    inline tmat_aug<T, N, A>::tmat_aug() noexcept {}
 
     template <typename T, size_t N, typename A>
-    inline tmat_aug<T, N, A>::tmat_aug(const tmat<T, N> &matrix, const std::array<A, N> &aux) : matrix(matrix), aux(aux) {}
+    inline tmat_aug<T, N, A>::tmat_aug(const tmat<T, N> &matrix, const std::array<A, N> &aux) noexcept
+        :matrix(matrix), aux(aux) {}
 
     template <typename T, size_t N, typename A>
-    inline const tmat<T, N> &tmat_aug<T, N, A>::coefficients() const {
+    inline auto tmat_aug<T, N, A>::coefficients() const {
 
         return matrix;
     }
 
     template <typename T, size_t N, typename A>
-    inline const std::array<A, N> &tmat_aug<T, N, A>::auxilary() const {
+    inline auto tmat_aug<T, N, A>::auxilary() const {
 
         return aux;
     }
 
     template <typename T, size_t N, typename A>
-    inline std::array<A, N> tmat_aug<T, N, A>::solve() const {
+    inline auto tmat_aug<T, N, A>::solve() const {
 
         if (singular()) throw std::invalid_argument("m::exception: solve() called on singular system");
 
@@ -164,7 +150,7 @@ namespace m {
     }
 
     template <typename T, size_t N, typename A>
-    inline size_t tmat_aug<T, N, A>::leadingIndex(size_t row) const {
+    inline auto tmat_aug<T, N, A>::leadingIndex(size_t row) const {
 
         for (size_t i = 0; i < N; i++) {
 
@@ -175,9 +161,9 @@ namespace m {
     }
 
     template <typename T, size_t N, typename A>
-    inline T tmat_aug<T, N, A>::leadingValue(size_t row) const {
+    inline auto tmat_aug<T, N, A>::leadingValue(size_t row) const {
 
-        size_t index = leadingIndex(row);
+        auto index = leadingIndex(row);
 
         if (index == N) return 0;
 
@@ -230,14 +216,14 @@ namespace m {
     template <typename T, size_t N, typename A>
     inline void tmat_aug<T, N, A>::swapRows(size_t a, size_t b) {
 
-        tvec<T, N> rowA = matrix.getRow(a);
-        tvec<T, N> rowB = matrix.getRow(b);
+        auto rowA = matrix.getRow(a);
+        auto rowB = matrix.getRow(b);
 
         matrix.setRow(a, rowB);
         matrix.setRow(b, rowA);
 
-        A auxA = aux[a];
-        A auxB = aux[b];
+        auto auxA = aux[a];
+        auto auxB = aux[b];
 
         aux[a] = auxB;
         aux[b] = auxA;
@@ -253,8 +239,8 @@ namespace m {
     template <typename T, size_t N, typename A>
     inline void tmat_aug<T, N, A>::addRow(size_t targetRow, size_t sourceRow, T scalar) {
 
-        tvec<T, N> addValue = scalar * matrix.getRow(sourceRow);
-        tvec<T, N> resultValue = matrix.getRow(targetRow) + addValue;
+        auto addValue = scalar * matrix.getRow(sourceRow);
+        auto resultValue = matrix.getRow(targetRow) + addValue;
 
         matrix.setRow(targetRow, resultValue);
 
@@ -271,7 +257,7 @@ namespace m {
     template <typename T, size_t N, typename A>
     inline void tmat_aug<T, N, A>::eliminate(size_t x, size_t y) {
 
-        T targetValue = -matrix.get(x, y);
+        auto targetValue = -matrix.get(x, y);
 
         if (util::checkZero(targetValue)) return;
 
@@ -279,7 +265,7 @@ namespace m {
 
             if (iy == y) continue;
 
-            T value = matrix.get(x, iy);
+            auto value = matrix.get(x, iy);
 
             if (!util::checkZero(value) && leadingIndex(iy) >= x) {
 
@@ -292,15 +278,18 @@ namespace m {
     }
 
     template <typename T, size_t N, typename A>
-    inline tmat_aug<T, N, A> tmat_aug<T, N, A>::ordered() const {
+    inline auto tmat_aug<T, N, A>::ordered() const {
+
+        using std::begin;
+        using std::end;
 
         std::array<size_t, N> rowIndices;
+        std::iota(begin(rowIndices), end(rowIndices), 0);
 
-        for (size_t i = 0; i < N; i++) rowIndices[i] = i;
+        auto compareLeadingIndex = [=] (auto a, auto b) -> bool { return leadingIndex(a) < leadingIndex(b); };
+        std::sort(begin(rowIndices), end(rowIndices), compareLeadingIndex);
 
-        std::sort(std::begin(rowIndices), std::end(rowIndices), [=] (auto a, auto b) -> bool { return leadingIndex(a) < leadingIndex(b); });
-
-        tmat_aug<T, N, A> result(matrix, aux);
+        tmat_aug<T, N, A> result{matrix, aux};
 
         for (size_t i = 0; i < N; i++) {
 
@@ -311,9 +300,9 @@ namespace m {
     }
 
     template <typename T, size_t N, typename A>
-    inline tmat_aug<T, N, A> tmat_aug<T, N, A>::rowEchelon() const {
+    inline auto tmat_aug<T, N, A>::rowEchelon() const {
 
-        tmat_aug<T, N, A> result = ordered();
+        auto result = ordered();
 
         for (size_t x = 0; x < N - 1; x++) { 
 
@@ -335,27 +324,27 @@ namespace m {
     }
 
     template <typename T, size_t N, typename A>
-    inline tmat_aug<T, N, A> tmat_aug<T, N, A>::reducedRowEchelon() const {
+    inline auto tmat_aug<T, N, A>::reducedRowEchelon() const {
 
-        tmat_aug<T, N, A> result = rowEchelon();
+        auto result = rowEchelon();
 
         if (result.hasZeroRow()) throw std::invalid_argument("m::exception: reducedRowEchelon() called on singular matrix");
 
         for (size_t y = 0; y < N; y++) { 
 
-            T leadingValue = result.leadingValue(y);
+            auto leadingValue = result.leadingValue(y);
 
             result.scaleRow(y, 1 / leadingValue);
 
             for (size_t x = result.leadingIndex(y) + 1; x < N; x++) {
 
-                T targetVal = -result.matrix.get(x, y);
+                auto targetVal = -result.matrix.get(x, y);
 
                 for (size_t iy = y + 1; iy < N; iy++) {
 
                     if (result.leadingIndex(iy) < x) continue;
 
-                    T val = result.matrix.get(x, iy);
+                    auto val = result.matrix.get(x, iy);
 
                     if (!util::checkZero(val)) {
 
@@ -369,12 +358,12 @@ namespace m {
         return result;
     }
 
-    // NOTE: transformations as tmat<T, 4> representations (e.g. for 3d rendering)
+    // NOTE: Static functions for matrices 
     
     namespace mat {
 
         template <typename T>
-        tmat<T, 4> scale(const tvec<T, 3> &factors) {
+        auto scale(const tvec<T, 3> &factors) {
 
             return tmat<T, 4>(factors.get(0), 0,              0,              0,
                               0,              factors.get(1), 0,              0,
@@ -383,13 +372,13 @@ namespace m {
         }
 
         template <typename T>
-        tmat<T, 4> scale(T factor) {
+        auto scale(T factor) {
 
             return scale(tvec<T, 3>(factor, factor, factor));
         }
 
         template <typename T>
-        tmat<T, 4> translate(const tvec<T, 3> &offset) {
+        auto translate(const tvec<T, 3> &offset) {
 
             return tmat<T, 4>(1, 0, 0, offset.x(),
                               0, 1, 0, offset.y(),
@@ -398,7 +387,7 @@ namespace m {
         }
 
         template <typename T>
-        tmat<T, 4> rotate(const tquat<T> &rep) {
+        auto rotate(const tquat<T> &rep) {
 
             tvec<T, 3> rotatedX = rep.rotate(m::X_AXIS<T>);
             tvec<T, 3> rotatedY = rep.rotate(m::Y_AXIS<T>);
@@ -411,7 +400,7 @@ namespace m {
         }
 
         template <typename T>
-        tmat<T, 4> rotate(T angle, const tvec<T, 3> &axis) {
+        auto rotate(T angle, const tvec<T, 3> &axis) {
 
             return rotate(tquat<T>::rotation(angle, axis));
         }
@@ -419,19 +408,22 @@ namespace m {
         // TODO: Ortho and perspective projections
     }
 
-#define TYPEDEF_MAT(n) typedef tmat<int, n> imat ## n; \
-                       typedef tmat<long, n> lmat ## n; \
-                       typedef tmat<float, n> mat ## n; \
-                       typedef tmat<double, n> dmat ## n; \
-                       typedef tmat<std::complex<double>, n> cmat ## n;
+#define CREATE_ALIASES(n) using imat ## n = tmat<int, n>; \
+                          using lmat ## n = tmat<long, n>; \
+                          using  mat ## n = tmat<float, n>; \
+                          using dmat ## n = tmat<double, n>; \
+                          using cmat ## n = tmat<std::complex<double>, n>;
 
-    TYPEDEF_MAT(2)
-    TYPEDEF_MAT(3)
-    TYPEDEF_MAT(4)
+    CREATE_ALIASES(2)
+    CREATE_ALIASES(3)
+    CREATE_ALIASES(4)
+    CREATE_ALIASES(5)
+    CREATE_ALIASES(6)
+    CREATE_ALIASES(7)
+    CREATE_ALIASES(8)
+    CREATE_ALIASES(9)
 
-#undef TYPEDEF_MAT
-
-#undef M
+#undef CREATE_ALIASES
 
 }
 

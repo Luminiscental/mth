@@ -20,291 +20,296 @@ namespace m {
 
     public:
 
-#define tvec3 tvec<T, 3>
+#define BINDING(name, value) const auto & name () const { return value ; } \
+                             auto & name () { return value ; }
 
-#define BINDING(name, value, type) const type & name () const { return value ; } \
-                                         type & name ()       { return value ; }
-
-        BINDING(real, w, T)
-        BINDING(imaginary, ijk, tvec3)
-        BINDING(i, ijk.x(), T)
-        BINDING(j, ijk.y(), T)
-        BINDING(k, ijk.z(), T)
+        BINDING(real, w)
+        BINDING(imaginary, ijk)
+        BINDING(i, ijk.x())
+        BINDING(j, ijk.y())
+        BINDING(k, ijk.z())
 
 #undef BINDING
 
-#undef tvec3
+        constexpr tquat() noexcept
+            :w(0), ijk(0, 0, 0) {}
 
-        tquat() : w(0), ijk(0, 0, 0) {}
+        constexpr tquat(T a, T b, T c, T d) noexcept
+            :w(a), ijk(b, c, d) {}
 
-        tquat(T a, T b, T c, T d) : w(a), ijk(b, c, d) {}
+        constexpr tquat(T r) noexcept
+            :w(r), ijk(0, 0, 0) {}
 
-        tquat(const tquat &other) : w(other.w), ijk(other.ijk) {}
+        constexpr tquat(const tvec<T, 3> &vector) noexcept
+            :w(0), ijk(vector) {}
 
-        tquat(T r) : w(r), ijk(0, 0, 0) {}
+        constexpr tquat(T r, const tvec<T, 3> &vector) noexcept
+            :w(r), ijk(vector) {}
 
-        tquat(const tvec<T, 3> &vector)  :w(0), ijk(vector) {}
-
-        tquat(T r, const tvec<T, 3> &vector) : w(r), ijk(vector) {}
-
-        T magnSqr() const {
+        auto magnSqr() const noexcept {
 
             return w * w + ijk.magnSqr();
         }
 
-        double magn() const {
+        auto magn() const noexcept {
 
             return std::sqrt(static_cast<double>(magnSqr()));
         }
 
-        tquat<T> conjugate() const {
+        constexpr auto conjugate() const noexcept {
 
             return tquat<T>(w, -ijk);
         }
 
-        tquat<T> inverse() const {
+        auto inverse() const {
 
-            T ls = magnSqr();
+            auto ls = magnSqr();
 
             if (util::checkZero(ls)) throw std::invalid_argument("zero quaternion has no inverse");
 
             return conjugate() / ls;
         }
 
-        tquat<T> unit() const {
+        auto unit() const {
 
-            T l = static_cast<T>(magn());
+            auto l = static_cast<T>(magn());
 
             if (util::checkZero(l)) throw std::invalid_argument("zero quaternion has no unit equivalent");
 
             return *this / l;
         }
 
-        tvec<T, 3> rotate(const m::tvec<T, 3> &vector) const {
+        auto rotate(const m::tvec<T, 3> &vector) const {
 
             return (*this * tquat<T>(vector) * inverse()).imaginary();
         }
 
-        static tquat identity() {
+        static auto identity() {
             
             return tquat(); 
         }
-                                                                 //                        /-
-        static tquat rotation(T angle, const tvec<T, 3> &axis) { // NOTE: Right-handed: ---|--> axis
-                                                                 //                        \-> rotation
-            double halfAngle = static_cast<double>(angle) / 2.0;
+                                                                //                        /-
+        static auto rotation(T angle, const tvec<T, 3> &axis) { // NOTE: Right-handed: ---|--> axis
+                                                                //                        \-> rotation
+            auto halfAngle = static_cast<double>(angle) / 2.0;
 
-            T c = static_cast<T>(std::cos(halfAngle));
-            T s = static_cast<T>(std::sin(halfAngle));
+            auto c = static_cast<T>(std::cos(halfAngle));
+            auto s = static_cast<T>(std::sin(halfAngle));
 
             return c + s * tquat<T>(axis);
         }
 
-        friend tquat<T> operator+(const tquat<T> &a, const tquat<T> &b) {
+        auto &operator+=(const tquat<T> &rhs) {
 
-            return tquat<T>(a.w + b.w, a.ijk + b.ijk);
+            w += rhs.w;
+            ijk += rhs.ijk;
+
+            return *this;
         }
 
-        friend tquat<T> operator+(const tquat<T> &quaternion, T scalar) {
+        auto &operator+=(T rhs) {
 
-            return tquat<T>(quaternion.w + scalar, quaternion.ijk);
+            w += rhs;
+
+            return *this;
         }
 
-        friend tquat<T> operator+(T scalar, const tquat<T> &quaternion) {
+        auto &operator-=(const tquat<T> &rhs) {
 
-            return quaternion + scalar;
+            w -= rhs.w;
+            ijk -= rhs.ijk;
+
+            return *this;
         }
 
-        friend tquat<T> operator-(const tquat<T> &a) {
+        auto &operator-=(T rhs) {
 
-            return tquat<T>(-a.w, -a.ijk);
+            w -= rhs;
+
+            return *this;
         }
 
-        friend tquat<T> operator-(const tquat<T> &a, const tquat<T> &b) {
+        auto &operator*=(const tquat<T> &rhs) {
 
-            return tquat<T>(a.w - b.w, a.ijk - b.ijk);
+            *this = *this * rhs;
+
+            return *this;
         }
 
-        friend tquat<T> operator-(const tquat<T> &quaternion, T scalar) {
+        auto &operator*=(T rhs) {
 
-            return tquat<T>(quaternion.w - scalar, quaternion.ijk);
+            w *= rhs;
+            ijk *= rhs;
+
+            return *this;
         }
 
-        friend tquat<T> operator-(T scalar, const tquat<T> &quaternion) {
+        auto &operator/=(const tquat<T> &rhs) {
 
-            return tquat<T>(scalar - quaternion.w, -quaternion.ijk);
+            *this = *this / rhs;
+
+            return *this;
         }
 
-        friend tquat<T> operator*(const tquat<T> &a, const tquat<T> &b) {
+        auto &operator/=(T rhs) {
 
-            return tquat<T>(a.real() * b.i() + a.i() * b.real() + a.j() * b.k() - a.k() * b.j(),
-                            a.real() * b.j() - a.i() * b.k() + a.j() * b.real() + a.k() * b.i(),
-                            a.real() * b.k() + a.i() * b.j() - a.j() * b.i() + a.k() * b.real(),
-                            a.real() * b.real() - a.i() * b.i() - a.j() * b.j() - a.k() * b.k());
+            w /= rhs;
+            ijk /= rhs;
+
+            return *this;
         }
 
-        friend tquat<T> operator*(T scalar, const tquat<T> &quaternion) {
+        friend auto operator+(const tquat<T> &lhs, const tquat<T> &rhs) {
 
-            return tquat<T>(scalar * quaternion.w, scalar * quaternion.ijk);
+            tquat<T> result = lhs;
+
+            return result += rhs;
         }
 
-        friend tquat<T> operator*(const tquat<T> &quaternion, T scalar) {
+        friend auto operator+(const tquat<T> &lhs, T rhs) {
 
-            return scalar * quaternion;
+            tquat<T> result = lhs;
+
+            return result += rhs;
         }
 
-        friend tquat<T> operator/(const tquat<T> &a, const tquat<T> &b) {
+        friend auto operator+(T lhs, const tquat<T> &rhs) {
 
-            return a * b.inverse();
+            return rhs + lhs;
         }
 
-        friend tquat<T> operator/(T scalar, const tquat<T> &quaternion) {
+        friend auto operator-(const tquat<T> &rhs) {
 
-            return tquat<T>(scalar) / quaternion;
+            return tquat<T>(-rhs.w, -rhs.ijk);
         }
 
-        friend tquat<T> operator/(const tquat<T> &quaternion, T scalar) {
+        friend auto operator-(const tquat<T> &lhs, const tquat<T> &rhs) {
 
-            return tquat<T>(quaternion.w / scalar, quaternion.ijk / scalar);
+            tquat<T> result = lhs;
+
+            return result -= rhs;
         }
 
-        friend std::ostream &operator<<(std::ostream &stream, const tquat<T> &quaternion) {
+        friend auto operator-(const tquat<T> &lhs, T rhs) {
+
+            tquat<T> result = lhs;
+
+            return result -= rhs;
+        }
+
+        friend auto operator-(T lhs, const tquat<T> &rhs) {
+
+            tquat<T> result = lhs;
+
+            return result -= rhs;
+        }
+
+        friend auto operator*(const tquat<T> &lhs, const tquat<T> &rhs) {
+
+            return tquat<T>(lhs.real() * rhs.i() + lhs.i() * rhs.real() + lhs.j() * rhs.k() - lhs.k() * rhs.j(),
+                            lhs.real() * rhs.j() - lhs.i() * rhs.k() + lhs.j() * rhs.real() + lhs.k() * rhs.i(),
+                            lhs.real() * rhs.k() + lhs.i() * rhs.j() - lhs.j() * rhs.i() + lhs.k() * rhs.real(),
+                            lhs.real() * rhs.real() - lhs.i() * rhs.i() - lhs.j() * rhs.j() - lhs.k() * rhs.k());
+        }
+
+        friend auto operator*(T lhs, const tquat<T> &rhs) {
+
+            tquat<T> result = rhs;
+
+            return result *= lhs;
+        }
+
+        friend auto operator*(const tquat<T> &lhs, T rhs) {
+
+            return rhs * lhs;
+        }
+
+        friend auto operator/(const tquat<T> &lhs, const tquat<T> &rhs) {
+
+            return lhs * rhs.inverse();
+        }
+
+        friend auto operator/(T lhs, const tquat<T> &rhs) {
+
+            return tquat<T>(lhs) / rhs;
+        }
+
+        friend auto operator/(const tquat<T> &lhs, T rhs) {
+
+            tquat<T> result = lhs;
+
+            return result /= rhs;
+        }
+
+        friend auto &operator<<(std::ostream &lhs, const tquat<T> &rhs) {
 
             bool nonZero = false;
 
-            stream << std::fixed << std::setprecision(
+            lhs << std::fixed << std::setprecision(m_PRECISION) << "(";
 
-#ifdef m_PRECISION
+            if (!util::checkZero(rhs.real())) {
 
-            m_PRECISION
-
-#else
-                    
-            2
-
-#endif
-                    
-            ) << "(";
-
-            if (!util::checkZero(quaternion.real())) {
-
-                stream << quaternion.real();
+                lhs << rhs.real();
                 nonZero = true;
             }
 
-            if (!util::checkZero(quaternion.i())) {
+            if (!util::checkZero(rhs.i())) {
 
                 if (nonZero) {
 
-                    stream << (quaternion.i() > 0 ? " + " : " - ");
-                    stream << std::abs(quaternion.i());
+                    lhs << (rhs.i() > 0 ? " + " : " - ");
+                    lhs << std::abs(rhs.i());
 
                 } else {
 
-                    stream << quaternion.i();
+                    lhs << rhs.i();
                     nonZero = true;
                 }
 
-                stream << "i";
+                lhs << "i";
             }
 
-            if (!util::checkZero(quaternion.j())) {
+            if (!util::checkZero(rhs.j())) {
                 
                 if (nonZero) {
 
-                    stream << (quaternion.j() > 0 ? " + " : " - ");
-                    stream << std::abs(quaternion.j());
+                    lhs << (rhs.j() > 0 ? " + " : " - ");
+                    lhs << std::abs(rhs.j());
 
                 } else {
 
-                    stream << quaternion.j();
+                    lhs << rhs.j();
                     nonZero = true;
                 }
 
-                stream << "j";
+                lhs << "j";
             }
 
-            if (!util::checkZero(quaternion.k())) {
+            if (!util::checkZero(rhs.k())) {
                 
                 if (nonZero) {
 
-                    stream << (quaternion.k() > 0 ? " + " : " - ");
-                    stream << std::abs(quaternion.k());
+                    lhs << (rhs.k() > 0 ? " + " : " - ");
+                    lhs << std::abs(rhs.k());
 
                 } else {
 
-                    stream << quaternion.k();
+                    lhs << rhs.k();
                 }
 
-                stream << "k";
+                lhs << "k";
             }
 
-            if (!nonZero) stream << "0";
+            if (!nonZero) lhs << "0";
 
-            return stream << ")";
-        }
-
-        tquat<T> &operator+=(const tquat<T> &other) {
-
-            *this = *this + other;
-
-            return *this;
-        }
-
-        tquat<T> &operator+=(T other) {
-
-            *this = *this + other;
-
-            return *this;
-        }
-
-        tquat<T> &operator-=(const tquat<T> &other) {
-
-            *this = *this - other;
-
-            return *this;
-        }
-
-        tquat<T> &operator-=(T other) {
-
-            *this = *this - other;
-
-            return *this;
-        }
-
-        tquat<T> &operator*=(const tquat<T> &other) {
-
-            *this = *this * other;
-
-            return *this;
-        }
-
-        tquat<T> &operator*=(T other) {
-
-            *this = *this * other;
-
-            return *this;
-        }
-
-        tquat<T> &operator/=(const tquat<T> &other) {
-
-            *this = *this / other;
-
-            return *this;
-        }
-
-        tquat<T> &operator/=(T other) {
-
-            *this = *this / other;
-
-            return *this;
+            return lhs << ")";
         }
     };
 
-    typedef tquat<int>    iquat;
-    typedef tquat<long>   lquat;
-    typedef tquat<float>  quat;
-    typedef tquat<double> dquat;
+    using iquat = tquat<int>;
+    using lquat = tquat<long>;
+    using  quat = tquat<float>;
+    using dquat = tquat<double>;
 }
 
 #endif

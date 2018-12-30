@@ -7,10 +7,14 @@
 
 /* NOTE: Optional preprocessor flags:
  *
- *      M_ROW_MAJOR - Matrix values are stored row-major rather than column-major.
- *      M_ELIMINATION - Matrix inverses are calculated by Gaussian row elimination rather than by calculating the adjoint matrix.
- *      M_PRECISION - Value passed to std::setprecision (2 if not set).
+ *      m_ROW_MAJOR - Matrix values are stored row-major rather than column-major.
+ *      m_ELIMINATION - Matrix inverses are calculated by Gaussian row elimination rather than by calculating the adjoint matrix.
+ *      m_PRECISION - Value passed to std::setprecision (2 if not set).
  */
+
+#ifndef m_PRECISION
+#define m_PRECISION 2
+#endif
 
 namespace m {
 
@@ -42,14 +46,14 @@ namespace m {
     namespace util {
 
         template <typename T>
-        bool checkZero(T x) {
+        auto checkZero(const T &x) {
 
             auto magnitude = std::abs(x);
             return magnitude <= EPSILON<decltype(magnitude)>;
         }
 
         template <typename T>
-        bool checkEqual(T a, T b) {
+        auto checkEqual(const T &a, const T &b) {
 
             return checkZero(a - b);
         }
