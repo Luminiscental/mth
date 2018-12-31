@@ -26,10 +26,11 @@
 
 namespace m {
 
-    template <typename T, size_t N>
+    template <typename T, size_t N, size_t M>
     class tmat;
 
     // NOTE: Forward declaration of tmat_aug so that it (and its members) can be used in tmat::inverse
+    // TODO: Augment non-square matrices?
 
     template <typename T, size_t N, typename A>
     class tmat_aug {
@@ -37,14 +38,15 @@ namespace m {
     private:
 
         std::array<A, N> aux;
-        tmat<T, N> matrix;
+        tmat<T, N, N> matrix;
 
-        void eliminate(size_t x, size_t y);
+        void eliminateFromBelow(size_t x, size_t y);
+        void eliminateFromRight(size_t x, size_t y);
 
     public:
 
         tmat_aug() noexcept;
-        tmat_aug(const tmat<T, N> &matrix, const std::array<A, N> &aux) noexcept;
+        tmat_aug(const tmat<T, N, N> &matrix, const std::array<A, N> &aux) noexcept;
 
         auto coefficients() const; 
         auto auxilary() const;
@@ -55,7 +57,7 @@ namespace m {
         // NOTE: returns N on empty rows
         auto leadingIndex(size_t row) const;
         // NOTE: returns zero on empty rows
-        auto leadingValue(size_t row) const;
+        T leadingValue(size_t row) const;
 
         bool columnIsZero(size_t x) const;
         bool rowIsZero(size_t y) const;
@@ -94,14 +96,27 @@ namespace m {
         }
     };   
 
-    // NOTE: tmat<T, 2> as base case for minor() template recursion
+    // NOTE: Implement tmat<2, 2>
 
-#define __m_mat_basecaseimpl__
-
+#define M 2
 #define N 2
 
     template <typename T>
-    class tmat<T, N> {
+    class tmat<T, N, M> {
+
+#include <m/mat_content.h>
+
+    };
+
+#undef N
+#undef M
+
+    // NOTE: Implement tmat<2, M>
+
+#define N 2
+
+    template <typename T, size_t M>
+    class tmat<T, N, M> {
 
 #include <m/mat_content.h>
 
@@ -109,24 +124,33 @@ namespace m {
 
 #undef N
 
-#undef __m_mat_basecaseimpl__
+    // NOTE: Implement tmat<N, 2>
 
-    // NOTE: tmat<T, N> for N > 2
+#define M 2
 
     template <typename T, size_t N>
+    class tmat<T, N, M> {
+
+#include <m/mat_content.h>
+
+    };
+
+#undef M
+
+    // NOTE: Implement tmat<N, M>
+
+    template <typename T, size_t N, size_t M>
     class tmat {
 
 #include <m/mat_content.h>
 
     };
 
-    // NOTE: Implementation of tmat_aug
-
     template <typename T, size_t N, typename A>
     inline tmat_aug<T, N, A>::tmat_aug() noexcept {}
 
     template <typename T, size_t N, typename A>
-    inline tmat_aug<T, N, A>::tmat_aug(const tmat<T, N> &matrix, const std::array<A, N> &aux) noexcept
+    inline tmat_aug<T, N, A>::tmat_aug(const tmat<T, N, N> &matrix, const std::array<A, N> &aux) noexcept
         :matrix(matrix), aux(aux) {}
 
     template <typename T, size_t N, typename A>
@@ -161,7 +185,7 @@ namespace m {
     }
 
     template <typename T, size_t N, typename A>
-    inline auto tmat_aug<T, N, A>::leadingValue(size_t row) const {
+    inline T tmat_aug<T, N, A>::leadingValue(size_t row) const {
 
         auto index = leadingIndex(row);
 
@@ -255,7 +279,30 @@ namespace m {
     }
 
     template <typename T, size_t N, typename A>
-    inline void tmat_aug<T, N, A>::eliminate(size_t x, size_t y) {
+    inline void tmat_aug<T, N, A>::eliminateFromBelow(size_t x, size_t y) {
+
+        auto targetValue = -matrix.get(x, y);
+
+        if (util::checkZero(targetValue)) return;
+
+        for (size_t iy = y + 1; iy < N; iy++) {
+
+            if (leadingIndex(iy) < x) continue;
+
+            auto val = matrix.get(x, iy);
+
+            if (!util::checkZero(val)) {
+
+                addRow(y, iy, targetValue / val); 
+                return;
+            }
+        }
+
+        throw std::invalid_argument("m::exception: eliminateFromBelow() called on non-eliminable element");
+    }
+
+    template <typename T, size_t N, typename A>
+    inline void tmat_aug<T, N, A>::eliminateFromRight(size_t x, size_t y) {
 
         auto targetValue = -matrix.get(x, y);
 
@@ -274,7 +321,7 @@ namespace m {
             }
         }
 
-        throw std::invalid_argument("m::exception: eliminate() called on non-eliminable element");
+        throw std::invalid_argument("m::exception: eliminateFromRight() called on non-eliminable element");
     }
 
     template <typename T, size_t N, typename A>
@@ -314,7 +361,7 @@ namespace m {
 
                 if (util::checkZero(result.matrix.get(x, y))) continue;
 
-                result.eliminate(x, y);
+                result.eliminateFromRight(x, y);
                 result = result.ordered();
                 y = x;
             }
@@ -338,20 +385,7 @@ namespace m {
 
             for (size_t x = result.leadingIndex(y) + 1; x < N; x++) {
 
-                auto targetVal = -result.matrix.get(x, y);
-
-                for (size_t iy = y + 1; iy < N; iy++) {
-
-                    if (result.leadingIndex(iy) < x) continue;
-
-                    auto val = result.matrix.get(x, iy);
-
-                    if (!util::checkZero(val)) {
-
-                        result.addRow(y, iy, targetVal / val); 
-                        break;
-                    }
-                }
+                result.eliminateFromBelow(x, y);
             }
         }
 
@@ -365,10 +399,10 @@ namespace m {
         template <typename T>
         auto scale(const tvec<T, 3> &factors) {
 
-            return tmat<T, 4>(factors.get(0), 0,              0,              0,
-                              0,              factors.get(1), 0,              0,
-                              0,              0,              factors.get(2), 0,
-                              0,              0,              0,              1);
+            return tmat<T, 4, 4>(factors.get(0), 0,              0,              0,
+                                 0,              factors.get(1), 0,              0,
+                                 0,              0,              factors.get(2), 0,
+                                 0,              0,              0,              1);
         }
 
         template <typename T>
@@ -380,10 +414,10 @@ namespace m {
         template <typename T>
         auto translate(const tvec<T, 3> &offset) {
 
-            return tmat<T, 4>(1, 0, 0, offset.x(),
-                              0, 1, 0, offset.y(),
-                              0, 0, 1, offset.z(),
-                              0, 0, 0, 1);
+            return tmat<T, 4, 4>(1, 0, 0, offset.x(),
+                                 0, 1, 0, offset.y(),
+                                 0, 0, 1, offset.z(),
+                                 0, 0, 0, 1);
         }
 
         template <typename T>
@@ -393,10 +427,10 @@ namespace m {
             tvec<T, 3> rotatedY = rep.rotate(m::Y_AXIS<T>);
             tvec<T, 3> rotatedZ = rep.rotate(m::Z_AXIS<T>);
 
-            return tmat<T, 4>(rotatedX.x(), rotatedY.x(), rotatedZ.x(), 0,
-                              rotatedX.y(), rotatedY.y(), rotatedZ.y(), 0,
-                              rotatedX.z(), rotatedY.z(), rotatedZ.z(), 0,
-                              0,            0,            0,            1);
+            return tmat<T, 4, 4>(rotatedX.x(), rotatedY.x(), rotatedZ.x(), 0,
+                                 rotatedX.y(), rotatedY.y(), rotatedZ.y(), 0,
+                                 rotatedX.z(), rotatedY.z(), rotatedZ.z(), 0,
+                                 0,            0,            0,            1);
         }
 
         template <typename T>
@@ -408,11 +442,11 @@ namespace m {
         // TODO: Ortho and perspective projections
     }
 
-#define CREATE_ALIASES(n) using imat ## n = tmat<int, n>; \
-                          using lmat ## n = tmat<long, n>; \
-                          using  mat ## n = tmat<float, n>; \
-                          using dmat ## n = tmat<double, n>; \
-                          using cmat ## n = tmat<std::complex<double>, n>;
+#define CREATE_ALIASES(n) using imat ## n = tmat<int, n, n>; \
+                          using lmat ## n = tmat<long, n, n>; \
+                          using  mat ## n = tmat<float, n, n>; \
+                          using dmat ## n = tmat<double, n, n>; \
+                          using cmat ## n = tmat<std::complex<double>, n, n>;
 
     CREATE_ALIASES(2)
     CREATE_ALIASES(3)

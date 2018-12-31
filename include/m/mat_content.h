@@ -1,25 +1,25 @@
 
 #ifdef __m_mat_content_toggle__
 
-// template <typename T, size_t N>
+// template <typename T, size_t N, size_t M>
 // class tmat {
 
 private:
 
-    std::array<T, N * N> values;
+    std::array<T, N * M> values;
 
     static auto getIndex(size_t x, size_t y) { // NOTE: 0,0 is top left
 
         if (x > N - 1) throw std::out_of_range("m::exception: column index out of bounds");
-        if (y > N - 1) throw std::out_of_range("m::exception: row index out of bounds");
+        if (y > M - 1) throw std::out_of_range("m::exception: row index out of bounds");
 
-#ifdef m_ROW_MAJOR // TODO: Maybe make this choosable per-object or have a different class for row-major matrices
+#ifdef m_ROW_MAJOR
 
         return x + y * N;
 
 #else
 
-        return x * N + y;   
+        return x * M + y;   
 
 #endif
 
@@ -29,53 +29,47 @@ public:
 
     constexpr tmat() noexcept {
 
-        for (size_t x = 0; x < N; x++) {
-
-            for (size_t y = 0; y < N; y++) {
-
-                get(x, y) = (x == y) ? 1 : 0;
-            }
-        }
+        values.fill(0);
     }
 
     // NOTE: Constructors take a list of rows, never a list of columns for consistency with value lists
-    tmat(const std::array<tvec<T, N>, N> &rows) noexcept {
+    tmat(const std::array<tvec<T, N>, M> &rows) noexcept {
 
-        for (size_t i = 0; i < N; i++) {
+        for (size_t i = 0; i < M; i++) {
 
             setRow(i, rows[i]);
         }
     }
 
-    tmat(const std::array<T, N * N> &values) noexcept
+    tmat(const std::array<T, N * M> &values) noexcept
         :values(values) {
 
 #ifndef m_ROW_MAJOR
 
-        *this = transpose(); // NOTE: Value lists are row major
+        this->values = transpose().values; // NOTE: Value lists are row major
 
 #endif
 
     }
 
-    template <typename ...Q, typename std::enable_if<sizeof...(Q) == N, int>::type = 0>
+    template <typename ...Q, typename std::enable_if<sizeof...(Q) == M, int>::type = 0>
     tmat(Q... args) noexcept {
 
-        std::array<tvec<T, N>, N> rows{static_cast<tvec<T, N>>(args)...};
+        std::array<tvec<T, N>, M> rows{static_cast<tvec<T, N>>(args)...};
 
-        for (size_t i = 0; i < N; i++) {
+        for (size_t i = 0; i < M; i++) {
 
             setRow(i, rows[i]);
         }
     }
 
-    template <typename ...Q, typename std::enable_if<sizeof...(Q) == N * N, int>::type = 0>
+    template <typename ...Q, typename std::enable_if<sizeof...(Q) == N * M, int>::type = 0>
     constexpr tmat(Q... args) noexcept
         :values{static_cast<T>(args)...} {
 
 #ifndef m_ROW_MAJOR
 
-        *this = transpose();
+        this->values = transpose().values;
 
 #endif
 
@@ -83,7 +77,7 @@ public:
 
     constexpr size_t size() const noexcept {
 
-        return N * N;
+        return N * M;
     }
 
     const auto &get(size_t x, size_t y) const {
@@ -111,9 +105,9 @@ public:
 
     auto getColumn(size_t x) const {
 
-        tvec<T, N> result;
+        tvec<T, M> result;
 
-        for (size_t i = 0; i < N; i++) {
+        for (size_t i = 0; i < M; i++) {
             
             result.get(i) = get(x, i);
         }
@@ -129,9 +123,9 @@ public:
         }
     }
 
-    void setColumn(size_t x, const tvec<T, N> &value) {
+    void setColumn(size_t x, const tvec<T, M> &value) {
 
-        for (size_t y = 0; y < N; y++) {
+        for (size_t y = 0; y < M; y++) {
 
             get(x, y) = value.get(y);
         }
@@ -139,9 +133,9 @@ public:
 
     auto rows() const {
 
-        std::array<tvec<T, N>, N> result;
+        std::array<tvec<T, N>, M> result;
 
-        for (size_t y = 0; y < N; y++) {
+        for (size_t y = 0; y < M; y++) {
 
             result[y] = getRow(y);
         }
@@ -151,7 +145,7 @@ public:
 
     auto columns() const {
 
-        std::array<tvec<T, N>, N> result;
+        std::array<tvec<T, M>, N> result;
 
         for (size_t x = 0; x < N; x++) {
 
@@ -161,18 +155,52 @@ public:
         return result;
     }
 
-#ifndef __m_mat_basecaseimpl__
+#if defined(N)
+
+#if defined(M) // tmat<2, 2>
 
     auto minor(size_t x, size_t y) const {
 
         if (x > N - 1) throw std::out_of_range("m::exception: column index out of bounds");
-        if (y > N - 1) throw std::out_of_range("m::exception: row index out of bounds");
+        if (y > M - 1) throw std::out_of_range("m::exception: row index out of bounds");
 
-        tmat<T, N - 1> result;
+        return get((x + 1) % 2, (y + 1) % 2);
+    }
+
+#else // tmat<2, M>
+
+    auto minor(size_t x, size_t y) const {
+
+        if (x > N - 1) throw std::out_of_range("m::exception: column index out of bounds");
+        if (y > M - 1) throw std::out_of_range("m::exception: row index out of bounds");
+
+        return getColumn((x + 1) % 2);
+    }
+
+#endif
+
+#elif defined(M) // tmat<N, 2>
+
+    auto minor(size_t x, size_t y) const {
+
+        if (x > N - 1) throw std::out_of_range("m::exception: column index out of bounds");
+        if (y > M - 1) throw std::out_of_range("m::exception: row index out of bounds");
+
+        return getRow((y + 1) % 2);
+    }
+
+#else // tmat<N, M>
+
+    auto minor(size_t x, size_t y) const {
+
+        if (x > N - 1) throw std::out_of_range("m::exception: column index out of bounds");
+        if (y > M - 1) throw std::out_of_range("m::exception: row index out of bounds");
+
+        tmat<T, N - 1, M - 1> result;
 
         size_t ry = 0;
 
-        for (size_t iy = 0; iy < N; iy++) {
+        for (size_t iy = 0; iy < M; iy++) {
 
             if (iy != y) {
 
@@ -195,19 +223,10 @@ public:
         return result;
     }
 
-#else
-
-    auto minor(size_t x, size_t y) const {
-
-        if (x > 1) throw std::out_of_range("m::exception: column index out of bounds");
-        if (y > 1) throw std::out_of_range("m::exception: row index out of bounds");
-
-        return get((x + 1) % 2, (y + 1) % 2);
-    }
-
 #endif
 
     // TODO: Update tmat_aug to store determinant multipliers so that echelon form can be used for this
+    template <typename std::enable_if<N == M, int>::type = 0>
     auto det() const noexcept {
 
         T result = 0;
@@ -218,7 +237,7 @@ public:
 
             auto c = minor(x, row)
 
-#ifndef __m_mat_basecaseimpl__
+#ifndef N // enable_if means either tmat<2, 2> or tmat<N, N> 
 
             .det()
 
@@ -233,14 +252,16 @@ public:
         return result;
     }
 
+    template <typename std::enable_if<N ==M, int>::type = 0>
     bool singular() const noexcept {
 
         return util::checkZero(det());
     }
 
+    template <typename std::enable_if<N == M, int>::type = 0>
     auto cofactors() const {
 
-        tmat<T, N> result;
+        tmat<T, N, N> result;
         T s = 1;
 
         for (size_t x = 0; x < N; x++) {
@@ -249,7 +270,7 @@ public:
 
                 auto c = minor(x, y)
 
-#ifndef __m_mat_basecaseimpl__
+#ifndef N // enable_if means either tmat<2, 2> or tmat<N, N>
 
                 .det()
 
@@ -269,9 +290,9 @@ public:
 
     auto transpose() const {
 
-        tmat<T, N> result;
+        tmat<T, M, N> result;
 
-        for (size_t x = 0; x < N; x++) {
+        for (size_t x = 0; x < M; x++) {
 
             for (size_t y = 0; y < N; y++) {
 
@@ -282,11 +303,13 @@ public:
         return result;
     }
 
+    template <typename std::enable_if<N == M, int>::type = 0>
     auto adjoint() const {
 
         return cofactors().transpose();
     }
 
+    template <typename std::enable_if<N == M, int>::type = 0>
     auto inverse() const {
 
 #ifdef m_ELIMINATION
@@ -297,15 +320,7 @@ public:
 
         tmat_aug<T, N, tvec<T, N>> augmented(*this, id);
 
-        return tmat<T, N>(augmented.reducedRowEchelon().auxilary())
-
-#ifndef m_ROW_MAJOR
-
-        .transpose()
-
-#endif
-
-        ;
+        return tmat<T, N, N>(augmented.reducedRowEchelon().auxilary());
 
 #else
 
@@ -319,6 +334,7 @@ public:
 
     }
 
+    template <typename std::enable_if<N == M, int>::type = 0>
     auto unit() const {
 
         auto determinant = det();
@@ -328,17 +344,27 @@ public:
         return *this / determinant;
     }
 
+    template <typename std::enable_if<N == M, int>::type = 0>
     static auto identity() {
         
-        return tmat<T, N>(); 
-    }
-
-
-    auto &operator+=(const tmat<T, N> &rhs) {
+        tmat<T, N, N> result;
 
         for (size_t x = 0; x < N; x++) {
 
             for (size_t y = 0; y < N; y++) {
+
+                result.get(x, y) = x == y ? 1 : 0;
+            }
+        }
+
+        return result;
+    }
+
+    auto &operator+=(const tmat<T, N, M> &rhs) {
+
+        for (size_t x = 0; x < N; x++) {
+
+            for (size_t y = 0; y < M; y++) {
 
                 this->get(x, y) += rhs.get(x, y);
             }
@@ -347,11 +373,11 @@ public:
         return *this;
     }
 
-    auto &operator-=(const tmat<T, N> &rhs) {
+    auto &operator-=(const tmat<T, N, M> &rhs) {
 
         for (size_t x = 0; x < N; x++) {
 
-            for (size_t y = 0; y < N; y++) {
+            for (size_t y = 0; y < M; y++) {
 
                 this->get(x, y) -= rhs.get(x, y);
             }
@@ -364,7 +390,7 @@ public:
 
         for (size_t x = 0; x < N; x++) {
 
-            for (size_t y = 0; y < N; y++) {
+            for (size_t y = 0; y < M; y++) {
 
                 this->get(x, y) *= rhs;
             }
@@ -377,7 +403,7 @@ public:
 
         for (size_t x = 0; x < N; x++) {
 
-            for (size_t y = 0; y < N; y++) {
+            for (size_t y = 0; y < M; y++) {
 
                 this->get(x, y) /= rhs;
             }
@@ -386,46 +412,47 @@ public:
         return *this;
     }
 
-    friend auto operator+(const tmat<T, N> &lhs, const tmat<T, N> &rhs) {
+    friend auto operator+(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
 
         auto result = lhs;
 
         return result += rhs;
     }
 
-    friend auto operator-(const tmat<T, N> &lhs, const tmat<T, N> &rhs) {
+    friend auto operator-(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
 
         auto result = lhs;
 
         return result -= rhs;
     }
 
-    friend auto operator*(const T &lhs, const tmat<T, N> &rhs) {
+    friend auto operator*(const T &lhs, const tmat<T, N, M> &rhs) {
 
         auto result = rhs;
 
         return result *= lhs;
     }
 
-    friend auto operator*(const tmat<T, N> &lhs, const T &rhs) {
+    friend auto operator*(const tmat<T, N, M> &lhs, const T &rhs) {
 
         return rhs * lhs;
     }
 
-    friend auto operator/(const tmat<T, N> &lhs, const T &rhs) {
+    friend auto operator/(const tmat<T, N, M> &lhs, const T &rhs) {
 
         auto result = lhs;
 
         return result /= rhs;
     }
 
-    friend auto operator*(const tmat<T, N> &lhs, const tmat<T, N> &rhs) {
+    template <size_t O>
+    friend auto operator*(const tmat<T, N, M> &lhs, const tmat<T, O, N> &rhs) {
 
-        tmat<T, N> result;
+        tmat<T, O, M> result;
 
-        for (size_t x = 0; x < N; x++) {
+        for (size_t x = 0; x < O; x++) {
 
-            for (size_t y = 0; y < N; y++) {
+            for (size_t y = 0; y < M; y++) {
 
                 result.get(x, y) = lhs.getRow(y).dot(rhs.getColumn(x));
             }
@@ -434,18 +461,19 @@ public:
         return result;
     }
 
-    friend auto operator/(const tmat<T, N> &lhs, const tmat<T, N> &rhs) {
+    template <typename std::enable_if<N == M, int>::type = 0>
+    friend auto operator/(const tmat<T, N, N> &lhs, const tmat<T, N, N> &rhs) {
 
         return lhs * rhs.inverse();
     }
 
-    friend auto operator*(const tmat<T, N> &lhs, const tvec<T, N> &rhs) {
+    friend auto operator*(const tmat<T, N, M> &lhs, const tvec<T, N> &rhs) {
 
-        tvec<T, N> result;
+        tvec<T, M> result;
 
         for (size_t x = 0; x < N; x++) {
 
-            for (size_t y = 0; y < N; y++) {
+            for (size_t y = 0; y < M; y++) {
 
                 result.get(y) = vec::dot(lhs.getRow(y), rhs);
             }
@@ -455,11 +483,11 @@ public:
     }
 
     // TODO: Either make this less crappy or remove it
-    friend auto &operator<<(std::ostream &lhs, const tmat<T, N> &rhs) {
+    friend auto &operator<<(std::ostream &lhs, const tmat<T, N, M> &rhs) {
 
         lhs << std::fixed << std::setprecision(m_PRECISION);
 
-        for (size_t y = 0; y < N; y++) {
+        for (size_t y = 0; y < M; y++) {
 
             lhs << "|\t";
 
@@ -470,7 +498,7 @@ public:
 
             lhs << rhs.get(N - 1, y) << "\t|";
 
-            if (y < N - 1) lhs << std::endl;
+            if (y < M - 1) lhs << std::endl;
         }
 
         return lhs;
