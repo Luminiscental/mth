@@ -4,7 +4,7 @@
 m::ComplexSolutions::ComplexSolutions() noexcept
     :inf(false) {}
 
-m::ComplexSolutions::ComplexSolutions(std::unordered_set<std::complex<double>> finiteSet) noexcept
+m::ComplexSolutions::ComplexSolutions(std::unordered_set<m::comp> finiteSet) noexcept
     :solutionSet(finiteSet), inf(false) {}
 
 m::ComplexSolutions m::ComplexSolutions::empty() noexcept {
@@ -12,7 +12,7 @@ m::ComplexSolutions m::ComplexSolutions::empty() noexcept {
     return ComplexSolutions();
 }
 
-m::ComplexSolutions m::ComplexSolutions::finite(std::unordered_set<std::complex<double>> finiteSet) noexcept {
+m::ComplexSolutions m::ComplexSolutions::finite(std::unordered_set<m::comp> finiteSet) noexcept {
 
     return ComplexSolutions(finiteSet);
 }
