@@ -8,7 +8,7 @@
 namespace m {
 
     template <typename T, size_t N>
-    class tvec;
+    class tvec; // NOTE: Forward declaration to avoid circular includes
 
     template <typename T>
     class tcomp;
@@ -153,6 +153,6 @@ namespace std {
     m::tcomp<T> sin(const m::tcomp<T> &z);
 }
 
-#include <m/complex_impl.h>
+#include <m/comp_impl.h>
 
 #endif

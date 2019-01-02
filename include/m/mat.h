@@ -5,17 +5,9 @@
 #include <array>
 #include <type_traits>
 
-#ifndef __m_vec_h__
 #include <m/vec.h>
-#endif
-
-#ifndef __m_quat_h__
 #include <m/quat.h>
-#endif
-
-#ifndef __m_complex_h__
-#include <m/complex.h>
-#endif
+#include <m/comp.h>
 
 #define __m_mat_content_toggle__ // NOTE: Safeguard so mat_content.h doesn't get included anywhere else
 

@@ -3,9 +3,7 @@
 
 #include <ostream>
 
-#ifndef __m_vec_h__
 #include <m/vec.h>
-#endif
 
 namespace m {
 

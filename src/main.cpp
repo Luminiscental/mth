@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include <m/m.h>
+
 #include <m/vec.h>
 #include <m/mat.h>
 #include <m/quat.h>

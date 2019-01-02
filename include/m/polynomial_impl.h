@@ -10,6 +10,31 @@ size_t std::hash<m::comp>::operator()(const m::comp &z) const {
     return hash<decltype(r)>()(r) ^ hash<decltype(i)>()(i);
 }
 
+inline m::ComplexSolutions::ComplexSolutions() noexcept
+    :inf(false) {}
+
+inline m::ComplexSolutions::ComplexSolutions(std::unordered_set<m::comp> finiteSet) noexcept
+    :solutionSet(finiteSet), inf(false) {}
+
+inline m::ComplexSolutions m::ComplexSolutions::empty() noexcept {
+
+    return ComplexSolutions();
+}
+
+inline m::ComplexSolutions m::ComplexSolutions::finite(std::unordered_set<m::comp> finiteSet) noexcept {
+
+    return ComplexSolutions(finiteSet);
+}
+
+inline m::ComplexSolutions m::ComplexSolutions::infinite() noexcept {
+
+    ComplexSolutions result;
+
+    result.inf = true;
+
+    return result;
+}
+
 template <typename ...Q>
 m::ComplexSolutions m::ComplexSolutions::finite(std::unordered_set<m::comp> finiteSet) noexcept {
 

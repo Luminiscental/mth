@@ -6,9 +6,7 @@
 #include <array>
 #include <type_traits>
 
-#ifndef __m_complex_h__
-#include <m/complex.h>
-#endif
+#include <m/comp.h>
 
 namespace m {
 

@@ -7,11 +7,9 @@
 #include <iostream>
 #include <iomanip>
 
-#ifndef __m_complex_h__
-#include <m/complex.h>
-#endif
+#include <m/comp.h>
 
-// TODO: Move to complex and add for other classes
+// TODO: Move to comp and add for other classes
 namespace std {
 
     template<>
