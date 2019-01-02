@@ -8,12 +8,6 @@ m::tvec<T, N>::tvec(const std::array<T, N> &values) noexcept
     :values(values) {}
 
 template <typename T, size_t N>
-m::tvec<T, N>::operator std::array<T, N>() noexcept {
-
-    return values;
-}
-
-template <typename T, size_t N>
 auto m::tvec<T, N>::begin() {
 
     return values.begin();
@@ -99,34 +93,40 @@ const T &m::tvec<T, N>::get(size_t index) const {
 
 #undef BINDING
 
-template <typename T, size_t N>
+template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 1), int>::type>
 m::tvec<T, 2> m::tvec<T, N>::xy() const {
 
     return tvec<T, 2>(x(), y());
 }
 
-template <typename T, size_t N>
+template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 1), int>::type>
 m::tvec<T, 2> m::tvec<T, N>::yz() const {
 
     return tvec<T, 2>(y(), z());
 }
 
-template <typename T, size_t N>
+template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 1), int>::type>
 m::tvec<T, 2>  m::tvec<T, N>::zw() const {
 
     return tvec<T, 2>(z(), w());
 }
 
-template <typename T, size_t N>
+template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 2), int>::type>
 m::tvec<T, 3>  m::tvec<T, N>::xyz() const {
 
     return tvec<T, 3>(x(), y(), z());
 }
 
-template <typename T, size_t N>
+template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 2), int>::type>
 m::tvec<T, 3>  m::tvec<T, N>::yzw() const {
 
     return tvec<T, 3>(y(), z(), w());
+}
+
+template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 3), int>::type>
+m::tvec<T, 4> m::tvec<T, N>::xyzw() const {
+
+    return tvec<T, 4>(x(), y(), z(), w());
 }
 
 template <typename T, size_t N>

@@ -281,25 +281,25 @@ auto &m::operator<<(std::ostream &lhs, const m::tmat_aug<T, N, A> &rhs) {
 #if defined(N) && defined(M)
 
 #define TEMPLATE_NM template <typename T>
-#define TEMPLATE_NN template <typename T> template <typename std::enable_if<N == M, int>::type>
+#define TEMPLATE_NN template <typename T> template <size_t n, size_t m, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type>
 #define TEMPLATE_NMO template <typename T, size_t O>
 
 #elif defined(N)
 
 #define TEMPLATE_NM template <typename T, size_t M>
-#define TEMPLATE_NN template <typename T, size_t M> template <typename std::enable_if<N == M, int>::type>
+#define TEMPLATE_NN template <typename T, size_t M> template <size_t n, size_t m, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type>
 #define TEMPLATE_NMO template <typename T, size_t M, size_t O>
 
 #elif defined(M)
 
 #define TEMPLATE_NM template <typename T, size_t N>
-#define TEMPLATE_NN template <typename T, size_t N> template <typename std::enable_if<N == M, int>::type>
+#define TEMPLATE_NN template <typename T, size_t N> template <size_t n, size_t m, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type>
 #define TEMPLATE_NMO template <typename T, size_t N, size_t O>
 
 #else
 
 #define TEMPLATE_NM template <typename T, size_t N, size_t M>
-#define TEMPLATE_NN template <typename T, size_t N, size_t M> template <typename std::enable_if<N == M, int>::type>
+#define TEMPLATE_NN template <typename T, size_t N, size_t M> template <size_t n, size_t m, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type>
 #define TEMPLATE_NMO template <typename T, size_t N, size_t M, size_t O>
 
 #endif
@@ -337,7 +337,8 @@ m::tmat<T, N, M>::tmat(const std::array<T, N * M> &values) noexcept
 
 #ifndef m_ROW_MAJOR
 
-    this->values = transpose().values; // NOTE: Value lists are row major
+    // NOTE: Value lists are row major
+    this->values = transpose().values;
 
 #endif
 
@@ -512,7 +513,9 @@ auto m::tmat<T, N, M>::det() const noexcept {
 
     T result = 0;
     T s = 1;
-    size_t row = 0; // NOTE: can be any row
+
+    // NOTE: can be any row
+    size_t row = 0;
 
     for (size_t x = 0; x < N; x++) {
 

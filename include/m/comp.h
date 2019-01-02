@@ -7,8 +7,9 @@
 
 namespace m {
 
+    // NOTE: Forward declaration to avoid circular includes
     template <typename T, size_t N>
-    class tvec; // NOTE: Forward declaration to avoid circular includes
+    class tvec; 
 
     template <typename T>
     class tcomp;
@@ -124,8 +125,6 @@ namespace m {
         auto &operator/=(const T &rhs);
     };
 
-    // TODO: Math function overloads
-    
     using icomp = tcomp<int>;
     using lcomp = tcomp<long>;
     using  comp = tcomp<float>;

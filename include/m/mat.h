@@ -9,7 +9,8 @@
 #include <m/quat.h>
 #include <m/comp.h>
 
-#define __m_mat_content_toggle__ // NOTE: Safeguard so mat_content.h doesn't get included anywhere else
+// NOTE: Safeguard so mat_content.h doesn't get included anywhere else
+#define __m_mat_content_toggle__ 
 
 namespace m {
 
@@ -93,13 +94,16 @@ namespace m {
         auto ordered() const;
         auto rowEchelon() const; 
         auto reducedRowEchelon() const; 
+
+        // TODO: Arithmetic on augmented matrices?
     };   
 
-    // NOTE: 2,2
-
+    // TODO: Make 1 the base case instead of 2
+    
 #define M 2
 #define N 2
 
+    // NOTE: 2,2
     template <typename T>
     class tmat<T, N, M> {
 
@@ -110,10 +114,9 @@ namespace m {
 #undef N
 #undef M
 
-    // NOTE: 2,M
-
 #define N 2
 
+    // NOTE: 2,M
     template <typename T, size_t M>
     class tmat<T, N, M> {
 
@@ -123,10 +126,9 @@ namespace m {
 
 #undef N
 
-    // NOTE: N,2
-
 #define M 2
 
+    // NOTE: N,2
     template <typename T, size_t N>
     class tmat<T, N, M> {
 
@@ -137,7 +139,6 @@ namespace m {
 #undef M
 
     // NOTE: N,M
-
     template <typename T, size_t N, size_t M>
     class tmat {
 
@@ -146,7 +147,6 @@ namespace m {
     };
 
     // NOTE: Specialized static functions 
-    
     namespace mat {
 
         template <typename T>

@@ -56,7 +56,10 @@ namespace m {
         constexpr tvec(Q... args) noexcept
             :values{static_cast<T>(args)...} {}
 
-        operator std::array<T, N>() noexcept;
+        constexpr operator std::array<T, N>() noexcept {
+
+            return values;
+        }
 
         auto begin();
 
@@ -97,17 +100,25 @@ namespace m {
 
 #undef BINDING
 
-        // TODO: There should be a better way of doing this
+        // TODO: Re-ordered swizzling (maybe find a better way to do this)
 
+        template <size_t n = N, typename std::enable_if<(n == N) && (n > 1), int>::type = 0>
         tvec<T, 2> xy() const;
 
+        template <size_t n = N, typename std::enable_if<(n == N) && (n > 1), int>::type = 0>
         tvec<T, 2> yz() const;
 
+        template <size_t n = N, typename std::enable_if<(n == N) && (n > 1), int>::type = 0>
         tvec<T, 2> zw() const;
         
+        template <size_t n = N, typename std::enable_if<(n == N) && (n > 2), int>::type = 0>
         tvec<T, 3> xyz() const;
 
+        template <size_t n = N, typename std::enable_if<(n == N) && (n > 2), int>::type = 0>
         tvec<T, 3> yzw() const;
+
+        template <size_t n = N, typename std::enable_if<(n == N) && (n > 3), int>::type = 0>
+        tvec<T, 4> xyzw() const;
 
         auto magnSqr() const noexcept;
 
@@ -129,7 +140,6 @@ namespace m {
     };
 
     // NOTE: Specialized static functions 
-
     namespace vec {
 
         template <typename T>
@@ -137,7 +147,6 @@ namespace m {
     }
 
     // TODO: Maybe move to double as default
-    
 #define CREATE_ALIASES(n) using ivec ## n = tvec<int, n>; \
                           using lvec ## n = tvec<long, n>; \
                           using  vec ## n = tvec<float, n>; \

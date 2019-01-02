@@ -31,8 +31,6 @@ namespace m {
     template <size_t N>
     auto &operator<<(std::ostream &lhs, const Polynomial<N> &rhs);
 
-    // NOTE: Nth degree polynomial
-    
     class ComplexSolutions {
 
     private:
@@ -54,8 +52,6 @@ namespace m {
 
         static ComplexSolutions infinite() noexcept;
     };
-
-    // TODO: Polynomial arithmetic
 
     template <size_t N>
     class Polynomial;
@@ -101,6 +97,8 @@ namespace m {
         auto value(m::comp x);
 
         auto solve();
+
+        // TODO: Polynomial arithmetic
     };
 }
 

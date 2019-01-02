@@ -38,11 +38,24 @@ int main() {
                                     0.0, 2.0, 0.0, 1.5, 2.5, -3.0, 5.0, 4.0,
                                     2.0, 4.0, 8.0, 12.0, -11.0, 2.0, 5.0, -6.0);
 
+
     std::cout << std::endl << "A : " << std::endl;
     std::cout << std::endl << bigMatrix << std::endl;
 
     std::cout << std::endl << "A^{-1} : " << std::endl;
     std::cout << std::endl << bigMatrix.inverse() << std::endl;
+
+    m::tmat<float, 2, 3> rectMat(1, 2,
+                                 3, 4,
+                                 5, 6);
+
+    auto rectProd = rectMat * m::vec2(-1, -2);
+
+    std::cout << std::endl << "B : " << std::endl;
+    std::cout << std::endl << rectMat << std::endl;
+
+    std::cout << std::endl << "B * (-1, -2) : " << std::endl;
+    std::cout << std::endl << rectProd << std::endl;
 
     std::cout << std::endl;
 
