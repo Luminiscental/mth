@@ -153,6 +153,7 @@ namespace m {
                           using dvec ## n = tvec<double, n>; \
                           using cvec ## n = tvec<m::comp, n>;
 
+    CREATE_ALIASES(1)
     CREATE_ALIASES(2)
     CREATE_ALIASES(3)
     CREATE_ALIASES(4)

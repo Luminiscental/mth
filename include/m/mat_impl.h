@@ -322,6 +322,8 @@ auto m::tmat<T, N, M>::getIndex(size_t x, size_t y) {
 
 }
 
+#if !defined(N) || !defined(M)
+
 TEMPLATE_NM
 m::tmat<T, N, M>::tmat(const std::array<m::tvec<T, N>, M> &rows) noexcept {
 
@@ -343,6 +345,24 @@ m::tmat<T, N, M>::tmat(const std::array<T, N * M> &values) noexcept {
         }
     }
 }
+
+#endif
+
+#if defined(N) && defined(M)
+
+TEMPLATE_NM
+const T &m::tmat<T, N, M>::get() const {
+
+    return get(0, 0);
+}
+
+TEMPLATE_NM
+T &m::tmat<T, N, M>::get() {
+
+    return get(0, 0);
+}
+
+#endif
 
 TEMPLATE_NM
 const T &m::tmat<T, N, M>::get(size_t x, size_t y) const {
@@ -427,40 +447,7 @@ auto m::tmat<T, N, M>::columns() const {
     return result;
 }
 
-#if defined(N) && defined(M)
-
-TEMPLATE_NM
-T m::tmat<T, 2, 2>::minor(size_t x, size_t y) const {
-
-    if (x > 1) throw std::out_of_range("m::exception: column index out of bounds");
-    if (y > 1) throw std::out_of_range("m::exception: row index out of bounds");
-
-    return get((x + 1) % 2, (y + 1) % 2);
-}
-
-#elif defined(N)
-
-TEMPLATE_NM
-m::tvec<T, M - 1> m::tmat<T, 2, M>::minor(size_t x, size_t y) const {
-
-    if (x > 1) throw std::out_of_range("m::exception: column index out of bounds");
-    if (y > M - 1) throw std::out_of_range("m::exception: row index out of bounds");
-
-    return getColumn((x + 1) % 2);
-}
-
-#elif defined(M)
-
-TEMPLATE_NM
-m::tvec<T, N - 1> m::tmat<T, N, 2>::minor(size_t x, size_t y) const {
-
-    if (x > N - 1) throw std::out_of_range("m::exception: column index out of bounds");
-    if (y > 1) throw std::out_of_range("m::exception: row index out of bounds");
-
-    return getRow((y + 1) % 2);
-}
-
-#else
+#if !defined(N) && !defined(M)
 
 TEMPLATE_NM
 m::tmat<T, N - 1, M - 1> m::tmat<T, N, M>::minor(size_t x, size_t y) const {
@@ -502,7 +489,7 @@ m::tmat<T, N - 1, M - 1> m::tmat<T, N, M>::minor(size_t x, size_t y) const {
 TEMPLATE_NN
 auto m::tmat<T, N, M>::det() const noexcept {
 
-    return get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0);
+    return get(0, 0);
 }
 
 #else
@@ -540,8 +527,7 @@ bool m::tmat<T, N, M>::singular() const noexcept {
 TEMPLATE_NN
 auto m::tmat<T, N, M>::cofactors() const {
 
-    return tmat<T, 2, 2>( get(1, 1), -get(1, 0),
-                         -get(0, 1),  get(0, 0));
+    return m::tmat<T, 1, 1>::identity();
 }
 
 #else

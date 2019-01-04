@@ -14,6 +14,8 @@ namespace m {
     template <typename T>
     class tcomp;
 
+    // TODO: Template for arbitrary scalars since implicit type conversion can't happen
+
     template <typename T>
     auto operator+(const tcomp<T> &lhs, const tcomp<T> &rhs);
 
@@ -132,8 +134,6 @@ namespace m {
 
     // TODO: Should this be a template?
     constexpr tcomp<float> i(0, 1);
-
-    auto operator "" _i(long double im);
 }
 
 namespace std {

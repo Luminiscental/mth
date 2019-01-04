@@ -269,19 +269,22 @@ auto m::operator/(const T &lhs, const m::tcomp<T> &rhs) {
 template <typename T>
 auto &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
 
-    bool nonZero = false;
+    bool realZero = util::checkZero(rhs.real());
+    bool imagZero = util::checkZero(rhs.imag());
+    bool zero = realZero && imagZero;
+    bool noneZero = !realZero && !imagZero;
 
-    lhs << std::fixed << std::setprecision(m_PRECISION) << "(";
+    if (zero) return lhs << "0";
 
-    if (!util::checkZero(rhs.real())) {
+    lhs << std::fixed << std::setprecision(m_PRECISION);
 
-        lhs << rhs.real();
-        nonZero = true;
-    }
+    if (noneZero) lhs << "(";
 
-    if (!util::checkZero(rhs.imag())) {
+    if (!realZero) lhs << rhs.real();
 
-        if (nonZero) {
+    if (!imagZero) {
+
+        if (!realZero) {
 
             lhs << (rhs.imag() > 0 ? " + " : " - ");
             lhs << std::abs(rhs.imag());
@@ -289,20 +292,14 @@ auto &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
         } else {
 
             lhs << rhs.imag();
-            nonZero = true;
         }
 
         lhs << "i";
     }
 
-    if (!nonZero) lhs << "0";
+    if (noneZero) lhs << ")";
 
-    return lhs << ")";
-}
-
-auto m::operator "" _i(long double im) {
-
-    return m::tcomp<float>(static_cast<float>(im));
+    return lhs;
 }
 
 template <typename T>

@@ -98,12 +98,10 @@ namespace m {
         // TODO: Arithmetic on augmented matrices?
     };   
 
-    // TODO: Make 1 the base case instead of 2
-    
-#define M 2
-#define N 2
+#define M 1
+#define N 1
 
-    // NOTE: 2,2
+    // NOTE: 1,1
     template <typename T>
     class tmat<T, N, M> {
 
@@ -114,9 +112,9 @@ namespace m {
 #undef N
 #undef M
 
-#define N 2
+#define N 1
 
-    // NOTE: 2,M
+    // NOTE: 1,M
     template <typename T, size_t M>
     class tmat<T, N, M> {
 
@@ -126,9 +124,9 @@ namespace m {
 
 #undef N
 
-#define M 2
+#define M 1
 
-    // NOTE: N,2
+    // NOTE: N,1
     template <typename T, size_t N>
     class tmat<T, N, M> {
 
@@ -167,12 +165,30 @@ namespace m {
         // TODO: Ortho and perspective projections
     }
 
-#define CREATE_ALIASES(n) using imat ## n = tmat<int, n, n>; \
-                          using lmat ## n = tmat<long, n, n>; \
-                          using  mat ## n = tmat<float, n, n>; \
-                          using dmat ## n = tmat<double, n, n>; \
-                          using cmat ## n = tmat<m::comp, n, n>;
+#define CREATE_SQR_ALIASES(n)       using imat ## n = tmat<int, n, n>; \
+                                    using lmat ## n = tmat<long, n, n>; \
+                                    using  mat ## n = tmat<float, n, n>; \
+                                    using dmat ## n = tmat<double, n, n>; \
+                                    using cmat ## n = tmat<comp, n, n>;
 
+#define CREATE_RECT_ALIASES(n, m)   using imat ## n ## x ## m = tmat<int, n, m>; \
+                                    using lmat ## n ## x ## m = tmat<long, n, m>; \
+                                    using  mat ## n ## x ## m = tmat<float, n, m>; \
+                                    using dmat ## n ## x ## m = tmat<double, n, m>; \
+                                    using cmat ## n ## x ## m = tmat<comp, n, m>;
+
+#define CREATE_ALIASES(n)   CREATE_SQR_ALIASES(n) \
+                            CREATE_RECT_ALIASES(n, 1) \
+                            CREATE_RECT_ALIASES(n, 2) \
+                            CREATE_RECT_ALIASES(n, 3) \
+                            CREATE_RECT_ALIASES(n, 4) \
+                            CREATE_RECT_ALIASES(n, 5) \
+                            CREATE_RECT_ALIASES(n, 6) \
+                            CREATE_RECT_ALIASES(n, 7) \
+                            CREATE_RECT_ALIASES(n, 8) \
+                            CREATE_RECT_ALIASES(n, 9)
+
+    CREATE_ALIASES(1)
     CREATE_ALIASES(2)
     CREATE_ALIASES(3)
     CREATE_ALIASES(4)
@@ -183,28 +199,29 @@ namespace m {
     CREATE_ALIASES(9)
 
 #undef CREATE_ALIASES
+#undef CREATE_SQR_ALIASES
 
 }
 
-#define N 2
-#define M 2
+#define N 1
+#define M 1
 
-// NOTE: 2,2
+// NOTE: 1,1
 #include <m/mat_impl.h>
 
 #undef M
 #undef N
 
-#define N 2
+#define N 1
 
-// NOTE: 2,M
+// NOTE: 1,M
 #include <m/mat_impl.h>
 
 #undef N
 
-#define M 2
+#define M 1
 
-// NOTE: N,2
+// NOTE: N,1
 #include <m/mat_impl.h>
 
 #undef M

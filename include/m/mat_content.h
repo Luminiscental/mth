@@ -18,6 +18,8 @@ public:
         values.fill(0);
     }
 
+#if !defined(N) || !defined(M)
+
     // NOTE: Constructors take a list of rows, never a list of columns for consistency with value lists
     tmat(const std::array<tvec<T, N>, M> &rows) noexcept;
 
@@ -26,6 +28,8 @@ public:
     template <typename ...Q, typename std::enable_if<sizeof...(Q) == M, int>::type = 0>
     tmat(Q... args) noexcept 
         :tmat(std::array<tvec<T, N>, M>{static_cast<tvec<T, N>>(args)...}) {}
+
+#endif
 
     template <typename ...Q, typename std::enable_if<sizeof...(Q) == N * M, int>::type = 0>
     constexpr tmat(Q... args) noexcept
@@ -49,6 +53,13 @@ public:
         return N * M;
     }
 
+#if defined(N) && defined(M)
+
+    const T &get() const;
+    T &get();
+
+#endif
+
     const T &get(size_t x, size_t y) const;
 
     T &get(size_t x, size_t y);
@@ -66,29 +77,9 @@ public:
 
     auto columns() const;
 
-#if defined(N)
-
-#if defined(M) // 2,2
-
-    T minor(size_t x, size_t y) const;
-
-#else // 2,M
-
-    tvec<T, M - 1> minor(size_t x, size_t y) const;
-
-#endif
-
-#else
-
-#if defined(M) // N,2
-
-    tvec<T, N - 1> minor(size_t x, size_t y) const;
-
-#else // N,M
+#if !defined(N) && !defined(M)
 
     tmat<T, N - 1, M - 1> minor(size_t x, size_t y) const;
-
-#endif
 
 #endif
 

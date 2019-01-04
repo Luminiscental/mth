@@ -8,7 +8,26 @@
 #include <m/quat.h>
 #include <m/polynomial.h>
 
+auto innerProd3(m::vec3 a, m::vec3 b) {
+
+    m::mat3x1 aMatT(a);
+    m::mat1x3 bMat(b);
+
+    m::mat1 result = aMatT * bMat;
+
+    return result.get();
+}
+
 int main() {
+
+    m::vec3 someVector(1, 3, 5);
+    m::vec3 anotherVector = 7.0f * someVector.unit();
+    auto scalarProd = innerProd3(someVector, anotherVector);
+
+    auto length = someVector.magn();
+
+    std::cout << std::endl << someVector << " . " << anotherVector << " = " << scalarProd << std::endl
+                           << "length = " << length << ", 7 * length = " << 7 * length << std::endl;
 
     m::mat4 transformation = m::mat::rotation(m::PI<float> / 3, m::X_AXIS<float>)
                            * m::mat::translate(m::vec3(1.0f, 13.0f, -2.0f));
@@ -55,8 +74,28 @@ int main() {
     std::cout << std::endl << "B : " << std::endl;
     std::cout << std::endl << rectMat << std::endl;
 
-    std::cout << std::endl << "B * (-1, -2) : " << std::endl;
-    std::cout << std::endl << rectProd << std::endl;
+    std::cout << std::endl << "B . (-1, -2) = " << rectProd << std::endl;
+
+    auto tinyMatrix = m::mat1(3);
+    auto tinyInverse = tinyMatrix.inverse();
+
+    std::cout << std::endl << "C : " << std::endl;
+    std::cout << std::endl << tinyMatrix << std::endl;
+
+    std::cout << std::endl << "C^{-1} : " << std::endl;
+    std::cout << std::endl << tinyInverse << std::endl;
+
+    auto complicatedMatrix = m::cmat4x2(1, 3.0f * m::i, -m::i, 2.0f * m::i,
+                                        -2.0f * m::i, 3, 2, 1);
+
+    auto complexVector = m::cvec4(1, m::i, -1, -m::i);
+
+    auto complicatedProd = complicatedMatrix * complexVector;
+
+    std::cout << std::endl << "D : " << std::endl;
+    std::cout << std::endl << complicatedMatrix << std::endl;
+
+    std::cout << std::endl << "D . " << complexVector << " = " << complicatedProd << std::endl;
 
     std::cout << std::endl;
 
