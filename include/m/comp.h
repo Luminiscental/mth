@@ -132,6 +132,8 @@ namespace m {
 
     // TODO: Should this be a template?
     constexpr tcomp<float> i(0, 1);
+
+    auto operator "" _i(long double im);
 }
 
 namespace std {

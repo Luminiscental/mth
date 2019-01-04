@@ -300,6 +300,11 @@ auto &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
     return lhs << ")";
 }
 
+auto m::operator "" _i(long double im) {
+
+    return m::tcomp<float>(static_cast<float>(im));
+}
+
 template <typename T>
 double std::abs(const m::tcomp<T> &z) {
 

@@ -332,16 +332,16 @@ m::tmat<T, N, M>::tmat(const std::array<m::tvec<T, N>, M> &rows) noexcept {
 }
 
 TEMPLATE_NM
-m::tmat<T, N, M>::tmat(const std::array<T, N * M> &values) noexcept
-    :values(values) {
+m::tmat<T, N, M>::tmat(const std::array<T, N * M> &values) noexcept {
 
-#ifndef m_ROW_MAJOR
+    for (size_t x = 0; x < N; x++) {
 
-    // NOTE: Value lists are row major
-    this->values = transpose().values;
+        for (size_t y = 0; y < M; y++) {
 
-#endif
-
+            // NOTE: Always interpret row-major
+            get(x, y) = values[x + y * N];
+        }
+    }
 }
 
 TEMPLATE_NM

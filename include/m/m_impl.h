@@ -13,10 +13,25 @@ constexpr T m::PI = static_cast<T>(3.1415926535897932384626433832795028841971693
 template <typename T>
 constexpr T m::TAU = static_cast<T>(6.28318530717958647692528676655900576839433879875021164194988918461563281257);
 
+// NOTE: Forward def for use of std::abs
+
+namespace m {
+
+    template <typename T>
+    class tcomp;
+}
+
+namespace std {
+
+    template <typename T>
+    double abs(const m::tcomp<T> &z);
+}
+
 template <typename T>
 auto m::util::checkZero(const T &x) {
 
     using std::abs;
+
     auto magnitude = abs(x);
     return magnitude <= m::EPSILON<decltype(magnitude)>;
 }

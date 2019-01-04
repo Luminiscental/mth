@@ -29,28 +29,60 @@ namespace m {
     auto &operator<<(std::ostream &lhs, const ComplexSolutions &rhs);
 
     template <size_t N>
+    auto operator+(const Polynomial<N> &lhs, const comp &rhs);
+
+    template <size_t N>
+    auto operator+(const comp &lhs, const Polynomial<N> &rhs);
+
+    template <size_t N, size_t M>
+    auto operator+(const Polynomial<N> &lhs, const Polynomial<M> &rhs);
+
+    template <size_t N>
+    auto operator-(const Polynomial<N> &rhs);
+
+    template <size_t N>
+    auto operator-(const Polynomial<N> &lhs, const comp &rhs);
+
+    template <size_t N>
+    auto operator-(const comp &lhs, const Polynomial<N> &rhs);
+
+    template <size_t N, size_t M>
+    auto operator-(const Polynomial<N> &lhs, const Polynomial<M> &rhs);
+
+    template <size_t N>
+    auto operator*(const Polynomial<N> &lhs, const comp &rhs);
+
+    template <size_t N>
+    auto operator*(const comp &lhs, const Polynomial<N> &rhs);
+
+    template <size_t N, size_t M>
+    auto operator*(const Polynomial<N> &lhs, const Polynomial<M> &rhs);
+
+    template <size_t N>
     auto &operator<<(std::ostream &lhs, const Polynomial<N> &rhs);
 
     class ComplexSolutions {
 
     private:
 
-        std::unordered_set<m::comp> solutionSet;
+        std::unordered_set<comp> solutionSet;
         bool inf;
 
-        ComplexSolutions() noexcept;
-        ComplexSolutions(std::unordered_set<m::comp> finiteSet) noexcept;
+        inline ComplexSolutions() noexcept;
+        inline ComplexSolutions(std::unordered_set<comp> finiteSet) noexcept;
 
     public:
 
-        static ComplexSolutions empty() noexcept;
+        friend auto &operator<<(std::ostream &lhs, const ComplexSolutions &rhs);
 
-        static ComplexSolutions finite(std::unordered_set<m::comp> finiteSet) noexcept;
+        inline static ComplexSolutions empty() noexcept;
+
+        inline static ComplexSolutions finite(std::unordered_set<comp> finiteSet) noexcept;
         
         template <typename ...Q>
         static ComplexSolutions finite(Q... args) noexcept;
 
-        static ComplexSolutions infinite() noexcept;
+        inline static ComplexSolutions infinite() noexcept;
     };
 
     template <size_t N>
@@ -61,18 +93,18 @@ namespace m {
 
     private:
 
-        m::comp coeff;
+        comp coeff;
         ComplexSolutions roots;
         bool rootsValid;
 
     public:
 
         template <size_t M, typename std::enable_if<(M > 0), int>::type = 0>
-        Polynomial(std::array<m::comp, M> coeffs) noexcept;
+        Polynomial(std::array<comp, M> coeffs) noexcept;
 
-        Polynomial(m::comp value) noexcept;
+        Polynomial(comp value) noexcept;
 
-        auto value(m::comp x);
+        auto value(comp x);
 
         auto solve();
     };
@@ -82,19 +114,19 @@ namespace m {
 
     private:
 
-        std::array<m::comp, N + 1> coeffs;
+        std::array<comp, N + 1> coeffs;
         ComplexSolutions roots;
         bool rootsValid;
 
     public:
 
         template <size_t M, typename std::enable_if<(M > N), int>::type = 0>
-        Polynomial(std::array<m::comp, M> coeffs);
+        Polynomial(std::array<comp, M> coeffs) noexcept;
 
         template <typename ...Q, typename std::enable_if<sizeof...(Q) == N + 1, int>::type = 0>
-        Polynomial(Q... args);
+        Polynomial(Q... args) noexcept;
 
-        auto value(m::comp x);
+        auto value(comp x);
 
         auto solve();
 

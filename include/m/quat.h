@@ -124,34 +124,6 @@ namespace m {
         auto &operator/=(const tquat<T> &rhs);
 
         auto &operator/=(T rhs);
-
-        friend auto operator+ <T> (const tquat<T> &lhs, const tquat<T> &rhs);
-
-        friend auto operator+ <T> (const tquat<T> &lhs, T rhs);
-
-        friend auto operator+ <T> (T lhs, const tquat<T> &rhs);
-
-        friend auto operator- <T> (const tquat<T> &rhs);
-
-        friend auto operator- <T> (const tquat<T> &lhs, const tquat<T> &rhs);
-
-        friend auto operator- <T> (const tquat<T> &lhs, T rhs);
-
-        friend auto operator- <T> (T lhs, const tquat<T> &rhs);
-
-        friend auto operator* <T> (const tquat<T> &lhs, const tquat<T> &rhs);
-
-        friend auto operator* <T> (T lhs, const tquat<T> &rhs);
-
-        friend auto operator* <T> (const tquat<T> &lhs, T rhs);
-
-        friend auto operator/ <T> (const tquat<T> &lhs, const tquat<T> &rhs);
-
-        friend auto operator/ <T> (T lhs, const tquat<T> &rhs);
-
-        friend auto operator/ <T> (const tquat<T> &lhs, T rhs);
-
-        friend auto &operator<< <T> (std::ostream &lhs, const tquat<T> &rhs);
     };
 
     using iquat = tquat<int>;

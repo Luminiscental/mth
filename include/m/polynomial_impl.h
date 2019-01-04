@@ -1,7 +1,6 @@
 #ifdef __m_impl__
 #undef __m_impl__
 
-template<>
 size_t std::hash<m::comp>::operator()(const m::comp &z) const {
 
     auto r = z.real();
@@ -26,6 +25,12 @@ inline m::ComplexSolutions m::ComplexSolutions::finite(std::unordered_set<m::com
     return ComplexSolutions(finiteSet);
 }
 
+template <typename ...Q>
+m::ComplexSolutions m::ComplexSolutions::finite(Q... args) noexcept {
+
+    return ComplexSolutions(std::unordered_set<m::comp>({args...}));
+}
+
 inline m::ComplexSolutions m::ComplexSolutions::infinite() noexcept {
 
     ComplexSolutions result;
@@ -33,12 +38,6 @@ inline m::ComplexSolutions m::ComplexSolutions::infinite() noexcept {
     result.inf = true;
 
     return result;
-}
-
-template <typename ...Q>
-m::ComplexSolutions m::ComplexSolutions::finite(std::unordered_set<m::comp> finiteSet) noexcept {
-
-    return ComplexSolutions(std::unordered_set<m::comp>({args...}));
 }
 
 auto &m::operator<<(std::ostream &stream, const m::ComplexSolutions &solutions) {
@@ -74,17 +73,10 @@ auto &m::operator<<(std::ostream &stream, const m::ComplexSolutions &solutions) 
     return stream;
 }
 
-template <size_t M, typename std::enable_if<(M > 0), int>:type>
+template <size_t M, typename std::enable_if<(M > 0), int>::type>
 m::Polynomial<0>::Polynomial(std::array<m::comp, M> coeffs) noexcept
     :rootsValid(false), roots(ComplexSolutions::empty()) {
 
-    coeff = coeffs[0];
-}
-
-template <size_t M, typename std::enable_if<(M > 0), int>::type = 0>
-m::Polynomial<0>::Polynomial(std::array<m::comp, M> coeffs) noexcept
-    :rootsValid(false), roots(ComplexSolutions::empty()) {
-    
     coeff = coeffs[0];
 }
 
@@ -107,15 +99,15 @@ auto m::Polynomial<0>::solve() {
     return roots = ComplexSolutions::empty();
 }
 
-template <size_t N, size_t M, typename std::enable_if<(M > N), int>::type = 0>
-m::Polynomial<N>::Polynomial(std::array<m::comp, M> coeffs)
+template <size_t N> template <size_t M, typename std::enable_if<(M > N), int>::type>
+m::Polynomial<N>::Polynomial(std::array<m::comp, M> coeffs) noexcept
     :rootsValid(false), roots(ComplexSolutions::empty()) {
 
     for (size_t i = 0; i < N + 1; i++) this->coeffs[i] = coeffs[i];
 }
 
-template <size_t N, typename ...Q, typename std::enable_if<sizeof...(Q) == N + 1, int>::type = 0>
-m::Polynomial<N>::Polynomial(Q... args)
+template <size_t N> template <typename ...Q, typename std::enable_if<sizeof...(Q) == N + 1, int>::type>
+m::Polynomial<N>::Polynomial(Q... args) noexcept
     :Polynomial(std::array<m::comp, N + 1> {args...}) {}
 
 template <size_t N>
@@ -178,6 +170,124 @@ auto m::Polynomial<N>::solve() {
 }
 
 template <size_t N>
+auto m::operator+(const m::Polynomial<N> &lhs, const m::comp &rhs) {
+
+    auto result = lhs;
+
+    result.coeffs[0] += rhs;
+
+    return result;
+}
+
+template <size_t N>
+auto m::operator+(const m::comp &lhs, const m::Polynomial<N> &rhs) {
+
+    return rhs + lhs;
+}
+
+template <size_t N, size_t M>
+auto m::operator+(const m::Polynomial<N> &lhs, const m::Polynomial<M> &rhs) {
+
+    if (N > M) {
+
+        auto result = lhs;
+
+        for (size_t i = 0; i < M; i++) {
+
+            result.coeffs[i] += rhs.coeffs[i];
+        }
+
+        return result;
+
+    } else {
+
+        auto result = rhs;
+
+        for (size_t i = 0; i < N; i++) {
+
+            result.coeffs[i] += lhs.coeffs[i];
+        }
+
+        return result;
+    }
+}
+
+template <size_t N>
+auto m::operator-(const m::Polynomial<N> &rhs) {
+
+    auto result = rhs;
+
+    for (size_t i = 0; i < N; i++) {
+
+        result.coeffs[i] = -result.coeffs[i];
+    }
+
+    return result;
+}
+
+template <size_t N>
+auto m::operator-(const m::Polynomial<N> &lhs, const m::comp &rhs) {
+
+    return lhs + (-rhs);
+}
+
+template <size_t N>
+auto m::operator-(const m::comp &lhs, const m::Polynomial<N> &rhs) {
+
+    return lhs + (-rhs);
+}
+
+template <size_t N, size_t M>
+auto m::operator-(const m::Polynomial<N> &lhs, const m::Polynomial<M> &rhs) {
+
+    return lhs + (-rhs);
+}
+
+template <size_t N>
+auto m::operator*(const m::Polynomial<N> &lhs, const m::comp &rhs) {
+
+    auto result = lhs;
+
+    for (size_t i = 0; i < N; i++) {
+
+        result.coeffs[i] *= rhs;
+    }
+
+    return result;
+}
+
+template <size_t N>
+auto m::operator*(const m::comp &lhs, const m::Polynomial<N> &rhs) {
+
+    return rhs * lhs;
+}
+
+template <size_t N, size_t M>
+auto m::operator*(const m::Polynomial<N> &lhs, const m::Polynomial<M> &rhs) {
+
+    Polynomial<N + M> result;
+
+    for (size_t i = 0; i < N + M; i++) {
+
+        comp c = 0;
+
+        for (size_t l = 0; l <= i; l++) {
+
+            auto r = i - l;
+
+            auto a = (l >= N) ? 0 : lhs.coeffs[l];
+            auto b = (r >= M) ? 0 : rhs.coeffs[r];
+
+            c += a * b;
+        }
+
+        result.coeffs[i] = c;
+    }
+
+    return result;
+}
+
+template <size_t N>
 auto &m::operator<<(std::ostream &lhs, const m::Polynomial<N> &rhs) {
 
     lhs << std::fixed << std::setprecision(m_PRECISION) << rhs.coeffs[0];
@@ -194,7 +304,6 @@ auto &m::operator<<(std::ostream &lhs, const m::Polynomial<N> &rhs) {
 
     return lhs;
 }
-
 
 #define __m_impl__
 #endif

@@ -6,6 +6,7 @@
 #include <m/vec.h>
 #include <m/mat.h>
 #include <m/quat.h>
+#include <m/polynomial.h>
 
 int main() {
 
