@@ -32,6 +32,12 @@ namespace m {
     auto operator/(const tvec<T, N> &lhs, const T &rhs);
 
     template <typename T, size_t N>
+    auto operator==(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+
+    template <typename T, size_t N>
+    auto operator!=(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+
+    template <typename T, size_t N>
     auto &operator<<(std::ostream &lhs, const tvec<T, N> &rhs);
 
     // TODO: noexcept on operators?
@@ -137,6 +143,33 @@ namespace m {
         auto &operator*=(const T &rhs);
 
         auto &operator/=(const T &rhs);
+
+        template <typename U, size_t M>
+        friend auto operator+(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+
+        template <typename U, size_t M>
+        friend auto operator-(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+
+        template <typename U, size_t M>
+        friend auto operator-(const tvec<U, M> &rhs);
+
+        template <typename U, size_t M>
+        friend auto operator*(const U &lhs, const tvec<U, M> &rhs);
+
+        template <typename U, size_t M>
+        friend auto operator*(const tvec<U, M> &lhs, const U &rhs);
+
+        template <typename U, size_t M>
+        friend auto operator/(const tvec<U, M> &lhs, const U &rhs);
+
+        template <typename U, size_t M>
+        friend auto operator==(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+
+        template <typename U, size_t M>
+        friend auto operator!=(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+
+        template <typename U, size_t M>
+        friend auto &operator<<(std::ostream &lhs, const tvec<U, M> &rhs);
     };
 
     // NOTE: Specialized static functions 

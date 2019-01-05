@@ -285,6 +285,23 @@ auto m::operator/(const m::tvec<T, N> &lhs, const T &rhs) {
 }
 
 template <typename T, size_t N>
+auto m::operator==(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
+
+    for (size_t i = 0; i < N; i++) {
+
+        if (!util::checkEqual(lhs.get(i), rhs.get(i))) return false;
+    }
+
+    return true;
+}
+
+template <typename T, size_t N>
+auto m::operator!=(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
+
+    return !(lhs == rhs);
+}
+
+template <typename T, size_t N>
 auto &m::operator<<(std::ostream &lhs, const m::tvec<T, N> &rhs) {
 
     lhs << std::fixed << std::setprecision(m_PRECISION) << "(";

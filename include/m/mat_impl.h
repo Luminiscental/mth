@@ -766,6 +766,26 @@ auto m::operator*(const m::tmat<T, N, M> &lhs, const m::tvec<T, N> &rhs) {
     return result;
 }
 
+template <typename T, size_t N, size_t M>
+auto m::operator==(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
+
+    for (size_t x = 0; x < N; x++) {
+
+        for (size_t y = 0; y < M; y++) {
+
+            if (!util::checkEqual(lhs.get(x, y), rhs.get(x, y))) return false;
+        }
+    }
+
+    return true;
+}
+
+template <typename T, size_t N, size_t M>
+auto m::operator!=(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
+
+    return !(lhs == rhs);
+}
+
 // TODO: Either make this less crappy or remove it
 template <typename T, size_t N, size_t M>
 auto &m::operator<<(std::ostream &lhs, const m::tmat<T, N, M> &rhs) {

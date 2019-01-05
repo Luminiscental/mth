@@ -10,6 +10,12 @@ BINDING(imag, b)
 #undef BINDING
 
 template <typename T>
+m::tvec<T, 2> m::tcomp<T>::asCartesian() const noexcept {
+
+    return tvec<T, 2>(a, b);
+}
+
+template <typename T>
 m::tvec<T, 2> m::tcomp<T>::asPolar() const noexcept {
 
     return tvec<T, 2>(static_cast<T>(abs()), static_cast<T>(arg()));
@@ -32,7 +38,7 @@ auto m::tcomp<T>::abs() const noexcept {
 
     auto ls = static_cast<double>(absSqr());
     
-    if (util::checkZero(ls)) return 0.0;
+    if (m::util::checkZero(ls)) return 0.0;
 
     return std::sqrt(ls);
 }
@@ -40,7 +46,7 @@ auto m::tcomp<T>::abs() const noexcept {
 template <typename T>
 auto m::tcomp<T>::arg() const noexcept {
 
-    return std::atan2(static_cast<double>(a), static_cast<double>(b));
+    return std::atan2(static_cast<double>(b), static_cast<double>(a));
 }
 
 template <typename T>
@@ -48,7 +54,7 @@ auto m::tcomp<T>::unit() const {
 
     auto l = abs();
 
-    if (util::checkZero(l)) throw std::invalid_argument("m::exception: tcomp zero has no unit equivalent");
+    if (m::util::checkZero(l)) throw std::invalid_argument("m::exception: tcomp zero has no unit equivalent");
 
     return *this / l;
 }
@@ -68,7 +74,7 @@ auto m::tcomp<T>::inverse() const {
 
     auto ls = absSqr();
 
-    if (util::checkZero(ls)) throw std::invalid_argument("m::exception: tcomp zero has no inverse");
+    if (m::util::checkZero(ls)) throw std::invalid_argument("m::exception: tcomp zero has no inverse");
 
     return conjugate() / ls;
 }
@@ -82,6 +88,12 @@ m::tcomp<T> m::tcomp<T>::rotation(const T &angle) {
     auto s = static_cast<T>(std::sin(a));
 
     return tcomp<T>(c, s);
+}
+
+template <typename T>
+m::tcomp<T> m::tcomp<T>::fromCartesian(const tvec<T, 2> &vec) {
+
+    return fromCartesian(vec.x(), vec.y());
 }
 
 template <typename T>
@@ -267,10 +279,46 @@ auto m::operator/(const T &lhs, const m::tcomp<T> &rhs) {
 }
 
 template <typename T>
+auto m::operator==(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
+
+    return util::checkEqual(lhs.real(), rhs.real()) && util::checkEqual(lhs.imag(), rhs.imag());
+}
+
+template <typename T>
+auto m::operator==(const m::tcomp<T> &lhs, const T &rhs) {
+
+    return util::checkZero(lhs.imag()) && util::checkEqual(lhs.real(), rhs);
+}
+
+template <typename T>
+auto m::operator==(const T &lhs, const m::tcomp<T> &rhs) {
+
+    return rhs == lhs;
+}
+
+template <typename T>
+auto m::operator!=(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
+
+    return !(lhs == rhs);
+}
+
+template <typename T>
+auto m::operator!=(const m::tcomp<T> &lhs, const T &rhs) {
+
+    return !(lhs == rhs);
+}
+
+template <typename T>
+auto m::operator!=(const T &lhs, const m::tcomp<T> &rhs) {
+
+    return !(lhs == rhs);
+}
+
+template <typename T>
 auto &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
 
-    bool realZero = util::checkZero(rhs.real());
-    bool imagZero = util::checkZero(rhs.imag());
+    bool realZero = m::util::checkZero(rhs.real());
+    bool imagZero = m::util::checkZero(rhs.imag());
     bool zero = realZero && imagZero;
     bool noneZero = !realZero && !imagZero;
 
@@ -325,19 +373,23 @@ m::tcomp<T> std::exp(const m::tcomp<T> &z) {
     auto c = static_cast<T>(std::cos(z.imag()));
     auto s = static_cast<T>(std::sin(z.imag()));
 
-    return exp(z.real()) * (c + m::i * s);
+    return exp(z.real()) * (c + m::i<T> * s);
 }
 
 template <typename T>
 m::tcomp<T> std::cos(const m::tcomp<T> &z) {
 
-    return exp(m::i * z).real();
+    auto exponent = m::i<T> * z;
+
+    return (exp(exponent) + exp(-exponent)) / static_cast<T>(2);
 }
 
 template <typename T>
 m::tcomp<T> std::sin(const m::tcomp<T> &z) {
 
-    return exp(m::i * z).imag();
+    auto exponent = m::i<T> * z;
+
+    return (exp(exponent) - exp(-exponent)) / (static_cast<T>(2) * m::i<T>);
 }
 
 #define __m_impl__

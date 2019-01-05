@@ -234,6 +234,42 @@ auto m::operator/(const m::tquat<T> &lhs, T rhs) {
 }
 
 template <typename T>
+auto m::operator==(const tquat<T> &lhs, const tquat<T> &rhs) {
+
+    return util::checkEqual(lhs.real(), rhs.real()) && lhs.imag() == rhs.imag();
+}
+
+template <typename T>
+auto m::operator==(const T &lhs, const tquat<T> &rhs) {
+
+    return util::checkEqual(lhs, rhs.real()) && rhs.imag() == tvec<T, 3>(0, 0, 0);
+}
+
+template <typename T>
+auto m::operator==(const tquat<T> &lhs, const T &rhs) {
+
+    return rhs == lhs;
+}
+
+template <typename T>
+auto m::operator!=(const tquat<T> &lhs, const tquat<T> &rhs) {
+
+    return !(lhs == rhs);
+}
+
+template <typename T>
+auto m::operator!=(const T &lhs, const tquat<T> &rhs) {
+
+    return !(lhs == rhs);
+}
+
+template <typename T>
+auto m::operator!=(const tquat<T> &lhs, const T &rhs) {
+
+    return !(lhs == rhs);
+}
+
+template <typename T>
 auto &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
 
     bool nonZero = false;

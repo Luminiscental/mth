@@ -40,6 +40,7 @@ inline m::ComplexSolutions m::ComplexSolutions::infinite() noexcept {
     return result;
 }
 
+// TODO: Parametrize variable name or something idk
 auto &m::operator<<(std::ostream &stream, const m::ComplexSolutions &solutions) {
 
     stream << std::fixed << std::setprecision(m_PRECISION);
@@ -73,6 +74,35 @@ auto &m::operator<<(std::ostream &stream, const m::ComplexSolutions &solutions) 
     return stream;
 }
 
+auto &m::operator<<(std::ostream &lhs, const PolynomialDegree &rhs) {
+
+    if (rhs.inf) return lhs << "infinity";
+
+    return lhs << rhs.value;
+}
+
+inline m::PolynomialDegree::PolynomialDegree(size_t value)
+    :value(value), inf(false) {}
+
+inline bool m::PolynomialDegree::isInfinite() const {
+
+    return inf;
+}
+
+inline size_t m::PolynomialDegree::getValue() const {
+
+    return value;
+}
+
+inline m::PolynomialDegree m::PolynomialDegree::infinite() {
+
+    PolynomialDegree result(0);
+    result.inf = true;
+    return result;
+}
+
+m::Polynomial<0>::Polynomial() noexcept {}
+
 template <size_t M, typename std::enable_if<(M > 0), int>::type>
 m::Polynomial<0>::Polynomial(std::array<m::comp, M> coeffs) noexcept
     :rootsValid(false), roots(ComplexSolutions::empty()) {
@@ -82,6 +112,18 @@ m::Polynomial<0>::Polynomial(std::array<m::comp, M> coeffs) noexcept
 
 m::Polynomial<0>::Polynomial(m::comp value) noexcept
     :coeff(value), rootsValid(false), roots(ComplexSolutions::empty()) {}
+
+m::comp m::Polynomial<0>::getCoeff() const {
+
+    return coeff;
+}
+
+auto m::Polynomial<0>::actualDegree() const {
+
+    if (util::checkZero(coeff)) return PolynomialDegree::infinite();
+
+    return PolynomialDegree(0);
+}
 
 auto m::Polynomial<0>::value(m::comp x) {
 
@@ -99,6 +141,9 @@ auto m::Polynomial<0>::solve() {
     return roots = ComplexSolutions::empty();
 }
 
+template <size_t N>
+m::Polynomial<N>::Polynomial() noexcept {}
+
 template <size_t N> template <size_t M, typename std::enable_if<(M > N), int>::type>
 m::Polynomial<N>::Polynomial(std::array<m::comp, M> coeffs) noexcept
     :rootsValid(false), roots(ComplexSolutions::empty()) {
@@ -109,6 +154,20 @@ m::Polynomial<N>::Polynomial(std::array<m::comp, M> coeffs) noexcept
 template <size_t N> template <typename ...Q, typename std::enable_if<sizeof...(Q) == N + 1, int>::type>
 m::Polynomial<N>::Polynomial(Q... args) noexcept
     :Polynomial(std::array<m::comp, N + 1> {args...}) {}
+
+template <size_t N>
+std::array<m::comp, N + 1> m::Polynomial<N>::getCoeffs() const {
+
+    return coeffs;
+}
+
+template <size_t N>
+auto m::Polynomial<N>::actualDegree() const {
+
+    if (util::checkZero(coeffs[N])) return Polynomial<N - 1>(coeffs).actualDegree();
+
+    return PolynomialDegree(N);
+}
 
 template <size_t N>
 auto m::Polynomial<N>::value(m::comp x) {
@@ -146,13 +205,13 @@ auto m::Polynomial<N>::solve() {
 
         case 2: {
 
-                auto descriminant = coeffs[1] * coeffs[1] - 4.0 * coeffs[2] * coeffs[0];
+                auto descriminant = coeffs[1] * coeffs[1] - 4.0f * coeffs[2] * coeffs[0];
                 auto offset = std::sqrt(descriminant);
 
                 auto lesser = -coeffs[1] - offset;
                 auto greater = -coeffs[1] + offset;
 
-                auto denom = 2.0 * coeffs[2];
+                auto denom = 2.0f * coeffs[2];
 
                 if (util::checkEqual(lesser, greater)) return roots = ComplexSolutions::finite(lesser / denom);
 
@@ -271,12 +330,12 @@ auto m::operator*(const m::Polynomial<N> &lhs, const m::Polynomial<M> &rhs) {
 
         comp c = 0;
 
-        for (size_t l = 0; l <= i; l++) {
+        for (size_t j = 0; j <= i; j++) {
 
-            auto r = i - l;
+            size_t k = i - j;
 
-            auto a = (l >= N) ? 0 : lhs.coeffs[l];
-            auto b = (r >= M) ? 0 : rhs.coeffs[r];
+            auto a = j > N ? 0 : lhs.coeffs[j];
+            auto b = k > M ? 0 : rhs.coeffs[k];
 
             c += a * b;
         }
@@ -288,19 +347,73 @@ auto m::operator*(const m::Polynomial<N> &lhs, const m::Polynomial<M> &rhs) {
 }
 
 template <size_t N>
+auto m::operator/(const m::Polynomial<N> &lhs, const m::comp &rhs) {
+
+    auto result = lhs;
+
+    for (size_t i = 0; i < N; i++) {
+
+        result.coeffs[i] /= rhs;
+    }
+
+    return result;
+}
+
+template <size_t N, size_t M>
+auto m::operator==(const Polynomial<N> &lhs, const Polynomial<M> &rhs) {
+
+    auto lDeg = lhs.actualDegree();
+    auto rDeg = rhs.actualDegree();
+
+    if (!util::checkEqual(lDeg, rDeg)) return false;
+
+    for (size_t i = 0; i < lDeg; i++) {
+
+        if (!util::checkEqual(lhs.coeffs[i], rhs.coeffs[i])) return false;
+    }
+
+    return true;
+}
+
+template <size_t N, size_t M>
+auto m::operator!=(const Polynomial<N> &lhs, const Polynomial<M> &rhs) {
+
+
+    return !(lhs == rhs);
+}
+
+template <size_t N>
 auto &m::operator<<(std::ostream &lhs, const m::Polynomial<N> &rhs) {
 
-    lhs << std::fixed << std::setprecision(m_PRECISION) << rhs.coeffs[0];
+    lhs << std::fixed << std::setprecision(m_PRECISION);
+
+    bool nonZero = false;
+   
+    if (!util::checkZero(rhs.coeffs[0])) {
+        
+        lhs << rhs.coeffs[0];
+        nonZero = true;
+    }
 
     if (N == 0) return lhs;
-    
-    lhs << " + " << rhs.coeffs[1] << "z";
+
+    if (!util::checkZero(rhs.coeffs[1])) {
+
+        lhs << " + " << rhs.coeffs[1] << "z";
+        nonZero = true;
+    }
 
     for (size_t i = 2; i < N + 1; i++) {
 
+        if (util::checkZero(rhs.coeffs[i])) continue;
+
         lhs << " + " << rhs.coeffs[i];
         lhs << "z^" << i;
+
+        nonZero = true;
     }
+
+    if (!nonZero) lhs << "0";
 
     return lhs;
 }

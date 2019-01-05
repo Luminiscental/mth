@@ -41,6 +41,12 @@ namespace m {
     template <typename T, size_t N, size_t M>
     auto operator*(const tmat<T, N, M> &lhs, const tvec<T, N> &rhs);
 
+    template <typename T, size_t N, size_t M>
+    auto operator==(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs);
+
+    template <typename T, size_t N, size_t M>
+    auto operator!=(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs);
+
     // TODO: Either make this less crappy or remove it
     template <typename T, size_t N, size_t M>
     auto &operator<<(std::ostream &lhs, const tmat<T, N, M> &rhs);
