@@ -101,7 +101,11 @@ inline m::PolynomialDegree m::PolynomialDegree::infinite() {
     return result;
 }
 
-m::Polynomial<0>::Polynomial() noexcept {}
+m::Polynomial<0>::Polynomial() noexcept
+    :rootsValid(false), roots(ComplexSolutions::empty()) {
+
+    coeff = comp::fromCartesian(0, 0);
+}
 
 template <size_t M, typename std::enable_if<(M > 0), int>::type>
 m::Polynomial<0>::Polynomial(std::array<m::comp, M> coeffs) noexcept
@@ -112,11 +116,6 @@ m::Polynomial<0>::Polynomial(std::array<m::comp, M> coeffs) noexcept
 
 m::Polynomial<0>::Polynomial(m::comp value) noexcept
     :coeff(value), rootsValid(false), roots(ComplexSolutions::empty()) {}
-
-m::comp m::Polynomial<0>::getCoeff() const {
-
-    return coeff;
-}
 
 auto m::Polynomial<0>::actualDegree() const {
 
@@ -141,8 +140,27 @@ auto m::Polynomial<0>::solve() {
     return roots = ComplexSolutions::empty();
 }
 
+auto m::Polynomial<0>::getCoeff(size_t index) const {
+
+    if (index > 0) return comp::fromCartesian(0, 0);
+
+    return coeff;
+}
+
+void m::Polynomial<0>::setCoeff(size_t index, const comp &value) {
+
+    if (index > 0) throw std::invalid_argument("m::exception: cannot extend polynomial");
+
+    coeff = value;
+    rootsValid = false;
+}
+
 template <size_t N>
-m::Polynomial<N>::Polynomial() noexcept {}
+m::Polynomial<N>::Polynomial() noexcept
+    :rootsValid(false), roots(ComplexSolutions::empty()) {
+
+    coeffs.fill(comp::fromCartesian(0, 0));
+}
 
 template <size_t N> template <size_t M, typename std::enable_if<(M > N), int>::type>
 m::Polynomial<N>::Polynomial(std::array<m::comp, M> coeffs) noexcept
@@ -226,6 +244,23 @@ auto m::Polynomial<N>::solve() {
             return roots = ComplexSolutions::empty();
         }
     }
+}
+
+template <size_t N>
+auto m::Polynomial<N>::getCoeff(size_t index) const {
+
+    if (index > N) return comp::fromCartesian(0, 0);
+
+    return coeffs[index];
+}
+
+template <size_t N>
+void m::Polynomial<N>::setCoeff(size_t index, const m::comp &value) {
+
+    if (index > N) throw std::invalid_argument("m::exception: cannot extend polynomial");
+
+    coeffs[index] = value;
+    rootsValid = false;
 }
 
 template <size_t N>
@@ -388,26 +423,36 @@ auto &m::operator<<(std::ostream &lhs, const m::Polynomial<N> &rhs) {
     lhs << std::fixed << std::setprecision(m_PRECISION);
 
     bool nonZero = false;
+
+    auto cTerm = rhs.coeffs[0];
    
-    if (!util::checkZero(rhs.coeffs[0])) {
+    if (!util::checkZero(cTerm)) {
         
-        lhs << rhs.coeffs[0];
+        lhs << cTerm;
         nonZero = true;
     }
 
     if (N == 0) return lhs;
 
-    if (!util::checkZero(rhs.coeffs[1])) {
+    auto lTerm = rhs.coeffs[1];
 
-        lhs << " + " << rhs.coeffs[1] << "z";
+    if (!util::checkZero(lTerm)) {
+
+        if (nonZero) lhs << " + ";
+        if (!util::checkEqual(lTerm, comp::fromCartesian(1, 0))) lhs << lTerm;
+        lhs << "z";
+
         nonZero = true;
     }
 
     for (size_t i = 2; i < N + 1; i++) {
 
-        if (util::checkZero(rhs.coeffs[i])) continue;
+        auto term = rhs.coeffs[i];
 
-        lhs << " + " << rhs.coeffs[i];
+        if (util::checkZero(term)) continue;
+
+        if (nonZero) lhs << " + ";
+        if (!util::checkEqual(term, comp::fromCartesian(1, 0))) lhs << term;
         lhs << "z^" << i;
 
         nonZero = true;
@@ -416,6 +461,33 @@ auto &m::operator<<(std::ostream &lhs, const m::Polynomial<N> &rhs) {
     if (!nonZero) lhs << "0";
 
     return lhs;
+}
+
+template <size_t N>
+m::Polynomial<N - 1> m::differentiate(const m::Polynomial<N> &polynomial) {
+
+    Polynomial<N - 1> result;
+
+    for (size_t i = 1; i < N + 1; i++) {
+
+        result.setCoeff(i - 1, m::comp::fromCartesian(i, 0) * polynomial.getCoeff(i));
+    }
+
+    return result;
+}
+
+template <size_t N>
+m::Polynomial<N + 1> m::integrate(const m::Polynomial<N> &polynomial) {
+
+    Polynomial<N + 1> result;
+    result.setCoeff(0, m::comp::fromCartesian(0, 0));
+
+    for (size_t i = 0; i < N + 1; i++) {
+
+        result.setCoeff(i + 1, polynomial.getCoeff(i) / m::comp::fromCartesian(i + 1, 0)); 
+    }
+
+    return result;
 }
 
 #define __m_impl__

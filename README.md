@@ -20,7 +20,7 @@ m is a maths library built around template classes to work with objects such as 
 * Augmentations of square matrices with any type that supports addition and scalar multiplication (e.g. `float`, `std::complex`, `tvec`), with row operations and functions to convert to echelon / reduced echelon form.
 * Quaternions of any given scalar type (you get the idea) with arithmetic operators and functions for representing rotations in 3-space (and converting to the equivalent matrices).
 * Complex number representations with arithmetic and overloads for `std::exp`, `std::cos`, `std::sin` and `std::abs`.
-* Polynomials with a `solve()` method for finding roots and a `value()` method for evaluating.
+* Polynomials with arithmetic, a `solve()` method for finding roots and a `value()` method for evaluating.
 * Somewhat pretty printing.
 
 ### Planned features:

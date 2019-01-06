@@ -181,6 +181,20 @@ int main() {
         printThing("R has degree " << prod.actualDegree());
     }
 
+    {
+
+        printThing("-- testing analytic calculus --");
+
+        m::Polynomial<5> thing(1, 2, 1, 2, 1, 2);
+
+        auto d = m::differentiate(thing);
+        auto p = m::integrate(thing);
+
+        printThing("A(z) = " << thing);
+        printThing("A'(z) = " << d);
+        printThing("B'(z) = A(z) and B(0) = 0 -> B(z) = " << p);
+    }
+
     std::cout << std::endl;
 
     return 0;

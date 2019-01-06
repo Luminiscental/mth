@@ -132,21 +132,24 @@ namespace m {
         ComplexSolutions roots;
         bool rootsValid;
 
-        Polynomial() noexcept;
-
     public:
+
+        Polynomial() noexcept;
 
         template <size_t M, typename std::enable_if<(M > 0), int>::type = 0>
         Polynomial(std::array<comp, M> coeffs) noexcept;
 
         Polynomial(comp value) noexcept;
 
-        comp getCoeff() const;
-
         auto actualDegree() const;
 
         auto value(comp x);
         auto solve();
+
+        auto getCoeff(size_t index = 0) const;
+        void setCoeff(size_t index, const comp &value);
+
+        // TODO: Unfriend and use getter/setters
 
         template <size_t M>
         friend auto operator+(const Polynomial<M> &lhs, const comp &rhs);
@@ -191,6 +194,8 @@ namespace m {
         friend auto &operator<<(std::ostream &lhs, const Polynomial<M> &rhs);
     };
 
+    // TODO: Make this non-templated and use a vector
+
     template <size_t N>
     class Polynomial {
 
@@ -200,10 +205,9 @@ namespace m {
         ComplexSolutions roots;
         bool rootsValid;
 
-        Polynomial() noexcept;
-
     public:
 
+        Polynomial() noexcept;
 
         template <size_t M, typename std::enable_if<(M > N), int>::type = 0>
         Polynomial(std::array<comp, M> coeffs) noexcept;
@@ -217,6 +221,9 @@ namespace m {
 
         auto value(comp x);
         auto solve();
+
+        auto getCoeff(size_t index) const;
+        void setCoeff(size_t index, const comp &value);
 
         template <size_t M>
         friend auto operator+(const Polynomial<M> &lhs, const comp &rhs);
@@ -254,6 +261,12 @@ namespace m {
         template <size_t M>
         friend auto &operator<<(std::ostream &lhs, const Polynomial<M> &rhs);
     };
+
+    template <size_t N>
+    Polynomial<N - 1> differentiate(const Polynomial<N> &polynomial);
+
+    template <size_t N>
+    Polynomial<N + 1> integrate(const Polynomial<N> &polynomial);
 }
 
 #include <m/polynomial_impl.h>

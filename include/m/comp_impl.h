@@ -38,7 +38,7 @@ auto m::tcomp<T>::abs() const noexcept {
 
     auto ls = static_cast<double>(absSqr());
     
-    if (m::util::checkZero(ls)) return 0.0;
+    if (util::checkZero(ls)) return 0.0;
 
     return std::sqrt(ls);
 }
@@ -54,7 +54,7 @@ auto m::tcomp<T>::unit() const {
 
     auto l = abs();
 
-    if (m::util::checkZero(l)) throw std::invalid_argument("m::exception: tcomp zero has no unit equivalent");
+    if (util::checkZero(l)) throw std::invalid_argument("m::exception: tcomp zero has no unit equivalent");
 
     return *this / l;
 }
@@ -74,7 +74,7 @@ auto m::tcomp<T>::inverse() const {
 
     auto ls = absSqr();
 
-    if (m::util::checkZero(ls)) throw std::invalid_argument("m::exception: tcomp zero has no inverse");
+    if (util::checkZero(ls)) throw std::invalid_argument("m::exception: tcomp zero has no inverse");
 
     return conjugate() / ls;
 }
@@ -317,8 +317,8 @@ auto m::operator!=(const T &lhs, const m::tcomp<T> &rhs) {
 template <typename T>
 auto &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
 
-    bool realZero = m::util::checkZero(rhs.real());
-    bool imagZero = m::util::checkZero(rhs.imag());
+    bool realZero = util::checkZero(rhs.real());
+    bool imagZero = util::checkZero(rhs.imag());
     bool zero = realZero && imagZero;
     bool noneZero = !realZero && !imagZero;
 
