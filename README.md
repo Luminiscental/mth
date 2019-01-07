@@ -3,14 +3,13 @@
 
 No one wanted it; no one needed it, but it's here now.
 
-m is a maths library built around template classes to work with objects such as vectors, matrices and quaternions, with helper classes to deal with solving equations. Currently a header library because of templates but that may not necessarily be the case in the future.
+m is a maths library built around template classes to work with objects such as vectors, matrices and quaternions, with helper classes to deal with solving equations. No guarantees of stability or quality atm so be warned.
 
 ### Optional preprocessor flags:
 
 * `m_ROW_MAJOR` - When set the values of matrices are stored row major rather than column-major. This isn't relevant for specifying values in constructors as they are always interpreted as row-major but it means that a list of vectors is interpreted as rows rather than columns.
 * `m_ELIMINATION` - When set the `inverse` method of `tmat` uses Gaussian elimination instead of recursing on minor matrices to find the adjoint.
 * `m_PRECISION` - If set this is passed to `std::setprecision` in pretty-print functions; it's the number of decimal places displayed.
-* More - soon tm
 
 ### Features:
 
@@ -21,12 +20,13 @@ m is a maths library built around template classes to work with objects such as 
 * Quaternions of any given scalar type (you get the idea) with arithmetic operators and functions for representing rotations in 3-space (and converting to the equivalent matrices).
 * Complex number representations with arithmetic and overloads for `std::exp`, `std::cos`, `std::sin` and `std::abs`.
 * Polynomials with arithmetic, a `solve()` method for finding roots and a `value()` method for evaluating.
+* Differentiation and integration of polynomials.
 * Somewhat pretty printing.
 
 ### Planned features:
 
 * Numeric methods for finding roots of arbitrary functions
-* Analytic calculus on polynomials and numeric on arbitrary functions
+* Numeric differentiation and integration of arbitrary complex functions.
 * Numerical series expansions
 
 ### Example code:
