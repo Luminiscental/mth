@@ -74,7 +74,19 @@ auto &m::operator<<(std::ostream &stream, const m::ComplexSolutions &solutions) 
     return stream;
 }
 
-auto &m::operator<<(std::ostream &lhs, const PolynomialDegree &rhs) {
+auto m::operator==(const m::PolynomialDegree &lhs, const m::PolynomialDegree &rhs) {
+
+    if (lhs.isInfinite()) return rhs.isInfinite();
+
+    return lhs.getValue() == rhs.getValue();
+}
+
+auto m::operator!=(const m::PolynomialDegree &lhs, const m::PolynomialDegree &rhs) {
+
+    return !(lhs == rhs);
+}
+
+auto &m::operator<<(std::ostream &lhs, const m::PolynomialDegree &rhs) {
 
     if (rhs.inf) return lhs << "infinity";
 
@@ -101,120 +113,106 @@ inline m::PolynomialDegree m::PolynomialDegree::infinite() {
     return result;
 }
 
-m::Polynomial<0>::Polynomial() noexcept
-    :rootsValid(false), roots(ComplexSolutions::empty()) {
+m::Polynomial::Polynomial() noexcept
+    :rootsValid(true), roots(ComplexSolutions::infinite()), degreeValid(true), degree(PolynomialDegree::infinite()) {}
 
-    coeff = comp::fromCartesian(0, 0);
+m::Polynomial::Polynomial(std::vector<m::comp> coeffs) noexcept
+    :coeffs(coeffs), rootsValid(false), roots(ComplexSolutions::empty()), degreeValid(false), degree(0) {}
+
+template <typename ...Q>
+m::Polynomial::Polynomial(Q... args) noexcept
+    :Polynomial(std::vector<comp> {static_cast<comp>(args)...}) {}
+
+m::Polynomial::operator std::function<comp(comp)>() const {
+
+    return [&] (comp z) { return this->value(z); };
 }
 
-template <size_t M, typename std::enable_if<(M > 0), int>::type>
-m::Polynomial<0>::Polynomial(std::array<m::comp, M> coeffs) noexcept
-    :rootsValid(false), roots(ComplexSolutions::empty()) {
+void m::Polynomial::updateValues() {
 
-    coeff = coeffs[0];
+    while (util::checkZero(coeffs.back())) {
+
+        coeffs.pop_back();
+    }
 }
 
-m::Polynomial<0>::Polynomial(m::comp value) noexcept
-    :coeff(value), rootsValid(false), roots(ComplexSolutions::empty()) {}
+void m::Polynomial::updateDegree() noexcept {
 
-auto m::Polynomial<0>::actualDegree() const {
+    degreeValid = true;
 
-    if (util::checkZero(coeff)) return PolynomialDegree::infinite();
+    auto l = coeffs.size();
 
-    return PolynomialDegree(0);
+    while (util::checkZero(coeffs[l - 1])) {
+
+        if (l == 1) {
+
+            degree = PolynomialDegree::infinite();
+            return;
+        }
+
+        l--;
+    }
+
+    degree = PolynomialDegree(l - 1);
 }
 
-auto m::Polynomial<0>::value(m::comp x) {
+auto m::Polynomial::getCoeffs() {
 
-    return coeff;
-}
-
-auto m::Polynomial<0>::solve() {
-
-    if (rootsValid) return roots;
-
-    rootsValid = true;
-
-    if (util::checkZero(coeff)) return roots = ComplexSolutions::infinite();
-
-    return roots = ComplexSolutions::empty();
-}
-
-auto m::Polynomial<0>::getCoeff(size_t index) const {
-
-    if (index > 0) return comp::fromCartesian(0, 0);
-
-    return coeff;
-}
-
-void m::Polynomial<0>::setCoeff(size_t index, const comp &value) {
-
-    if (index > 0) throw std::invalid_argument("m::exception: cannot extend polynomial");
-
-    coeff = value;
-    rootsValid = false;
-}
-
-template <size_t N>
-m::Polynomial<N>::Polynomial() noexcept
-    :rootsValid(false), roots(ComplexSolutions::empty()) {
-
-    coeffs.fill(comp::fromCartesian(0, 0));
-}
-
-template <size_t N> template <size_t M, typename std::enable_if<(M > N), int>::type>
-m::Polynomial<N>::Polynomial(std::array<m::comp, M> coeffs) noexcept
-    :rootsValid(false), roots(ComplexSolutions::empty()) {
-
-    for (size_t i = 0; i < N + 1; i++) this->coeffs[i] = coeffs[i];
-}
-
-template <size_t N> template <typename ...Q, typename std::enable_if<sizeof...(Q) == N + 1, int>::type>
-m::Polynomial<N>::Polynomial(Q... args) noexcept
-    :Polynomial(std::array<m::comp, N + 1> {args...}) {}
-
-template <size_t N>
-std::array<m::comp, N + 1> m::Polynomial<N>::getCoeffs() const {
+    updateValues();
 
     return coeffs;
 }
 
-template <size_t N>
-auto m::Polynomial<N>::actualDegree() const {
+auto m::Polynomial::getCoeffs() const {
 
-    if (util::checkZero(coeffs[N])) return Polynomial<N - 1>(coeffs).actualDegree();
-
-    return PolynomialDegree(N);
+    return coeffs;
 }
 
-template <size_t N>
-auto m::Polynomial<N>::value(m::comp x) {
+auto m::Polynomial::getDegree() {
+
+    if (!degreeValid) updateDegree();
+
+    return degree;
+}
+
+auto m::Polynomial::getDegree() const {
+
+    Polynomial c = *this;
+
+    return c.getDegree();
+}
+
+m::comp m::Polynomial::value(m::comp x) const {
 
     m::comp result = 0;
     m::comp v = 1;
 
-    for (size_t i = 0; i < N + 1; i++) {
+    for (auto coeff : coeffs) {
 
-        result += v * coeffs[i];
+        result += v * coeff;
         v *= x;
     }
 
     return result;
 }
 
-template <size_t N>
-auto m::Polynomial<N>::solve() {
+auto m::Polynomial::solve() {
 
     if (rootsValid) return roots;
 
     rootsValid = true;
 
-    if (util::checkZero(coeffs[N])) {
+    if (!degreeValid) updateDegree();
 
-        return roots = Polynomial<N - 1>(coeffs).solve();
-    }
+    if (degree.isInfinite()) return ComplexSolutions::infinite();
 
-    switch (N) {
+    switch (degree.getValue()) {
+
+        case 0: {
+
+            // NOTE: non-zero because of check for infinite degree above
+            return ComplexSolutions::empty();
+        }
 
         case 1: {
 
@@ -246,72 +244,62 @@ auto m::Polynomial<N>::solve() {
     }
 }
 
-template <size_t N>
-auto m::Polynomial<N>::getCoeff(size_t index) const {
+auto m::Polynomial::getCoeff(size_t index) const {
 
-    if (index > N) return comp::fromCartesian(0, 0);
+    if (index >= coeffs.size()) return comp::fromCartesian(0, 0);
 
     return coeffs[index];
 }
 
-template <size_t N>
-void m::Polynomial<N>::setCoeff(size_t index, const m::comp &value) {
+void m::Polynomial::setCoeff(size_t index, const m::comp &value) {
 
-    if (index > N) throw std::invalid_argument("m::exception: cannot extend polynomial");
+    if (index >= coeffs.size()) {
 
-    coeffs[index] = value;
+        while (coeffs.size() < index) {
+
+            coeffs.push_back(comp::fromCartesian(0, 0));
+        }
+
+        coeffs.push_back(value);
+
+    } else {
+
+        coeffs[index] = value;
+    }
+
     rootsValid = false;
+    degreeValid = false;
 }
 
-template <size_t N>
-auto m::operator+(const m::Polynomial<N> &lhs, const m::comp &rhs) {
+auto m::operator+(const m::Polynomial &lhs, const m::comp &rhs) {
 
     auto result = lhs;
 
-    result.coeffs[0] += rhs;
+    result.setCoeff(0, result.getCoeff(0) + rhs);
 
     return result;
 }
 
-template <size_t N>
-auto m::operator+(const m::comp &lhs, const m::Polynomial<N> &rhs) {
+auto m::operator+(const m::comp &lhs, const m::Polynomial &rhs) {
 
     return rhs + lhs;
 }
 
-template <size_t N, size_t M>
-auto m::operator+(const m::Polynomial<N> &lhs, const m::Polynomial<M> &rhs) {
+auto m::operator+(const m::Polynomial &lhs, const m::Polynomial &rhs) {
 
-    if (N > M) {
+    auto result = lhs;
 
-        auto result = lhs;
+    for (size_t i = 0; i < rhs.coeffs.size(); i++) {
 
-        for (size_t i = 0; i < M; i++) {
-
-            result.coeffs[i] += rhs.coeffs[i];
-        }
-
-        return result;
-
-    } else {
-
-        auto result = rhs;
-
-        for (size_t i = 0; i < N; i++) {
-
-            result.coeffs[i] += lhs.coeffs[i];
-        }
-
-        return result;
+        result.setCoeff(i, lhs.getCoeff(i) + rhs.getCoeff(i));
     }
 }
 
-template <size_t N>
-auto m::operator-(const m::Polynomial<N> &rhs) {
+auto m::operator-(const m::Polynomial &rhs) {
 
     auto result = rhs;
 
-    for (size_t i = 0; i < N; i++) {
+    for (size_t i = 0; i < result.coeffs.size(); i++) {
 
         result.coeffs[i] = -result.coeffs[i];
     }
@@ -319,30 +307,26 @@ auto m::operator-(const m::Polynomial<N> &rhs) {
     return result;
 }
 
-template <size_t N>
-auto m::operator-(const m::Polynomial<N> &lhs, const m::comp &rhs) {
+auto m::operator-(const m::Polynomial &lhs, const m::comp &rhs) {
 
     return lhs + (-rhs);
 }
 
-template <size_t N>
-auto m::operator-(const m::comp &lhs, const m::Polynomial<N> &rhs) {
+auto m::operator-(const m::comp &lhs, const m::Polynomial &rhs) {
 
     return lhs + (-rhs);
 }
 
-template <size_t N, size_t M>
-auto m::operator-(const m::Polynomial<N> &lhs, const m::Polynomial<M> &rhs) {
+auto m::operator-(const m::Polynomial &lhs, const m::Polynomial &rhs) {
 
     return lhs + (-rhs);
 }
 
-template <size_t N>
-auto m::operator*(const m::Polynomial<N> &lhs, const m::comp &rhs) {
+auto m::operator*(const m::Polynomial &lhs, const m::comp &rhs) {
 
     auto result = lhs;
 
-    for (size_t i = 0; i < N; i++) {
+    for (size_t i = 0; i < result.coeffs.size(); i++) {
 
         result.coeffs[i] *= rhs;
     }
@@ -350,18 +334,22 @@ auto m::operator*(const m::Polynomial<N> &lhs, const m::comp &rhs) {
     return result;
 }
 
-template <size_t N>
-auto m::operator*(const m::comp &lhs, const m::Polynomial<N> &rhs) {
+auto m::operator*(const m::comp &lhs, const m::Polynomial &rhs) {
 
     return rhs * lhs;
 }
 
-template <size_t N, size_t M>
-auto m::operator*(const m::Polynomial<N> &lhs, const m::Polynomial<M> &rhs) {
+auto m::operator*(const m::Polynomial &lhs, const m::Polynomial &rhs) {
 
-    Polynomial<N + M> result;
+    if (lhs.getDegree().isInfinite()) return rhs;
+    if (rhs.getDegree().isInfinite()) return lhs;
 
-    for (size_t i = 0; i < N + M; i++) {
+    Polynomial result;
+
+    auto N = lhs.getDegree().getValue();
+    auto M = rhs.getDegree().getValue();
+
+    for (size_t i = 0; i <= N + M; i++) {
 
         comp c = 0;
 
@@ -369,24 +357,23 @@ auto m::operator*(const m::Polynomial<N> &lhs, const m::Polynomial<M> &rhs) {
 
             size_t k = i - j;
 
-            auto a = j > N ? 0 : lhs.coeffs[j];
-            auto b = k > M ? 0 : rhs.coeffs[k];
+            auto a = j > N ? 0 : lhs.getCoeff(j);
+            auto b = k > M ? 0 : rhs.getCoeff(k);
 
             c += a * b;
         }
 
-        result.coeffs[i] = c;
+        result.setCoeff(i, c);
     }
 
     return result;
 }
 
-template <size_t N>
-auto m::operator/(const m::Polynomial<N> &lhs, const m::comp &rhs) {
+auto m::operator/(const m::Polynomial &lhs, const m::comp &rhs) {
 
     auto result = lhs;
 
-    for (size_t i = 0; i < N; i++) {
+    for (size_t i = 0; i < result.coeffs.size(); i++) {
 
         result.coeffs[i] /= rhs;
     }
@@ -394,15 +381,18 @@ auto m::operator/(const m::Polynomial<N> &lhs, const m::comp &rhs) {
     return result;
 }
 
-template <size_t N, size_t M>
-auto m::operator==(const Polynomial<N> &lhs, const Polynomial<M> &rhs) {
+auto m::operator==(const Polynomial &lhs, const Polynomial &rhs) {
 
-    auto lDeg = lhs.actualDegree();
-    auto rDeg = rhs.actualDegree();
+    auto lDeg = lhs.getDegree();
+    auto rDeg = rhs.getDegree();
 
-    if (!util::checkEqual(lDeg, rDeg)) return false;
+    if (lDeg != rDeg) return false;
 
-    for (size_t i = 0; i < lDeg; i++) {
+    if (lDeg.isInfinite()) return true;
+
+    auto N = lDeg.getValue();
+
+    for (size_t i = 0; i < N; i++) {
 
         if (!util::checkEqual(lhs.coeffs[i], rhs.coeffs[i])) return false;
     }
@@ -410,17 +400,19 @@ auto m::operator==(const Polynomial<N> &lhs, const Polynomial<M> &rhs) {
     return true;
 }
 
-template <size_t N, size_t M>
-auto m::operator!=(const Polynomial<N> &lhs, const Polynomial<M> &rhs) {
+auto m::operator!=(const Polynomial &lhs, const Polynomial &rhs) {
 
 
     return !(lhs == rhs);
 }
 
-template <size_t N>
-auto &m::operator<<(std::ostream &lhs, const m::Polynomial<N> &rhs) {
+auto &m::operator<<(std::ostream &lhs, const m::Polynomial &rhs) {
 
     lhs << std::fixed << std::setprecision(m_PRECISION);
+
+    if (rhs.getDegree().isInfinite()) return lhs << "0";
+
+    auto N = rhs.getDegree().getValue();
 
     bool nonZero = false;
 
@@ -458,15 +450,16 @@ auto &m::operator<<(std::ostream &lhs, const m::Polynomial<N> &rhs) {
         nonZero = true;
     }
 
-    if (!nonZero) lhs << "0";
-
     return lhs;
 }
 
-template <size_t N>
-m::Polynomial<N - 1> m::differentiate(const m::Polynomial<N> &polynomial) {
+m::Polynomial m::differentiate(const m::Polynomial &polynomial) {
 
-    Polynomial<N - 1> result;
+    if (polynomial.getDegree().isInfinite()) return Polynomial();
+
+    auto N = polynomial.getDegree().getValue();
+
+    Polynomial result;
 
     for (size_t i = 1; i < N + 1; i++) {
 
@@ -476,11 +469,13 @@ m::Polynomial<N - 1> m::differentiate(const m::Polynomial<N> &polynomial) {
     return result;
 }
 
-template <size_t N>
-m::Polynomial<N + 1> m::integrate(const m::Polynomial<N> &polynomial) {
+m::Polynomial m::integrate(const m::Polynomial &polynomial) {
 
-    Polynomial<N + 1> result;
-    result.setCoeff(0, m::comp::fromCartesian(0, 0));
+    if (polynomial.getDegree().isInfinite()) return Polynomial();
+
+    auto N = polynomial.getDegree().getValue();
+
+    Polynomial result;
 
     for (size_t i = 0; i < N + 1; i++) {
 

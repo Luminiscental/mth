@@ -2,7 +2,8 @@
 #define __m_polynomial_h__
 
 #include <unordered_set>
-#include <array>
+#include <functional>
+#include <vector>
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -25,54 +26,34 @@ namespace m {
 
     class PolynomialDegree;
 
-    template <size_t N>
     class Polynomial;
 
     auto &operator<<(std::ostream &lhs, const ComplexSolutions &rhs);
 
+    auto operator==(const PolynomialDegree &lhs, const PolynomialDegree &rhs);
+    auto operator!=(const PolynomialDegree &lhs, const PolynomialDegree &rhs);
+
     auto &operator<<(std::ostream &lhs, const PolynomialDegree &rhs);
 
-    template <size_t N>
-    auto operator+(const Polynomial<N> &lhs, const comp &rhs);
+    auto operator+(const Polynomial &lhs, const comp &rhs);
+    auto operator+(const comp &lhs, const Polynomial &rhs);
+    auto operator+(const Polynomial &lhs, const Polynomial &rhs);
 
-    template <size_t N>
-    auto operator+(const comp &lhs, const Polynomial<N> &rhs);
+    auto operator-(const Polynomial &rhs);
+    auto operator-(const Polynomial &lhs, const comp &rhs);
+    auto operator-(const comp &lhs, const Polynomial &rhs);
+    auto operator-(const Polynomial &lhs, const Polynomial &rhs);
 
-    template <size_t N, size_t M>
-    auto operator+(const Polynomial<N> &lhs, const Polynomial<M> &rhs);
+    auto operator*(const Polynomial &lhs, const comp &rhs);
+    auto operator*(const comp &lhs, const Polynomial &rhs);
+    auto operator*(const Polynomial &lhs, const Polynomial &rhs);
 
-    template <size_t N>
-    auto operator-(const Polynomial<N> &rhs);
+    auto operator/(const Polynomial &lhs, const comp &rhs);
 
-    template <size_t N>
-    auto operator-(const Polynomial<N> &lhs, const comp &rhs);
+    auto operator==(const Polynomial &lhs, const Polynomial &rhs);
+    auto operator!=(const Polynomial &lhs, const Polynomial &rhs);
 
-    template <size_t N>
-    auto operator-(const comp &lhs, const Polynomial<N> &rhs);
-
-    template <size_t N, size_t M>
-    auto operator-(const Polynomial<N> &lhs, const Polynomial<M> &rhs);
-
-    template <size_t N>
-    auto operator*(const Polynomial<N> &lhs, const comp &rhs);
-
-    template <size_t N>
-    auto operator*(const comp &lhs, const Polynomial<N> &rhs);
-
-    template <size_t N, size_t M>
-    auto operator*(const Polynomial<N> &lhs, const Polynomial<M> &rhs);
-
-    template <size_t N>
-    auto operator/(const Polynomial<N> &lhs, const comp &rhs);
-
-    template <size_t N, size_t M>
-    auto operator==(const Polynomial<N> &lhs, const Polynomial<M> &rhs);
-
-    template <size_t N, size_t M>
-    auto operator!=(const Polynomial<N> &lhs, const Polynomial<M> &rhs);
-
-    template <size_t N>
-    auto &operator<<(std::ostream &lhs, const Polynomial<N> &rhs);
+    auto &operator<<(std::ostream &lhs, const Polynomial &rhs);
 
     class ComplexSolutions {
 
@@ -97,7 +78,6 @@ namespace m {
 
         friend auto &operator<<(std::ostream &lhs, const ComplexSolutions &rhs);
 
-        template <size_t N>
         friend class Polynomial;
     };
 
@@ -118,155 +98,72 @@ namespace m {
         static PolynomialDegree infinite();
 
         friend auto &operator<<(std::ostream &lhs, const PolynomialDegree &rhs);
+
+        friend class Polynomial;
     };
 
-    template <size_t N>
-    class Polynomial;
-
-    template<>
-    class Polynomial<0> {
-
-    private:
-
-        comp coeff;
-        ComplexSolutions roots;
-        bool rootsValid;
-
-    public:
-
-        Polynomial() noexcept;
-
-        template <size_t M, typename std::enable_if<(M > 0), int>::type = 0>
-        Polynomial(std::array<comp, M> coeffs) noexcept;
-
-        Polynomial(comp value) noexcept;
-
-        auto actualDegree() const;
-
-        auto value(comp x);
-        auto solve();
-
-        auto getCoeff(size_t index = 0) const;
-        void setCoeff(size_t index, const comp &value);
-
-        // TODO: Unfriend and use getter/setters
-
-        template <size_t M>
-        friend auto operator+(const Polynomial<M> &lhs, const comp &rhs);
-
-        template <size_t M>
-        friend auto operator+(const comp &lhs, const Polynomial<M> &rhs);
-
-        template <size_t M, size_t O>
-        friend auto operator+(const Polynomial<M> &lhs, const Polynomial<O> &rhs);
-
-        template <size_t M>
-        friend auto operator-(const Polynomial<M> &rhs);
-
-        template <size_t M>
-        friend auto operator-(const Polynomial<M> &lhs, const comp &rhs);
-
-        template <size_t M>
-        friend auto operator-(const comp &lhs, const Polynomial<M> &rhs);
-
-        template <size_t M, size_t O>
-        friend auto operator-(const Polynomial<M> &lhs, const Polynomial<O> &rhs);
-
-        template <size_t M>
-        friend auto operator*(const Polynomial<M> &lhs, const comp &rhs);
-
-        template <size_t M>
-        friend auto operator*(const comp &lhs, const Polynomial<M> &rhs);
-
-        template <size_t M, size_t O>
-        friend auto operator*(const Polynomial<M> &lhs, const Polynomial<O> &rhs);
-
-        template <size_t M>
-        friend auto operator/(const Polynomial<M> &lhs, const comp &rhs);
-
-        template <size_t M, size_t O>
-        friend auto operator==(const Polynomial<M> &lhs, const Polynomial<O> &rhs);
-
-        template <size_t M, size_t O>
-        friend auto operator!=(const Polynomial<M> &lhs, const Polynomial<O> &rhs);
-
-        template <size_t M>
-        friend auto &operator<<(std::ostream &lhs, const Polynomial<M> &rhs);
-    };
-
-    // TODO: Make this non-templated and use a vector
-
-    template <size_t N>
     class Polynomial {
 
     private:
 
-        std::array<comp, N + 1> coeffs;
+        std::vector<comp> coeffs;
+
         ComplexSolutions roots;
         bool rootsValid;
+
+        PolynomialDegree degree;
+        bool degreeValid;
+
+        void updateValues();
+        void updateDegree() noexcept;
 
     public:
 
         Polynomial() noexcept;
 
-        template <size_t M, typename std::enable_if<(M > N), int>::type = 0>
-        Polynomial(std::array<comp, M> coeffs) noexcept;
+        Polynomial(std::vector<comp> coeffs) noexcept;
 
-        template <typename ...Q, typename std::enable_if<sizeof...(Q) == N + 1, int>::type = 0>
+        template <typename ...Q>
         Polynomial(Q... args) noexcept;
 
-        std::array<comp, N + 1> getCoeffs() const;
+        operator std::function<comp(comp)>() const;
 
-        auto actualDegree() const;
+        auto getCoeffs();
+        auto getCoeffs() const;
+        auto getDegree();
+        auto getDegree() const;
 
-        auto value(comp x);
+        comp value(comp x) const;
         auto solve();
 
         auto getCoeff(size_t index) const;
         void setCoeff(size_t index, const comp &value);
 
-        template <size_t M>
-        friend auto operator+(const Polynomial<M> &lhs, const comp &rhs);
+        // TODO: Unfriend and use getters/setter (then also in other classes)
 
-        template <size_t M>
-        friend auto operator+(const comp &lhs, const Polynomial<M> &rhs);
+        friend auto operator+(const Polynomial &lhs, const comp &rhs);
+        friend auto operator+(const comp &lhs, const Polynomial &rhs);
+        friend auto operator+(const Polynomial &lhs, const Polynomial &rhs);
 
-        template <size_t M, size_t O>
-        friend auto operator+(const Polynomial<M> &lhs, const Polynomial<O> &rhs);
+        friend auto operator-(const Polynomial &rhs);
+        friend auto operator-(const Polynomial &lhs, const comp &rhs);
+        friend auto operator-(const comp &lhs, const Polynomial &rhs);
+        friend auto operator-(const Polynomial &lhs, const Polynomial &rhs);
 
-        template <size_t M>
-        friend auto operator-(const Polynomial<M> &rhs);
+        friend auto operator*(const Polynomial &lhs, const comp &rhs);
+        friend auto operator*(const comp &lhs, const Polynomial &rhs);
+        friend auto operator*(const Polynomial &lhs, const Polynomial &rhs);
 
-        template <size_t M>
-        friend auto operator-(const Polynomial<M> &lhs, const comp &rhs);
+        friend auto operator/(const Polynomial &lhs, const comp &rhs);
 
-        template <size_t M>
-        friend auto operator-(const comp &lhs, const Polynomial<M> &rhs);
+        friend auto operator==(const Polynomial &lhs, const Polynomial &rhs);
+        friend auto operator!=(const Polynomial &lhs, const Polynomial &rhs);
 
-        template <size_t M, size_t O>
-        friend auto operator-(const Polynomial<M> &lhs, const Polynomial<O> &rhs);
-
-        template <size_t M>
-        friend auto operator*(const Polynomial<M> &lhs, const comp &rhs);
-
-        template <size_t M>
-        friend auto operator*(const comp &lhs, const Polynomial<M> &rhs);
-
-        template <size_t M, size_t O>
-        friend auto operator*(const Polynomial<M> &lhs, const Polynomial<O> &rhs);
-
-        template <size_t M>
-        friend auto operator/(const Polynomial<M> &lhs, const comp &rhs);
-
-        template <size_t M>
-        friend auto &operator<<(std::ostream &lhs, const Polynomial<M> &rhs);
+        friend auto &operator<<(std::ostream &lhs, const Polynomial &rhs);
     };
 
-    template <size_t N>
-    Polynomial<N - 1> differentiate(const Polynomial<N> &polynomial);
-
-    template <size_t N>
-    Polynomial<N + 1> integrate(const Polynomial<N> &polynomial);
+    Polynomial differentiate(const Polynomial &polynomial);
+    Polynomial integrate(const Polynomial &polynomial);
 }
 
 #include <m/polynomial_impl.h>

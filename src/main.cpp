@@ -162,30 +162,30 @@ int main() {
 
         printThing("-- testing polynomial arithmetic --");
 
-        m::Polynomial<2> quadratic(1, 2, 3); // 1 + 2z + 3z^2
+        m::Polynomial quadratic(1, 2, 3); // 1 + 2z + 3z^2
 
         auto roots = quadratic.solve();
-        auto degree = quadratic.actualDegree();
+        auto degree = quadratic.getDegree();
 
         printThing("P(z) = " << quadratic);
         printThing("P has degree " << degree);
         printThing("P(z) = 0 -> " << roots);
 
-        auto quintic = m::Polynomial<5>(1, 0, 0, 0, 0, 1); // 1 + z^5
+        auto quintic = m::Polynomial(1, 0, 0, 0, 0, 1); // 1 + z^5
         auto prod = quadratic * quintic;
 
         printThing("Q(z) = " << quintic);
         printThing("P(z) * Q(z) = R(z) = " << prod);
 
         printThing("R(1) = " << prod.value(1));
-        printThing("R has degree " << prod.actualDegree());
+        printThing("R has degree " << prod.getDegree());
     }
 
     {
 
         printThing("-- testing analytic calculus --");
 
-        m::Polynomial<5> thing(1, 2, 1, 2, 1, 2);
+        m::Polynomial thing(1, 2, 1, 2, 1, 2);
 
         auto d = m::differentiate(thing);
         auto p = m::integrate(thing);
