@@ -9,7 +9,7 @@ private:
     std::array<T, N * M> values;
 
     // NOTE: 0,0 is top left
-    static auto getIndex(size_t x, size_t y);
+    static size_t getIndex(size_t x, size_t y);
 
 public:
 
@@ -65,17 +65,17 @@ public:
     T &get(size_t x, size_t y);
 
     // TODO: Look into getting references here
-    auto getRow(size_t y) const;
+    tvec<T, N> getRow(size_t y) const;
 
-    auto getColumn(size_t x) const;
+    tvec<T, M> getColumn(size_t x) const;
 
     void setRow(size_t y, const tvec<T, N> &value);
 
     void setColumn(size_t x, const tvec<T, M> &value);
 
-    auto rows() const;
+    std::array<tvec<T, N>, M> rows() const;
 
-    auto columns() const;
+    std::array<tvec<T, M>, N> columns() const;
 
 #if !defined(N) && !defined(M)
 
@@ -85,35 +85,35 @@ public:
 
     // TODO: Update tmat_aug to store determinant multipliers so that echelon form can be used for this
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
-    auto det() const noexcept;
+    T det() const noexcept;
 
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
     bool singular() const noexcept;
 
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
-    auto cofactors() const;
+    tmat<T, N, M> cofactors() const;
 
-    auto transpose() const;
-
-    template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
-    auto adjoint() const;
+    tmat<T, M, N> transpose() const;
 
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
-    auto inverse() const;
+    tmat<T, N, M> adjoint() const;
 
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
-    auto unit() const;
+    tmat<T, N, M> inverse() const;
 
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
-    static auto identity();
+    tmat<T, N, M> unit() const;
 
-    auto &operator+=(const tmat<T, N, M> &rhs);
+    template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
+    static tmat<T, N, M> identity();
 
-    auto &operator-=(const tmat<T, N, M> &rhs);
+    tmat<T, N, M> &operator+=(const tmat<T, N, M> &rhs);
 
-    auto &operator*=(const T &rhs);
+    tmat<T, N, M> &operator-=(const tmat<T, N, M> &rhs);
 
-    auto &operator/=(const T &rhs);
+    tmat<T, N, M> &operator*=(const T &rhs);
+
+    tmat<T, N, M> &operator/=(const T &rhs);
 // };
 
 #endif

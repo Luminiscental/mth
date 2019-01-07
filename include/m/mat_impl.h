@@ -1,5 +1,3 @@
-#ifdef __m_impl__
-#undef __m_impl__
 
 #include <cmath>
 #include <iomanip>
@@ -16,19 +14,19 @@ m::tmat_aug<T, N, A>::tmat_aug(const m::tmat<T, N, N> &matrix, const std::array<
     :matrix(matrix), aux(aux) {}
 
 template <typename T, size_t N, typename A>
-auto m::tmat_aug<T, N, A>::coefficients() const {
+m::tmat<T, N, N> m::tmat_aug<T, N, A>::coefficients() const {
 
     return matrix;
 }
 
 template <typename T, size_t N, typename A>
-auto m::tmat_aug<T, N, A>::auxilary() const {
+std::array<A, N> m::tmat_aug<T, N, A>::auxilary() const {
 
     return aux;
 }
 
 template <typename T, size_t N, typename A>
-auto m::tmat_aug<T, N, A>::solve() const {
+std::array<A, N> m::tmat_aug<T, N, A>::solve() const {
 
     if (singular()) throw std::invalid_argument("m::exception: solve() called on singular system");
 
@@ -36,7 +34,7 @@ auto m::tmat_aug<T, N, A>::solve() const {
 }
 
 template <typename T, size_t N, typename A>
-auto m::tmat_aug<T, N, A>::leadingIndex(size_t row) const {
+size_t m::tmat_aug<T, N, A>::leadingIndex(size_t row) const {
 
     for (size_t i = 0; i < N; i++) {
 
@@ -187,7 +185,7 @@ void m::tmat_aug<T, N, A>::eliminateFromRight(size_t x, size_t y) {
 }
 
 template <typename T, size_t N, typename A>
-auto m::tmat_aug<T, N, A>::ordered() const {
+m::tmat_aug<T, N, A> m::tmat_aug<T, N, A>::ordered() const {
 
     using std::begin;
     using std::end;
@@ -209,7 +207,7 @@ auto m::tmat_aug<T, N, A>::ordered() const {
 }
 
 template <typename T, size_t N, typename A>
-auto m::tmat_aug<T, N, A>::rowEchelon() const {
+m::tmat_aug<T, N, A> m::tmat_aug<T, N, A>::rowEchelon() const {
 
     auto result = ordered();
 
@@ -233,7 +231,7 @@ auto m::tmat_aug<T, N, A>::rowEchelon() const {
 }
 
 template <typename T, size_t N, typename A>
-auto m::tmat_aug<T, N, A>::reducedRowEchelon() const {
+m::tmat_aug<T, N, A> m::tmat_aug<T, N, A>::reducedRowEchelon() const {
 
     auto result = rowEchelon();
 
@@ -255,7 +253,7 @@ auto m::tmat_aug<T, N, A>::reducedRowEchelon() const {
 }
 
 template <typename T, size_t N, typename A>
-auto &m::operator<<(std::ostream &lhs, const m::tmat_aug<T, N, A> &rhs) {
+std::ostream &m::operator<<(std::ostream &lhs, const m::tmat_aug<T, N, A> &rhs) {
 
     lhs << std::fixed << std::setprecision(m_PRECISION);
 
@@ -305,7 +303,7 @@ auto &m::operator<<(std::ostream &lhs, const m::tmat_aug<T, N, A> &rhs) {
 #endif
 
 TEMPLATE_NM
-auto m::tmat<T, N, M>::getIndex(size_t x, size_t y) {
+size_t m::tmat<T, N, M>::getIndex(size_t x, size_t y) {
 
     if (x > N - 1) throw std::out_of_range("m::exception: column index out of bounds");
     if (y > M - 1) throw std::out_of_range("m::exception: row index out of bounds");
@@ -378,7 +376,7 @@ T &m::tmat<T, N, M>::get(size_t x, size_t y) {
 
 // TODO: Look into getting references here
 TEMPLATE_NM
-auto m::tmat<T, N, M>::getRow(size_t y) const {
+m::tvec<T, N> m::tmat<T, N, M>::getRow(size_t y) const {
 
     tvec<T, N> result;
 
@@ -391,7 +389,7 @@ auto m::tmat<T, N, M>::getRow(size_t y) const {
 }
 
 TEMPLATE_NM
-auto m::tmat<T, N, M>::getColumn(size_t x) const {
+m::tvec<T, M> m::tmat<T, N, M>::getColumn(size_t x) const {
 
     tvec<T, M> result;
 
@@ -422,7 +420,7 @@ void m::tmat<T, N, M>::setColumn(size_t x, const m::tvec<T, M> &value) {
 }
 
 TEMPLATE_NM
-auto m::tmat<T, N, M>::rows() const {
+std::array<m::tvec<T, N>, M> m::tmat<T, N, M>::rows() const {
 
     std::array<tvec<T, N>, M> result;
 
@@ -435,7 +433,7 @@ auto m::tmat<T, N, M>::rows() const {
 }
 
 TEMPLATE_NM
-auto m::tmat<T, N, M>::columns() const {
+std::array<m::tvec<T, M>, N> m::tmat<T, N, M>::columns() const {
 
     std::array<tvec<T, M>, N> result;
 
@@ -487,7 +485,7 @@ m::tmat<T, N - 1, M - 1> m::tmat<T, N, M>::minor(size_t x, size_t y) const {
 #if defined(N) || defined(M)
 
 TEMPLATE_NN
-auto m::tmat<T, N, M>::det() const noexcept {
+T m::tmat<T, N, M>::det() const noexcept {
 
     return get(0, 0);
 }
@@ -496,7 +494,7 @@ auto m::tmat<T, N, M>::det() const noexcept {
 
 // TODO: Update tmat_aug to store determinant multipliers so that echelon form can be used for this
 TEMPLATE_NN
-auto m::tmat<T, N, M>::det() const noexcept {
+T m::tmat<T, N, M>::det() const noexcept {
 
     T result = 0;
     T s = 1;
@@ -525,7 +523,7 @@ bool m::tmat<T, N, M>::singular() const noexcept {
 #if defined(N) || defined(M)
 
 TEMPLATE_NN
-auto m::tmat<T, N, M>::cofactors() const {
+m::tmat<T, N, M> m::tmat<T, N, M>::cofactors() const {
 
     return m::tmat<T, 1, 1>::identity();
 }
@@ -533,7 +531,7 @@ auto m::tmat<T, N, M>::cofactors() const {
 #else
 
 TEMPLATE_NN
-auto m::tmat<T, N, M>::cofactors() const {
+m::tmat<T, N, M> m::tmat<T, N, M>::cofactors() const {
 
     tmat<T, N, N> result;
     T s = 1;
@@ -556,7 +554,7 @@ auto m::tmat<T, N, M>::cofactors() const {
 #endif
 
 TEMPLATE_NM
-auto m::tmat<T, N, M>::transpose() const {
+m::tmat<T, M, N> m::tmat<T, N, M>::transpose() const {
 
     tmat<T, M, N> result;
 
@@ -572,13 +570,13 @@ auto m::tmat<T, N, M>::transpose() const {
 }
 
 TEMPLATE_NN
-auto m::tmat<T, N, M>::adjoint() const {
+m::tmat<T, N, M> m::tmat<T, N, M>::adjoint() const {
 
     return cofactors().transpose();
 }
 
 TEMPLATE_NN
-auto m::tmat<T, N, M>::inverse() const {
+m::tmat<T, N, M> m::tmat<T, N, M>::inverse() const {
 
 #ifdef m_ELIMINATION
 
@@ -603,7 +601,7 @@ auto m::tmat<T, N, M>::inverse() const {
 }
 
 TEMPLATE_NN
-auto m::tmat<T, N, M>::unit() const {
+m::tmat<T, N, M> m::tmat<T, N, M>::unit() const {
 
     auto determinant = det();
 
@@ -613,7 +611,7 @@ auto m::tmat<T, N, M>::unit() const {
 }
 
 TEMPLATE_NN
-auto m::tmat<T, N, M>::identity() {
+m::tmat<T, N, M> m::tmat<T, N, M>::identity() {
     
     tmat<T, N, N> result;
 
@@ -629,7 +627,7 @@ auto m::tmat<T, N, M>::identity() {
 }
 
 TEMPLATE_NM
-auto &m::tmat<T, N, M>::operator+=(const tmat<T, N, M> &rhs) {
+m::tmat<T, N, M> &m::tmat<T, N, M>::operator+=(const tmat<T, N, M> &rhs) {
 
     for (size_t x = 0; x < N; x++) {
 
@@ -643,7 +641,7 @@ auto &m::tmat<T, N, M>::operator+=(const tmat<T, N, M> &rhs) {
 }
 
 TEMPLATE_NM
-auto &m::tmat<T, N, M>::operator-=(const tmat<T, N, M> &rhs) {
+m::tmat<T, N, M> &m::tmat<T, N, M>::operator-=(const tmat<T, N, M> &rhs) {
 
     for (size_t x = 0; x < N; x++) {
 
@@ -657,7 +655,7 @@ auto &m::tmat<T, N, M>::operator-=(const tmat<T, N, M> &rhs) {
 }
 
 TEMPLATE_NM
-auto &m::tmat<T, N, M>::operator*=(const T &rhs) {
+m::tmat<T, N, M> &m::tmat<T, N, M>::operator*=(const T &rhs) {
 
     for (size_t x = 0; x < N; x++) {
 
@@ -671,7 +669,7 @@ auto &m::tmat<T, N, M>::operator*=(const T &rhs) {
 }
 
 TEMPLATE_NM
-auto &m::tmat<T, N, M>::operator/=(const T &rhs) {
+m::tmat<T, N, M> &m::tmat<T, N, M>::operator/=(const T &rhs) {
 
     for (size_t x = 0; x < N; x++) {
 
@@ -691,7 +689,7 @@ auto &m::tmat<T, N, M>::operator/=(const T &rhs) {
 #if !defined(N) && !defined(M)
 
 template <typename T, size_t N, size_t M>
-auto m::operator+(const m::tmat<T, N, M> &lhs, const m::tmat<T, N, M> &rhs) {
+m::tmat<T, N, M> m::operator+(const m::tmat<T, N, M> &lhs, const m::tmat<T, N, M> &rhs) {
 
     auto result = lhs;
 
@@ -699,7 +697,7 @@ auto m::operator+(const m::tmat<T, N, M> &lhs, const m::tmat<T, N, M> &rhs) {
 }
 
 template <typename T, size_t N, size_t M>
-auto m::operator-(const m::tmat<T, N, M> &lhs, const m::tmat<T, N, M> &rhs) {
+m::tmat<T, N, M> m::operator-(const m::tmat<T, N, M> &lhs, const m::tmat<T, N, M> &rhs) {
 
     auto result = lhs;
 
@@ -707,7 +705,7 @@ auto m::operator-(const m::tmat<T, N, M> &lhs, const m::tmat<T, N, M> &rhs) {
 }
 
 template <typename T, size_t N, size_t M>
-auto m::operator*(const T &lhs, const m::tmat<T, N, M> &rhs) {
+m::tmat<T, N, M> m::operator*(const T &lhs, const m::tmat<T, N, M> &rhs) {
 
     auto result = rhs;
 
@@ -715,13 +713,13 @@ auto m::operator*(const T &lhs, const m::tmat<T, N, M> &rhs) {
 }
 
 template <typename T, size_t N, size_t M>
-auto m::operator*(const m::tmat<T, N, M> &lhs, const T &rhs) {
+m::tmat<T, N, M> m::operator*(const m::tmat<T, N, M> &lhs, const T &rhs) {
 
     return rhs * lhs;
 }
 
 template <typename T, size_t N, size_t M>
-auto m::operator/(const m::tmat<T, N, M> &lhs, const T &rhs) {
+m::tmat<T, N, M> m::operator/(const m::tmat<T, N, M> &lhs, const T &rhs) {
 
     auto result = lhs;
 
@@ -729,7 +727,7 @@ auto m::operator/(const m::tmat<T, N, M> &lhs, const T &rhs) {
 }
 
 template <typename T, size_t N, size_t M, size_t O>
-auto m::operator*(const m::tmat<T, N, M> &lhs, const m::tmat<T, O, N> &rhs) {
+m::tmat<T, O, M> m::operator*(const m::tmat<T, N, M> &lhs, const m::tmat<T, O, N> &rhs) {
 
     tmat<T, O, M> result;
 
@@ -745,13 +743,13 @@ auto m::operator*(const m::tmat<T, N, M> &lhs, const m::tmat<T, O, N> &rhs) {
 }
 
 template <typename T, size_t N>
-auto m::operator/(const m::tmat<T, N, N> &lhs, const m::tmat<T, N, N> &rhs) {
+m::tmat<T, N, N> m::operator/(const m::tmat<T, N, N> &lhs, const m::tmat<T, N, N> &rhs) {
 
     return lhs * rhs.inverse();
 }
 
 template <typename T, size_t N, size_t M>
-auto m::operator*(const m::tmat<T, N, M> &lhs, const m::tvec<T, N> &rhs) {
+m::tvec<T, M> m::operator*(const m::tmat<T, N, M> &lhs, const m::tvec<T, N> &rhs) {
 
     tvec<T, M> result;
 
@@ -767,7 +765,7 @@ auto m::operator*(const m::tmat<T, N, M> &lhs, const m::tvec<T, N> &rhs) {
 }
 
 template <typename T, size_t N, size_t M>
-auto m::operator==(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
+bool m::operator==(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
 
     for (size_t x = 0; x < N; x++) {
 
@@ -781,14 +779,14 @@ auto m::operator==(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
 }
 
 template <typename T, size_t N, size_t M>
-auto m::operator!=(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
+bool m::operator!=(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
 
     return !(lhs == rhs);
 }
 
 // TODO: Either make this less crappy or remove it
 template <typename T, size_t N, size_t M>
-auto &m::operator<<(std::ostream &lhs, const m::tmat<T, N, M> &rhs) {
+std::ostream &m::operator<<(std::ostream &lhs, const m::tmat<T, N, M> &rhs) {
 
     lhs << std::fixed << std::setprecision(m_PRECISION);
 
@@ -810,7 +808,7 @@ auto &m::operator<<(std::ostream &lhs, const m::tmat<T, N, M> &rhs) {
 }
 
 template <typename T>
-auto m::mat::scale(const m::tvec<T, 3> &factors) {
+m::tmat<T, 4, 4> m::mat::scale(const m::tvec<T, 3> &factors) {
 
     return tmat<T, 4, 4>(factors.get(0), 0,              0,              0,
                          0,              factors.get(1), 0,              0,
@@ -819,13 +817,13 @@ auto m::mat::scale(const m::tvec<T, 3> &factors) {
 }
 
 template <typename T>
-auto m::mat::scale(T factor) {
+m::tmat<T, 4, 4> m::mat::scale(T factor) {
 
     return scale(tvec<T, 3>(factor, factor, factor));
 }
 
 template <typename T>
-auto m::mat::translate(const m::tvec<T, 3> &offset) {
+m::tmat<T, 4, 4> m::mat::translation(const m::tvec<T, 3> &offset) {
 
     return tmat<T, 4, 4>(1, 0, 0, offset.x(),
                          0, 1, 0, offset.y(),
@@ -834,7 +832,7 @@ auto m::mat::translate(const m::tvec<T, 3> &offset) {
 }
 
 template <typename T>
-auto m::mat::rotation(const m::tquat<T> &rep) {
+m::tmat<T, 4, 4> m::mat::rotation(const m::tquat<T> &rep) {
 
     tvec<T, 3> rotatedX = rep.rotate(m::X_AXIS<T>);
     tvec<T, 3> rotatedY = rep.rotate(m::Y_AXIS<T>);
@@ -847,12 +845,9 @@ auto m::mat::rotation(const m::tquat<T> &rep) {
 }
 
 template <typename T>
-auto m::mat::rotation(T angle, const m::tvec<T, 3> &axis) {
+m::tmat<T, 4, 4> m::mat::rotation(T angle, const m::tvec<T, 3> &axis) {
 
     return rotation(tquat<T>::rotation(angle, axis));
 }
 
-#endif
-
-#define __m_impl__
 #endif

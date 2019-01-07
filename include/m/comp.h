@@ -17,64 +17,64 @@ namespace m {
     // TODO: Template for arbitrary scalars since implicit type conversion can't happen
 
     template <typename T>
-    auto operator+(const tcomp<T> &lhs, const tcomp<T> &rhs);
+    tcomp<T> operator+(const tcomp<T> &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator+(const tcomp<T> &lhs, const T &rhs); 
+    tcomp<T> operator+(const tcomp<T> &lhs, const T &rhs); 
 
     template <typename T>
-    auto operator+(const T &lhs, const tcomp<T> &rhs);
+    tcomp<T> operator+(const T &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator-(const tcomp<T> &rhs);
+    tcomp<T> operator-(const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator-(const tcomp<T> &lhs, const tcomp<T> &rhs);
+    tcomp<T> operator-(const tcomp<T> &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator-(const tcomp<T> &lhs, const T &rhs);
+    tcomp<T> operator-(const tcomp<T> &lhs, const T &rhs);
 
     template <typename T>
-    auto operator-(const T &lhs, const tcomp<T> &rhs);
+    tcomp<T> operator-(const T &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator*(const tcomp<T> &lhs, const tcomp<T> &rhs);
+    tcomp<T> operator*(const tcomp<T> &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator*(const tcomp<T> &lhs, const T &rhs);
+    tcomp<T> operator*(const tcomp<T> &lhs, const T &rhs);
 
     template <typename T>
-    auto operator*(const T &lhs, const tcomp<T> &rhs);
+    tcomp<T> operator*(const T &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator/(const tcomp<T> &lhs, const tcomp<T> &rhs);
+    tcomp<T> operator/(const tcomp<T> &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator/(const tcomp<T> &lhs, const T &rhs);
+    tcomp<T> operator/(const tcomp<T> &lhs, const T &rhs);
 
     template <typename T>
-    auto operator/(const T &lhs, const tcomp<T> &rhs);
+    tcomp<T> operator/(const T &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator==(const tcomp<T> &lhs, const tcomp<T> &rhs);
+    bool operator==(const tcomp<T> &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator==(const tcomp<T> &lhs, const T &rhs);
+    bool operator==(const tcomp<T> &lhs, const T &rhs);
 
     template <typename T>
-    auto operator==(const T &lhs, const tcomp<T> &rhs);
+    bool operator==(const T &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator!=(const tcomp<T> &lhs, const tcomp<T> &rhs);
+    bool operator!=(const tcomp<T> &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto operator!=(const tcomp<T> &lhs, const T &rhs);
+    bool operator!=(const tcomp<T> &lhs, const T &rhs);
 
     template <typename T>
-    auto operator!=(const T &lhs, const tcomp<T> &rhs);
+    bool operator!=(const T &lhs, const tcomp<T> &rhs);
 
     template <typename T>
-    auto &operator<<(std::ostream &lhs, const tcomp<T> &rhs);
+    std::ostream &operator<<(std::ostream &lhs, const tcomp<T> &rhs);
 
     template <typename T>
     class tcomp {
@@ -98,8 +98,8 @@ namespace m {
         constexpr tcomp(const T &a) noexcept
             :a(a), b(0) {}
 
-#define BINDING(name, value)    const auto & name () const noexcept; \
-                                auto & name () noexcept;
+#define BINDING(name, value)    const T & name () const noexcept; \
+                                T & name () noexcept;
 
         BINDING(real, a)
         BINDING(imag, b)
@@ -112,17 +112,17 @@ namespace m {
 
         operator tvec<T, 2>() noexcept;
 
-        auto absSqr() const noexcept;
+        T absSqr() const noexcept;
 
-        auto abs() const noexcept;
+        double abs() const noexcept;
 
-        auto arg() const noexcept;
+        double arg() const noexcept;
 
-        auto unit() const;
+        tcomp<T> unit() const;
 
-        auto conjugate() const noexcept;
+        tcomp<T> conjugate() const noexcept;
 
-        auto inverse() const;
+        tcomp<T> inverse() const;
 
         static tcomp<T> rotation(const T &angle);
 
@@ -137,81 +137,81 @@ namespace m {
 
         static tcomp<T> fromPolar(const tvec<T, 2> &polar);
 
-        auto &operator+=(const tcomp<T> &rhs);
+        tcomp<T> &operator+=(const tcomp<T> &rhs);
 
-        auto &operator+=(const T &rhs);
+        tcomp<T> &operator+=(const T &rhs);
 
-        auto &operator-=(const tcomp<T> &rhs);
+        tcomp<T> &operator-=(const tcomp<T> &rhs);
 
-        auto &operator-=(const T &rhs);
+        tcomp<T> &operator-=(const T &rhs);
 
-        auto &operator*=(const tcomp <T> &rhs);
+        tcomp<T> &operator*=(const tcomp <T> &rhs);
 
-        auto &operator*=(const T &rhs);
+        tcomp<T> &operator*=(const T &rhs);
 
-        auto &operator/=(const tcomp<T> &rhs);
+        tcomp<T> &operator/=(const tcomp<T> &rhs);
 
-        auto &operator/=(const T &rhs);
-
-        template <typename U>
-        friend auto operator+(const tcomp<U> &lhs, const tcomp<U> &rhs);
+        tcomp<T> &operator/=(const T &rhs);
 
         template <typename U>
-        friend auto operator+(const tcomp<U> &lhs, const U &rhs); 
+        friend tcomp<U> operator+(const tcomp<U> &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator+(const U &lhs, const tcomp<U> &rhs);
+        friend tcomp<U> operator+(const tcomp<U> &lhs, const U &rhs); 
 
         template <typename U>
-        friend auto operator-(const tcomp<U> &rhs);
+        friend tcomp<U> operator+(const U &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator-(const tcomp<U> &lhs, const tcomp<U> &rhs);
+        friend tcomp<U> operator-(const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator-(const tcomp<U> &lhs, const U &rhs);
+        friend tcomp<U> operator-(const tcomp<U> &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator-(const U &lhs, const tcomp<U> &rhs);
+        friend tcomp<U> operator-(const tcomp<U> &lhs, const U &rhs);
 
         template <typename U>
-        friend auto operator*(const tcomp<U> &lhs, const tcomp<U> &rhs);
+        friend tcomp<U> operator-(const U &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator*(const tcomp<U> &lhs, const U &rhs);
+        friend tcomp<U> operator*(const tcomp<U> &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator*(const U &lhs, const tcomp<U> &rhs);
+        friend tcomp<U> operator*(const tcomp<U> &lhs, const U &rhs);
 
         template <typename U>
-        friend auto operator/(const tcomp<U> &lhs, const tcomp<U> &rhs);
+        friend tcomp<U> operator*(const U &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator/(const tcomp<U> &lhs, const U &rhs);
+        friend tcomp<U> operator/(const tcomp<U> &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator/(const U &lhs, const tcomp<U> &rhs);
+        friend tcomp<U> operator/(const tcomp<U> &lhs, const U &rhs);
 
         template <typename U>
-        friend auto operator==(const tcomp<U> &lhs, const tcomp<U> &rhs);
+        friend tcomp<U> operator/(const U &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator==(const tcomp<U> &lhs, const U &rhs);
+        friend bool operator==(const tcomp<U> &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator==(const U &lhs, const tcomp<U> &rhs);
+        friend bool operator==(const tcomp<U> &lhs, const U &rhs);
 
         template <typename U>
-        friend auto operator!=(const tcomp<U> &lhs, const tcomp<U> &rhs);
+        friend bool operator==(const U &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator!=(const tcomp<U> &lhs, const U &rhs);
+        friend bool operator!=(const tcomp<U> &lhs, const tcomp<U> &rhs);
 
         template <typename U>
-        friend auto operator!=(const U &lhs, const tcomp<U> &rhs);
+        friend bool operator!=(const tcomp<U> &lhs, const U &rhs);
 
         template <typename U>
-        friend auto &operator<<(std::ostream &lhs, const tcomp<U> &rhs);
+        friend bool operator!=(const U &lhs, const tcomp<U> &rhs);
+
+        template <typename U>
+        friend std::ostream &operator<<(std::ostream &lhs, const tcomp<U> &rhs);
     };
 
     using icomp = tcomp<int>;
@@ -225,20 +225,24 @@ namespace m {
 
 namespace std {
 
-    template <typename T>
-    double abs(const m::tcomp<T> &z);
+    // TODO: Figure out how to template these while still getting overload detection
 
-    template <typename T>
-    m::tcomp<T> sqrt(const m::tcomp<T> &z);
+    double abs(const m::comp &z);
 
-    template <typename T>
-    m::tcomp<T> exp(const m::tcomp<T> &z);
+    m::comp sqrt(const m::comp &z);
 
-    template <typename T>
-    m::tcomp<T> cos(const m::tcomp<T> &z);
+    m::comp exp(const m::comp &z);
 
-    template <typename T>
-    m::tcomp<T> sin(const m::tcomp<T> &z);
+    m::comp cos(const m::comp &z);
+
+    m::comp sin(const m::comp &z);
+    
+    // TODO: Add for other types
+    template<>
+    struct hash<m::comp> {
+
+        size_t operator()(const m::comp &x) const;
+    };
 }
 
 #include <m/comp_impl.h>

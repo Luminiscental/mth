@@ -1,5 +1,3 @@
-#ifdef __m_impl__
-#undef __m_impl__
 
 #include <cmath>
 #include <iomanip>
@@ -16,19 +14,19 @@
 #undef BINDING
 
 template <typename T>
-auto m::tquat<T>::magnSqr() const noexcept {
+T m::tquat<T>::magnSqr() const noexcept {
 
     return w * w + ijk.magnSqr();
 }
 
 template <typename T>
-auto m::tquat<T>::magn() const noexcept {
+double m::tquat<T>::magn() const noexcept {
 
     return std::sqrt(static_cast<double>(magnSqr()));
 }
 
 template <typename T>
-auto m::tquat<T>::inverse() const {
+m::tquat<T> m::tquat<T>::inverse() const {
 
     auto ls = magnSqr();
 
@@ -38,7 +36,7 @@ auto m::tquat<T>::inverse() const {
 }
 
 template <typename T>
-auto m::tquat<T>::unit() const {
+m::tquat<T> m::tquat<T>::unit() const {
 
     auto l = static_cast<T>(magn());
 
@@ -48,19 +46,19 @@ auto m::tquat<T>::unit() const {
 }
 
 template <typename T>
-auto m::tquat<T>::rotate(const m::tvec<T, 3> &vector) const {
+m::tvec<T, 3> m::tquat<T>::rotate(const m::tvec<T, 3> &vector) const {
 
     return (*this * tquat<T>(vector) * inverse()).imaginary();
 }
 
 template <typename T>
-auto m::tquat<T>::identity() {
+m::tquat<T> m::tquat<T>::identity() {
     
     return tquat(); 
 }
 
 template <typename T>
-auto m::tquat<T>::rotation(T angle, const m::tvec<T, 3> &axis) {
+m::tquat<T> m::tquat<T>::rotation(T angle, const m::tvec<T, 3> &axis) {
 
     auto halfAngle = static_cast<double>(angle) / 2.0;
 
@@ -71,7 +69,7 @@ auto m::tquat<T>::rotation(T angle, const m::tvec<T, 3> &axis) {
 }
 
 template <typename T>
-auto &m::tquat<T>::operator+=(const m::tquat<T> &rhs) {
+m::tquat<T> &m::tquat<T>::operator+=(const m::tquat<T> &rhs) {
 
     w += rhs.w;
     ijk += rhs.ijk;
@@ -80,7 +78,7 @@ auto &m::tquat<T>::operator+=(const m::tquat<T> &rhs) {
 }
 
 template <typename T>
-auto &m::tquat<T>::operator+=(T rhs) {
+m::tquat<T> &m::tquat<T>::operator+=(T rhs) {
 
     w += rhs;
 
@@ -88,7 +86,7 @@ auto &m::tquat<T>::operator+=(T rhs) {
 }
 
 template <typename T>
-auto &m::tquat<T>::operator-=(const m::tquat<T> &rhs) {
+m::tquat<T> &m::tquat<T>::operator-=(const m::tquat<T> &rhs) {
 
     w -= rhs.w;
     ijk -= rhs.ijk;
@@ -97,7 +95,7 @@ auto &m::tquat<T>::operator-=(const m::tquat<T> &rhs) {
 }
 
 template <typename T>
-auto &m::tquat<T>::operator-=(T rhs) {
+m::tquat<T> &m::tquat<T>::operator-=(T rhs) {
 
     w -= rhs;
 
@@ -105,7 +103,7 @@ auto &m::tquat<T>::operator-=(T rhs) {
 }
 
 template <typename T>
-auto &m::tquat<T>::operator*=(const m::tquat<T> &rhs) {
+m::tquat<T> &m::tquat<T>::operator*=(const m::tquat<T> &rhs) {
 
     *this = *this * rhs;
 
@@ -113,7 +111,7 @@ auto &m::tquat<T>::operator*=(const m::tquat<T> &rhs) {
 }
 
 template <typename T>
-auto &m::tquat<T>::operator*=(T rhs) {
+m::tquat<T> &m::tquat<T>::operator*=(T rhs) {
 
     w *= rhs;
     ijk *= rhs;
@@ -122,7 +120,7 @@ auto &m::tquat<T>::operator*=(T rhs) {
 }
 
 template <typename T>
-auto &m::tquat<T>::operator/=(const m::tquat<T> &rhs) {
+m::tquat<T> &m::tquat<T>::operator/=(const m::tquat<T> &rhs) {
 
     *this = *this / rhs;
 
@@ -130,7 +128,7 @@ auto &m::tquat<T>::operator/=(const m::tquat<T> &rhs) {
 }
 
 template <typename T>
-auto &m::tquat<T>::operator/=(T rhs) {
+m::tquat<T> &m::tquat<T>::operator/=(T rhs) {
 
     w /= rhs;
     ijk /= rhs;
@@ -139,7 +137,7 @@ auto &m::tquat<T>::operator/=(T rhs) {
 }
 
 template <typename T>
-auto m::operator+(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
+m::tquat<T> m::operator+(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
 
     tquat<T> result = lhs;
 
@@ -147,7 +145,7 @@ auto m::operator+(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
 }
 
 template <typename T>
-auto m::operator+(const m::tquat<T> &lhs, T rhs) {
+m::tquat<T> m::operator+(const m::tquat<T> &lhs, T rhs) {
 
     tquat<T> result = lhs;
 
@@ -155,19 +153,19 @@ auto m::operator+(const m::tquat<T> &lhs, T rhs) {
 }
 
 template <typename T>
-auto m::operator+(T lhs, const m::tquat<T> &rhs) {
+m::tquat<T> m::operator+(T lhs, const m::tquat<T> &rhs) {
 
     return rhs + lhs;
 }
 
 template <typename T>
-auto m::operator-(const m::tquat<T> &rhs) {
+m::tquat<T> m::operator-(const m::tquat<T> &rhs) {
 
     return tquat<T>(-rhs.w, -rhs.ijk);
 }
 
 template <typename T>
-auto m::operator-(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
+m::tquat<T> m::operator-(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
 
     tquat<T> result = lhs;
 
@@ -175,7 +173,7 @@ auto m::operator-(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
 }
 
 template <typename T>
-auto m::operator-(const m::tquat<T> &lhs, T rhs) {
+m::tquat<T> m::operator-(const m::tquat<T> &lhs, T rhs) {
 
     tquat<T> result = lhs;
 
@@ -183,7 +181,7 @@ auto m::operator-(const m::tquat<T> &lhs, T rhs) {
 }
 
 template <typename T>
-auto m::operator-(T lhs, const m::tquat<T> &rhs) {
+m::tquat<T> m::operator-(T lhs, const m::tquat<T> &rhs) {
 
     tquat<T> result = lhs;
 
@@ -191,7 +189,7 @@ auto m::operator-(T lhs, const m::tquat<T> &rhs) {
 }
 
 template <typename T>
-auto m::operator*(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
+m::tquat<T> m::operator*(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
 
     return tquat<T>(lhs.real() * rhs.i() + lhs.i() * rhs.real() + lhs.j() * rhs.k() - lhs.k() * rhs.j(),
                     lhs.real() * rhs.j() - lhs.i() * rhs.k() + lhs.j() * rhs.real() + lhs.k() * rhs.i(),
@@ -200,7 +198,7 @@ auto m::operator*(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
 }
 
 template <typename T>
-auto m::operator*(T lhs, const m::tquat<T> &rhs) {
+m::tquat<T> m::operator*(T lhs, const m::tquat<T> &rhs) {
 
     tquat<T> result = rhs;
 
@@ -208,25 +206,25 @@ auto m::operator*(T lhs, const m::tquat<T> &rhs) {
 }
 
 template <typename T>
-auto m::operator*(const m::tquat<T> &lhs, T rhs) {
+m::tquat<T> m::operator*(const m::tquat<T> &lhs, T rhs) {
 
     return rhs * lhs;
 }
 
 template <typename T>
-auto m::operator/(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
+m::tquat<T> m::operator/(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
 
     return lhs * rhs.inverse();
 }
 
 template <typename T>
-auto m::operator/(T lhs, const m::tquat<T> &rhs) {
+m::tquat<T> m::operator/(T lhs, const m::tquat<T> &rhs) {
 
     return tquat<T>(lhs) / rhs;
 }
 
 template <typename T>
-auto m::operator/(const m::tquat<T> &lhs, T rhs) {
+m::tquat<T> m::operator/(const m::tquat<T> &lhs, T rhs) {
 
     tquat<T> result = lhs;
 
@@ -234,43 +232,43 @@ auto m::operator/(const m::tquat<T> &lhs, T rhs) {
 }
 
 template <typename T>
-auto m::operator==(const tquat<T> &lhs, const tquat<T> &rhs) {
+bool m::operator==(const tquat<T> &lhs, const tquat<T> &rhs) {
 
     return util::checkEqual(lhs.real(), rhs.real()) && lhs.imag() == rhs.imag();
 }
 
 template <typename T>
-auto m::operator==(const T &lhs, const tquat<T> &rhs) {
+bool m::operator==(const T &lhs, const tquat<T> &rhs) {
 
     return util::checkEqual(lhs, rhs.real()) && rhs.imag() == tvec<T, 3>(0, 0, 0);
 }
 
 template <typename T>
-auto m::operator==(const tquat<T> &lhs, const T &rhs) {
+bool m::operator==(const tquat<T> &lhs, const T &rhs) {
 
     return rhs == lhs;
 }
 
 template <typename T>
-auto m::operator!=(const tquat<T> &lhs, const tquat<T> &rhs) {
+bool m::operator!=(const tquat<T> &lhs, const tquat<T> &rhs) {
 
     return !(lhs == rhs);
 }
 
 template <typename T>
-auto m::operator!=(const T &lhs, const tquat<T> &rhs) {
+bool m::operator!=(const T &lhs, const tquat<T> &rhs) {
 
     return !(lhs == rhs);
 }
 
 template <typename T>
-auto m::operator!=(const tquat<T> &lhs, const T &rhs) {
+bool m::operator!=(const tquat<T> &lhs, const T &rhs) {
 
     return !(lhs == rhs);
 }
 
 template <typename T>
-auto &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
+std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
 
     bool nonZero = false;
 
@@ -333,6 +331,3 @@ auto &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
 
     return lhs << ")";
 }
-
-#define __m_impl__
-#endif

@@ -14,31 +14,31 @@ namespace m {
     class tvec;
 
     template <typename T, size_t N>
-    auto operator+(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+    tvec<T, N> operator+(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
 
     template <typename T, size_t N>
-    auto operator-(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+    tvec<T, N> operator-(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
 
     template <typename T, size_t N>
-    auto operator-(const tvec<T, N> &rhs);
+    tvec<T, N> operator-(const tvec<T, N> &rhs);
 
     template <typename T, size_t N>
-    auto operator*(const T &lhs, const tvec<T, N> &rhs);
+    tvec<T, N> operator*(const T &lhs, const tvec<T, N> &rhs);
 
     template <typename T, size_t N>
-    auto operator*(const tvec<T, N> &lhs, const T &rhs);
+    tvec<T, N> operator*(const tvec<T, N> &lhs, const T &rhs);
 
     template <typename T, size_t N>
-    auto operator/(const tvec<T, N> &lhs, const T &rhs);
+    tvec<T, N> operator/(const tvec<T, N> &lhs, const T &rhs);
 
     template <typename T, size_t N>
-    auto operator==(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+    bool operator==(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
 
     template <typename T, size_t N>
-    auto operator!=(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+    bool operator!=(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
 
     template <typename T, size_t N>
-    auto &operator<<(std::ostream &lhs, const tvec<T, N> &rhs);
+    std::ostream &operator<<(std::ostream &lhs, const tvec<T, N> &rhs);
 
     // TODO: noexcept on operators?
 
@@ -126,57 +126,57 @@ namespace m {
         template <size_t n = N, typename std::enable_if<(n == N) && (n > 3), int>::type = 0>
         tvec<T, 4> xyzw() const;
 
-        auto magnSqr() const noexcept;
+        T magnSqr() const noexcept;
 
-        auto magn() const noexcept;
+        double magn() const noexcept;
         
-        auto dot(const tvec<T, N> &rhs) const;
+        T dot(const tvec<T, N> &rhs) const;
 
-        auto unit() const;
+        tvec<T, N> unit() const;
 
-        static auto dot(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+        static T dot(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
 
-        auto &operator+=(const tvec<T, N> &rhs);
+        tvec<T, N> &operator+=(const tvec<T, N> &rhs);
 
-        auto &operator-=(const tvec<T, N> &rhs);
+        tvec<T, N> &operator-=(const tvec<T, N> &rhs);
 
-        auto &operator*=(const T &rhs);
+        tvec<T, N> &operator*=(const T &rhs);
 
-        auto &operator/=(const T &rhs);
-
-        template <typename U, size_t M>
-        friend auto operator+(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+        tvec<T, N> &operator/=(const T &rhs);
 
         template <typename U, size_t M>
-        friend auto operator-(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+        friend tvec<U, M> operator+(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
 
         template <typename U, size_t M>
-        friend auto operator-(const tvec<U, M> &rhs);
+        friend tvec<U, M> operator-(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
 
         template <typename U, size_t M>
-        friend auto operator*(const U &lhs, const tvec<U, M> &rhs);
+        friend tvec<U, M> operator-(const tvec<U, M> &rhs);
 
         template <typename U, size_t M>
-        friend auto operator*(const tvec<U, M> &lhs, const U &rhs);
+        friend tvec<U, M> operator*(const U &lhs, const tvec<U, M> &rhs);
 
         template <typename U, size_t M>
-        friend auto operator/(const tvec<U, M> &lhs, const U &rhs);
+        friend tvec<U, M> operator*(const tvec<U, M> &lhs, const U &rhs);
 
         template <typename U, size_t M>
-        friend auto operator==(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+        friend tvec<U, M> operator/(const tvec<U, M> &lhs, const U &rhs);
 
         template <typename U, size_t M>
-        friend auto operator!=(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+        friend bool operator==(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
 
         template <typename U, size_t M>
-        friend auto &operator<<(std::ostream &lhs, const tvec<U, M> &rhs);
+        friend bool operator!=(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+
+        template <typename U, size_t M>
+        friend std::ostream &operator<<(std::ostream &lhs, const tvec<U, M> &rhs);
     };
 
     // NOTE: Specialized static functions 
     namespace vec {
 
         template <typename T>
-        auto cross(const tvec<T, 3> &lhs, const tvec<T, 3> &rhs);
+        tvec<T, 3> cross(const tvec<T, 3> &lhs, const tvec<T, 3> &rhs);
     }
 
     // TODO: Maybe move to double as default
@@ -199,13 +199,13 @@ namespace m {
 #undef CREATE_ALIASES
 
     template <typename T>
-    constexpr tvec<T, 3> X_AXIS(1, 0, 0);
+    constexpr tvec<T, 3> X_AXIS = tvec<T, 3>(1, 0, 0);
                                 
     template <typename T>
-    constexpr tvec<T, 3> Y_AXIS(0, 1, 0);
+    constexpr tvec<T, 3> Y_AXIS = tvec<T, 3>(0, 1, 0);
                                 
     template <typename T>
-    constexpr tvec<T, 3> Z_AXIS(0, 0, 1);
+    constexpr tvec<T, 3> Z_AXIS = tvec<T, 3>(0, 0, 1);
 }
 
 #include <m/vec_impl.h>

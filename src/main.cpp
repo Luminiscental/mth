@@ -84,7 +84,7 @@ int main() {
         m::vec3 initialPosition(1, 2, 1);
 
         m::mat4 transformation = m::mat::rotation(m::PI<float> / 3, m::X_AXIS<float>)
-                               * m::mat::translate(m::vec3(1.0f, 13.0f, -2.0f));
+                               * m::mat::translation(m::vec3(1.0f, 13.0f, -2.0f));
         m::vec4 positionHandle(initialPosition.x(), initialPosition.y(), initialPosition.z(), 1);
 
         m::vec3 transformedPosition = (transformation * positionHandle).xyz();

@@ -11,64 +11,64 @@ namespace m {
     class tquat;
 
     template <typename T>
-    auto operator+(const tquat<T> &lhs, const tquat<T> &rhs);
+    tquat<T> operator+(const tquat<T> &lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator+(const tquat<T> &lhs, T rhs);
+    tquat<T> operator+(const tquat<T> &lhs, T rhs);
 
     template <typename T>
-    auto operator+(T lhs, const tquat<T> &rhs);
+    tquat<T> operator+(T lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator-(const tquat<T> &rhs);
+    tquat<T> operator-(const tquat<T> &rhs);
 
     template <typename T>
-    auto operator-(const tquat<T> &lhs, const tquat<T> &rhs);
+    tquat<T> operator-(const tquat<T> &lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator-(const tquat<T> &lhs, T rhs);
+    tquat<T> operator-(const tquat<T> &lhs, T rhs);
 
     template <typename T>
-    auto operator-(T lhs, const tquat<T> &rhs);
+    tquat<T> operator-(T lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator*(const tquat<T> &lhs, const tquat<T> &rhs);
+    tquat<T> operator*(const tquat<T> &lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator*(T lhs, const tquat<T> &rhs);
+    tquat<T> operator*(T lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator*(const tquat<T> &lhs, T rhs);
+    tquat<T> operator*(const tquat<T> &lhs, T rhs);
 
     template <typename T>
-    auto operator/(const tquat<T> &lhs, const tquat<T> &rhs);
+    tquat<T> operator/(const tquat<T> &lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator/(T lhs, const tquat<T> &rhs);
+    tquat<T> operator/(T lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator/(const tquat<T> &lhs, T rhs);
+    tquat<T> operator/(const tquat<T> &lhs, T rhs);
 
     template <typename T>
-    auto operator==(const tquat<T> &lhs, const tquat<T> &rhs);
+    bool operator==(const tquat<T> &lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator==(const T &lhs, const tquat<T> &rhs);
+    bool operator==(const T &lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator==(const tquat<T> &lhs, const T &rhs);
+    bool operator==(const tquat<T> &lhs, const T &rhs);
 
     template <typename T>
-    auto operator!=(const tquat<T> &lhs, const tquat<T> &rhs);
+    bool operator!=(const tquat<T> &lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator!=(const T &lhs, const tquat<T> &rhs);
+    bool operator!=(const T &lhs, const tquat<T> &rhs);
 
     template <typename T>
-    auto operator!=(const tquat<T> &lhs, const T &rhs);
+    bool operator!=(const tquat<T> &lhs, const T &rhs);
 
     template <typename T>
-    auto &operator<<(std::ostream &lhs, const tquat<T> &rhs);
+    std::ostream &operator<<(std::ostream &lhs, const tquat<T> &rhs);
 
     template <typename T>
     class tquat {
@@ -106,102 +106,102 @@ namespace m {
         constexpr tquat(T r, const tvec<T, 3> &vector) noexcept
             :w(r), ijk(vector) {}
 
-        auto magnSqr() const noexcept;
+        T magnSqr() const noexcept;
 
-        auto magn() const noexcept;
+        double magn() const noexcept;
 
-        constexpr auto conjugate() const noexcept {
+        constexpr tquat<T> conjugate() const noexcept {
 
             return tquat<T>(w, -ijk);
         }
 
-        auto inverse() const;
+        tquat<T> inverse() const;
 
-        auto unit() const;
+        tquat<T> unit() const;
 
-        auto rotate(const m::tvec<T, 3> &vector) const;
+        tvec<T, 3> rotate(const m::tvec<T, 3> &vector) const;
 
-        static auto identity();
+        static tquat<T> identity();
 
                                                                //                        /-
-        static auto rotation(T angle, const tvec<T, 3> &axis); // NOTE: Right-handed: ---|--> axis
+        static tquat<T> rotation(T angle, const tvec<T, 3> &axis); // NOTE: Right-handed: ---|--> axis
                                                                //                        \-> rotation
 
-        auto &operator+=(const tquat<T> &rhs);
+        tquat<T> &operator+=(const tquat<T> &rhs);
 
-        auto &operator+=(T rhs);
+        tquat<T> &operator+=(T rhs);
 
-        auto &operator-=(const tquat<T> &rhs);
+        tquat<T> &operator-=(const tquat<T> &rhs);
 
-        auto &operator-=(T rhs);
+        tquat<T> &operator-=(T rhs);
 
-        auto &operator*=(const tquat<T> &rhs);
+        tquat<T> &operator*=(const tquat<T> &rhs);
 
-        auto &operator*=(T rhs);
+        tquat<T> &operator*=(T rhs);
 
-        auto &operator/=(const tquat<T> &rhs);
+        tquat<T> &operator/=(const tquat<T> &rhs);
 
-        auto &operator/=(T rhs);
-
-        template <typename U>
-        friend auto operator+(const tquat<U> &lhs, const tquat<U> &rhs);
+        tquat<T> &operator/=(T rhs);
 
         template <typename U>
-        friend auto operator+(const tquat<U> &lhs, U rhs);
+        friend tquat<U> operator+(const tquat<U> &lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator+(U lhs, const tquat<U> &rhs);
+        friend tquat<U> operator+(const tquat<U> &lhs, U rhs);
 
         template <typename U>
-        friend auto operator-(const tquat<U> &rhs);
+        friend tquat<U> operator+(U lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator-(const tquat<U> &lhs, const tquat<U> &rhs);
+        friend tquat<U> operator-(const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator-(const tquat<U> &lhs, U rhs);
+        friend tquat<U> operator-(const tquat<U> &lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator-(U lhs, const tquat<U> &rhs);
+        friend tquat<U> operator-(const tquat<U> &lhs, U rhs);
 
         template <typename U>
-        friend auto operator*(const tquat<U> &lhs, const tquat<U> &rhs);
+        friend tquat<U> operator-(U lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator*(U lhs, const tquat<U> &rhs);
+        friend tquat<U> operator*(const tquat<U> &lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator*(const tquat<U> &lhs, U rhs);
+        friend tquat<U> operator*(U lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator/(const tquat<U> &lhs, const tquat<U> &rhs);
+        friend tquat<U> operator*(const tquat<U> &lhs, U rhs);
 
         template <typename U>
-        friend auto operator/(U lhs, const tquat<U> &rhs);
+        friend tquat<U> operator/(const tquat<U> &lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator/(const tquat<U> &lhs, U rhs);
+        friend tquat<U> operator/(U lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator==(const tquat<U> &lhs, const tquat<U> &rhs);
+        friend tquat<U> operator/(const tquat<U> &lhs, U rhs);
 
         template <typename U>
-        friend auto operator==(const U &lhs, const tquat<U> &rhs);
+        friend bool operator==(const tquat<U> &lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator==(const tquat<U> &lhs, const U &rhs);
+        friend bool operator==(const U &lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator!=(const tquat<U> &lhs, const tquat<U> &rhs);
+        friend bool operator==(const tquat<U> &lhs, const U &rhs);
 
         template <typename U>
-        friend auto operator!=(const U &lhs, const tquat<U> &rhs);
+        friend bool operator!=(const tquat<U> &lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto operator!=(const tquat<U> &lhs, const U &rhs);
+        friend bool operator!=(const U &lhs, const tquat<U> &rhs);
 
         template <typename U>
-        friend auto &operator<<(std::ostream &lhs, const tquat<U> &rhs);
+        friend bool operator!=(const tquat<U> &lhs, const U &rhs);
+
+        template <typename U>
+        friend std::ostream &operator<<(std::ostream &lhs, const tquat<U> &rhs);
     };
 
     using iquat = tquat<int>;

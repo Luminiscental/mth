@@ -1,8 +1,6 @@
 #ifndef __m_m_h__
 #define __m_m_h__
 
-#define __m_impl__
-
 /* NOTE: Optional preprocessor flags:
  *
  *      m_ROW_MAJOR - Matrix values are stored row-major rather than column-major.
@@ -14,24 +12,26 @@
 #define m_PRECISION 2
 #endif
 
+#include <limits>
+
 namespace m {
 
     template <typename T>
-    constexpr T EPSILON;
+    constexpr T EPSILON = std::numeric_limits<T>::epsilon();
 
     template <typename T>
-    constexpr T PI;
-
+    constexpr T PI = static_cast<T>(3.14159265358979323846264338327950288419716939937510582097494459230781640629);
+    
     template <typename T>
-    constexpr T TAU;
+    constexpr T TAU = static_cast<T>(6.28318530717958647692528676655900576839433879875021164194988918461563281257);
 
     namespace util {
 
         template <typename T>
-        auto checkZero(const T &x);
+        bool checkZero(const T &x);
 
         template <typename T>
-        auto checkEqual(const T &a, const T &b);
+        bool checkEqual(const T &a, const T &b);
     }
 }
 

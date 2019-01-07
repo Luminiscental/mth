@@ -1,8 +1,6 @@
-#ifdef __m_impl__
-#undef __m_impl__
 
-#define BINDING(name, value)   template <typename T> const auto &m::tcomp<T>:: name () const noexcept { return value ; } \
-                        template <typename T> auto &m::tcomp<T>:: name () noexcept { return value ; }
+#define BINDING(name, value)   template <typename T> const T &m::tcomp<T>:: name () const noexcept { return value ; } \
+                        template <typename T> T &m::tcomp<T>:: name () noexcept { return value ; }
 
 BINDING(real, a)
 BINDING(imag, b)
@@ -28,13 +26,13 @@ m::tcomp<T>::operator m::tvec<T, 2>() noexcept {
 }
 
 template <typename T>
-auto m::tcomp<T>::absSqr() const noexcept {
+T m::tcomp<T>::absSqr() const noexcept {
 
     return a * a + b * b;
 }
 
 template <typename T>
-auto m::tcomp<T>::abs() const noexcept {
+double m::tcomp<T>::abs() const noexcept {
 
     auto ls = static_cast<double>(absSqr());
     
@@ -44,13 +42,13 @@ auto m::tcomp<T>::abs() const noexcept {
 }
 
 template <typename T>
-auto m::tcomp<T>::arg() const noexcept {
+double m::tcomp<T>::arg() const noexcept {
 
     return std::atan2(static_cast<double>(b), static_cast<double>(a));
 }
 
 template <typename T>
-auto m::tcomp<T>::unit() const {
+m::tcomp<T> m::tcomp<T>::unit() const {
 
     auto l = abs();
 
@@ -60,7 +58,7 @@ auto m::tcomp<T>::unit() const {
 }
 
 template <typename T>
-auto m::tcomp<T>::conjugate() const noexcept {
+m::tcomp<T> m::tcomp<T>::conjugate() const noexcept {
 
     tcomp<T> result = a;
 
@@ -70,7 +68,7 @@ auto m::tcomp<T>::conjugate() const noexcept {
 }
 
 template <typename T>
-auto m::tcomp<T>::inverse() const {
+m::tcomp<T> m::tcomp<T>::inverse() const {
 
     auto ls = absSqr();
 
@@ -109,7 +107,7 @@ m::tcomp<T> m::tcomp<T>::fromPolar(const m::tvec<T, 2> &polar) {
 }
 
 template <typename T>
-auto &m::tcomp<T>::operator+=(const m::tcomp<T> &rhs) {
+m::tcomp<T> &m::tcomp<T>::operator+=(const m::tcomp<T> &rhs) {
 
     a += rhs.a;
     b += rhs.b;
@@ -118,7 +116,7 @@ auto &m::tcomp<T>::operator+=(const m::tcomp<T> &rhs) {
 }
 
 template <typename T>
-auto &m::tcomp<T>::operator+=(const T &rhs) {
+m::tcomp<T> &m::tcomp<T>::operator+=(const T &rhs) {
 
     a += rhs;
 
@@ -126,7 +124,7 @@ auto &m::tcomp<T>::operator+=(const T &rhs) {
 }
 
 template <typename T>
-auto &m::tcomp<T>::operator-=(const m::tcomp<T> &rhs) {
+m::tcomp<T> &m::tcomp<T>::operator-=(const m::tcomp<T> &rhs) {
 
     a -= rhs.a;
     b -= rhs.b;
@@ -135,7 +133,7 @@ auto &m::tcomp<T>::operator-=(const m::tcomp<T> &rhs) {
 }
 
 template <typename T>
-auto &m::tcomp<T>::operator-=(const T &rhs) {
+m::tcomp<T> &m::tcomp<T>::operator-=(const T &rhs) {
 
     a -= rhs;
 
@@ -143,7 +141,7 @@ auto &m::tcomp<T>::operator-=(const T &rhs) {
 }
 
 template <typename T>
-auto &m::tcomp<T>::operator*=(const m::tcomp <T> &rhs) {
+m::tcomp<T> &m::tcomp<T>::operator*=(const m::tcomp <T> &rhs) {
 
     *this = *this * rhs;
 
@@ -151,7 +149,7 @@ auto &m::tcomp<T>::operator*=(const m::tcomp <T> &rhs) {
 }
 
 template <typename T>
-auto &m::tcomp<T>::operator*=(const T &rhs) {
+m::tcomp<T> &m::tcomp<T>::operator*=(const T &rhs) {
 
     a *= rhs;
     b *= rhs;
@@ -160,7 +158,7 @@ auto &m::tcomp<T>::operator*=(const T &rhs) {
 }
 
 template <typename T>
-auto &m::tcomp<T>::operator/=(const m::tcomp<T> &rhs) {
+m::tcomp<T> &m::tcomp<T>::operator/=(const m::tcomp<T> &rhs) {
 
     *this = *this / rhs;
 
@@ -168,7 +166,7 @@ auto &m::tcomp<T>::operator/=(const m::tcomp<T> &rhs) {
 }
 
 template <typename T>
-auto &m::tcomp<T>::operator/=(const T &rhs) {
+m::tcomp<T> &m::tcomp<T>::operator/=(const T &rhs) {
 
     a /= rhs;
     b /= rhs;
@@ -177,7 +175,7 @@ auto &m::tcomp<T>::operator/=(const T &rhs) {
 }
 
 template <typename T>
-auto m::operator+(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
+m::tcomp<T> m::operator+(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
 
     tcomp<T> result = lhs;
 
@@ -185,7 +183,7 @@ auto m::operator+(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
 }
 
 template <typename T>
-auto m::operator+(const m::tcomp<T> &lhs, const T &rhs) {
+m::tcomp<T> m::operator+(const m::tcomp<T> &lhs, const T &rhs) {
 
     tcomp<T> result = lhs;
 
@@ -193,13 +191,13 @@ auto m::operator+(const m::tcomp<T> &lhs, const T &rhs) {
 }
 
 template <typename T>
-auto m::operator+(const T &lhs, const m::tcomp<T> &rhs) {
+m::tcomp<T> m::operator+(const T &lhs, const m::tcomp<T> &rhs) {
 
     return rhs + lhs;
 }
 
 template <typename T>
-auto m::operator-(const m::tcomp<T> &rhs) {
+m::tcomp<T> m::operator-(const m::tcomp<T> &rhs) {
 
     tcomp<T> result = rhs;
 
@@ -210,7 +208,7 @@ auto m::operator-(const m::tcomp<T> &rhs) {
 }
 
 template <typename T>
-auto m::operator-(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
+m::tcomp<T> m::operator-(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
 
     tcomp<T> result = lhs;
 
@@ -218,7 +216,7 @@ auto m::operator-(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
 }
 
 template <typename T>
-auto m::operator-(const m::tcomp<T> &lhs, const T &rhs) {
+m::tcomp<T> m::operator-(const m::tcomp<T> &lhs, const T &rhs) {
 
     tcomp<T> result = lhs;
 
@@ -226,7 +224,7 @@ auto m::operator-(const m::tcomp<T> &lhs, const T &rhs) {
 }
 
 template <typename T>
-auto m::operator-(const T &lhs, const m::tcomp<T> &rhs) {
+m::tcomp<T> m::operator-(const T &lhs, const m::tcomp<T> &rhs) {
 
     tcomp<T> result = lhs;
 
@@ -234,7 +232,7 @@ auto m::operator-(const T &lhs, const m::tcomp<T> &rhs) {
 }
 
 template <typename T>
-auto m::operator*(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
+m::tcomp<T> m::operator*(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
 
     tcomp<T> result;
 
@@ -245,7 +243,7 @@ auto m::operator*(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
 }
 
 template <typename T>
-auto m::operator*(const m::tcomp<T> &lhs, const T &rhs) {
+m::tcomp<T> m::operator*(const m::tcomp<T> &lhs, const T &rhs) {
 
     tcomp<T> result = lhs;
 
@@ -253,19 +251,19 @@ auto m::operator*(const m::tcomp<T> &lhs, const T &rhs) {
 }
 
 template <typename T>
-auto m::operator*(const T &lhs, const m::tcomp<T> &rhs) {
+m::tcomp<T> m::operator*(const T &lhs, const m::tcomp<T> &rhs) {
 
     return rhs * lhs;
 }
 
 template <typename T>
-auto m::operator/(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
+m::tcomp<T> m::operator/(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
 
     return lhs * rhs.inverse();
 }
 
 template <typename T>
-auto m::operator/(const m::tcomp<T> &lhs, const T &rhs) {
+m::tcomp<T> m::operator/(const m::tcomp<T> &lhs, const T &rhs) {
 
     tcomp<T> result = lhs;
 
@@ -273,49 +271,49 @@ auto m::operator/(const m::tcomp<T> &lhs, const T &rhs) {
 }
 
 template <typename T>
-auto m::operator/(const T &lhs, const m::tcomp<T> &rhs) {
+m::tcomp<T> m::operator/(const T &lhs, const m::tcomp<T> &rhs) {
 
     return lhs * rhs.inverse();
 }
 
 template <typename T>
-auto m::operator==(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
+bool m::operator==(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
 
     return util::checkEqual(lhs.real(), rhs.real()) && util::checkEqual(lhs.imag(), rhs.imag());
 }
 
 template <typename T>
-auto m::operator==(const m::tcomp<T> &lhs, const T &rhs) {
+bool m::operator==(const m::tcomp<T> &lhs, const T &rhs) {
 
     return util::checkZero(lhs.imag()) && util::checkEqual(lhs.real(), rhs);
 }
 
 template <typename T>
-auto m::operator==(const T &lhs, const m::tcomp<T> &rhs) {
+bool m::operator==(const T &lhs, const m::tcomp<T> &rhs) {
 
     return rhs == lhs;
 }
 
 template <typename T>
-auto m::operator!=(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
+bool m::operator!=(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
 
     return !(lhs == rhs);
 }
 
 template <typename T>
-auto m::operator!=(const m::tcomp<T> &lhs, const T &rhs) {
+bool m::operator!=(const m::tcomp<T> &lhs, const T &rhs) {
 
     return !(lhs == rhs);
 }
 
 template <typename T>
-auto m::operator!=(const T &lhs, const m::tcomp<T> &rhs) {
+bool m::operator!=(const T &lhs, const m::tcomp<T> &rhs) {
 
     return !(lhs == rhs);
 }
 
 template <typename T>
-auto &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
+std::ostream &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
 
     bool realZero = util::checkZero(rhs.real());
     bool imagZero = util::checkZero(rhs.imag());
@@ -349,48 +347,3 @@ auto &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
 
     return lhs;
 }
-
-template <typename T>
-double std::abs(const m::tcomp<T> &z) {
-
-    return z.abs();
-}
-
-template <typename T>
-m::tcomp<T> std::sqrt(const m::tcomp<T> &z) {
-
-    auto p = z.asPolar();
-
-    p.x() = sqrt(p.x());
-    p.y() /= 2;
-
-    return m::tcomp<T>::fromPolar(p);
-}
-
-template <typename T>
-m::tcomp<T> std::exp(const m::tcomp<T> &z) {
-
-    auto c = static_cast<T>(std::cos(z.imag()));
-    auto s = static_cast<T>(std::sin(z.imag()));
-
-    return exp(z.real()) * (c + m::i<T> * s);
-}
-
-template <typename T>
-m::tcomp<T> std::cos(const m::tcomp<T> &z) {
-
-    auto exponent = m::i<T> * z;
-
-    return (exp(exponent) + exp(-exponent)) / static_cast<T>(2);
-}
-
-template <typename T>
-m::tcomp<T> std::sin(const m::tcomp<T> &z) {
-
-    auto exponent = m::i<T> * z;
-
-    return (exp(exponent) - exp(-exponent)) / (static_cast<T>(2) * m::i<T>);
-}
-
-#define __m_impl__
-#endif

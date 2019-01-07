@@ -18,44 +18,44 @@ namespace m {
     class tmat;
 
     template <typename T, size_t N, size_t M>
-    auto operator+(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs);
+    tmat<T, N, M> operator+(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs);
 
     template <typename T, size_t N, size_t M>
-    auto operator-(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs);
+    tmat<T, N, M> operator-(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs);
 
     template <typename T, size_t N, size_t M>
-    auto operator*(const T &lhs, const tmat<T, N, M> &rhs);
+    tmat<T, N, M> operator*(const T &lhs, const tmat<T, N, M> &rhs);
 
     template <typename T, size_t N, size_t M>
-    auto operator*(const tmat<T, N, M> &lhs, const T &rhs);
+    tmat<T, N, M> operator*(const tmat<T, N, M> &lhs, const T &rhs);
 
     template <typename T, size_t N, size_t M>
-    auto operator/(const tmat<T, N, M> &lhs, const T &rhs);
+    tmat<T, N, M> operator/(const tmat<T, N, M> &lhs, const T &rhs);
 
     template <typename T, size_t N, size_t M, size_t O>
-    auto operator*(const tmat<T, N, M> &lhs, const tmat<T, O, N> &rhs);
+    tmat<T, O, M> operator*(const tmat<T, N, M> &lhs, const tmat<T, O, N> &rhs);
 
     template <typename T, size_t N>
-    auto operator/(const tmat<T, N, N> &lhs, const tmat<T, N, N> &rhs);
+    tmat<T, N, N> operator/(const tmat<T, N, N> &lhs, const tmat<T, N, N> &rhs);
 
     template <typename T, size_t N, size_t M>
-    auto operator*(const tmat<T, N, M> &lhs, const tvec<T, N> &rhs);
+    tvec<T, M> operator*(const tmat<T, N, M> &lhs, const tvec<T, N> &rhs);
 
     template <typename T, size_t N, size_t M>
-    auto operator==(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs);
+    bool operator==(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs);
 
     template <typename T, size_t N, size_t M>
-    auto operator!=(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs);
+    bool operator!=(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs);
 
     // TODO: Either make this less crappy or remove it
     template <typename T, size_t N, size_t M>
-    auto &operator<<(std::ostream &lhs, const tmat<T, N, M> &rhs);
+    std::ostream &operator<<(std::ostream &lhs, const tmat<T, N, M> &rhs);
 
     template <typename T, size_t N, typename A>
     class tmat_aug;
 
     template <typename T, size_t N, typename A>
-    auto &operator<<(std::ostream &lhs, const tmat_aug<T, N, A> &rhs);
+    std::ostream &operator<<(std::ostream &lhs, const tmat_aug<T, N, A> &rhs);
 
     template <typename T, size_t N, typename A>
     class tmat_aug {
@@ -75,14 +75,14 @@ namespace m {
         tmat_aug() noexcept;
         tmat_aug(const tmat<T, N, N> &matrix, const std::array<A, N> &aux) noexcept;
 
-        auto coefficients() const; 
-        auto auxilary() const;
+        tmat<T, N, N> coefficients() const; 
+        std::array<A, N> auxilary() const;
 
         // TODO: degenerate solution cases
-        auto solve() const;
+        std::array<A, N> solve() const;
 
         // NOTE: returns N on empty rows
-        auto leadingIndex(size_t row) const;
+        size_t leadingIndex(size_t row) const;
         // NOTE: returns zero on empty rows
         T leadingValue(size_t row) const;
 
@@ -97,9 +97,9 @@ namespace m {
 
         void setRow(size_t index, const tvec<T, N> &val, A auxVal); 
 
-        auto ordered() const;
-        auto rowEchelon() const; 
-        auto reducedRowEchelon() const; 
+        tmat_aug<T, N, A> ordered() const;
+        tmat_aug<T, N, A> rowEchelon() const; 
+        tmat_aug<T, N, A> reducedRowEchelon() const; 
 
         // TODO: Arithmetic on augmented matrices?
     };   
@@ -154,19 +154,19 @@ namespace m {
     namespace mat {
 
         template <typename T>
-        auto scale(const tvec<T, 3> &factors);
+        tmat<T, 4, 4> scale(const tvec<T, 3> &factors);
 
         template <typename T>
-        auto scale(T factor);
+        tmat<T, 4, 4> scale(T factor);
 
         template <typename T>
-        auto translate(const tvec<T, 3> &offset);
+        tmat<T, 4, 4> translation(const tvec<T, 3> &offset);
 
         template <typename T>
-        auto rotation(const tquat<T> &rep);
+        tmat<T, 4, 4> rotation(const tquat<T> &rep);
 
         template <typename T>
-        auto rotation(T angle, const tvec<T, 3> &axis);
+        tmat<T, 4, 4> rotation(T angle, const tvec<T, 3> &axis);
 
         // TODO: Ortho and perspective projections
     }

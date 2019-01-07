@@ -10,16 +10,6 @@
 
 #include <m/comp.h>
 
-// TODO: Move to comp and add for other classes
-namespace std {
-
-    template<>
-    struct hash<m::comp> {
-
-        size_t operator()(const m::comp &x) const;
-    };
-}
-
 namespace m {
 
     class ComplexSolutions;
@@ -28,55 +18,55 @@ namespace m {
 
     class Polynomial;
 
-    auto &operator<<(std::ostream &lhs, const ComplexSolutions &rhs);
+    std::ostream &operator<<(std::ostream &lhs, const ComplexSolutions &rhs);
 
-    auto operator==(const PolynomialDegree &lhs, const PolynomialDegree &rhs);
-    auto operator!=(const PolynomialDegree &lhs, const PolynomialDegree &rhs);
+    bool operator==(const PolynomialDegree &lhs, const PolynomialDegree &rhs);
+    bool operator!=(const PolynomialDegree &lhs, const PolynomialDegree &rhs);
 
-    auto &operator<<(std::ostream &lhs, const PolynomialDegree &rhs);
+    std::ostream &operator<<(std::ostream &lhs, const PolynomialDegree &rhs);
 
-    auto operator+(const Polynomial &lhs, const comp &rhs);
-    auto operator+(const comp &lhs, const Polynomial &rhs);
-    auto operator+(const Polynomial &lhs, const Polynomial &rhs);
+    Polynomial operator+(const Polynomial &lhs, const comp &rhs);
+    Polynomial operator+(const comp &lhs, const Polynomial &rhs);
+    Polynomial operator+(const Polynomial &lhs, const Polynomial &rhs);
 
-    auto operator-(const Polynomial &rhs);
-    auto operator-(const Polynomial &lhs, const comp &rhs);
-    auto operator-(const comp &lhs, const Polynomial &rhs);
-    auto operator-(const Polynomial &lhs, const Polynomial &rhs);
+    Polynomial operator-(const Polynomial &rhs);
+    Polynomial operator-(const Polynomial &lhs, const comp &rhs);
+    Polynomial operator-(const comp &lhs, const Polynomial &rhs);
+    Polynomial operator-(const Polynomial &lhs, const Polynomial &rhs);
 
-    auto operator*(const Polynomial &lhs, const comp &rhs);
-    auto operator*(const comp &lhs, const Polynomial &rhs);
-    auto operator*(const Polynomial &lhs, const Polynomial &rhs);
+    Polynomial operator*(const Polynomial &lhs, const comp &rhs);
+    Polynomial operator*(const comp &lhs, const Polynomial &rhs);
+    Polynomial operator*(const Polynomial &lhs, const Polynomial &rhs);
 
-    auto operator/(const Polynomial &lhs, const comp &rhs);
+    Polynomial operator/(const Polynomial &lhs, const comp &rhs);
 
-    auto operator==(const Polynomial &lhs, const Polynomial &rhs);
-    auto operator!=(const Polynomial &lhs, const Polynomial &rhs);
+    bool operator==(const Polynomial &lhs, const Polynomial &rhs);
+    bool operator!=(const Polynomial &lhs, const Polynomial &rhs);
 
-    auto &operator<<(std::ostream &lhs, const Polynomial &rhs);
+    std::ostream &operator<<(std::ostream &lhs, const Polynomial &rhs);
 
     class ComplexSolutions {
 
     private:
 
-        inline ComplexSolutions() noexcept;
-        inline ComplexSolutions(std::unordered_set<comp> finiteSet) noexcept;
+        ComplexSolutions() noexcept;
+        ComplexSolutions(std::unordered_set<comp> finiteSet) noexcept;
 
     public:
 
         std::unordered_set<comp> solutionSet;
         bool inf;
 
-        inline static ComplexSolutions empty() noexcept;
+        static ComplexSolutions empty() noexcept;
 
-        inline static ComplexSolutions finite(std::unordered_set<comp> finiteSet) noexcept;
+        static ComplexSolutions finite(std::unordered_set<comp> finiteSet) noexcept;
         
         template <typename ...Q>
         static ComplexSolutions finite(Q... args) noexcept;
 
-        inline static ComplexSolutions infinite() noexcept;
+        static ComplexSolutions infinite() noexcept;
 
-        friend auto &operator<<(std::ostream &lhs, const ComplexSolutions &rhs);
+        friend std::ostream &operator<<(std::ostream &lhs, const ComplexSolutions &rhs);
 
         friend class Polynomial;
     };
@@ -97,7 +87,10 @@ namespace m {
 
         static PolynomialDegree infinite();
 
-        friend auto &operator<<(std::ostream &lhs, const PolynomialDegree &rhs);
+        friend bool operator==(const PolynomialDegree &lhs, const PolynomialDegree &rhs);
+        friend bool operator!=(const PolynomialDegree &lhs, const PolynomialDegree &rhs);
+
+        friend std::ostream &operator<<(std::ostream &lhs, const PolynomialDegree &rhs);
 
         friend class Polynomial;
     };
@@ -128,38 +121,36 @@ namespace m {
 
         operator std::function<comp(comp)>() const;
 
-        auto getCoeffs();
-        auto getCoeffs() const;
-        auto getDegree();
-        auto getDegree() const;
+        std::vector<comp> getCoeffs();
+        std::vector<comp> getCoeffs() const;
+        PolynomialDegree getDegree();
+        PolynomialDegree getDegree() const;
 
         comp value(comp x) const;
-        auto solve();
+        ComplexSolutions solve();
 
-        auto getCoeff(size_t index) const;
+        comp getCoeff(size_t index) const;
         void setCoeff(size_t index, const comp &value);
 
-        // TODO: Unfriend and use getters/setter (then also in other classes)
+        friend Polynomial operator+(const Polynomial &lhs, const comp &rhs);
+        friend Polynomial operator+(const comp &lhs, const Polynomial &rhs);
+        friend Polynomial operator+(const Polynomial &lhs, const Polynomial &rhs);
 
-        friend auto operator+(const Polynomial &lhs, const comp &rhs);
-        friend auto operator+(const comp &lhs, const Polynomial &rhs);
-        friend auto operator+(const Polynomial &lhs, const Polynomial &rhs);
+        friend Polynomial operator-(const Polynomial &rhs);
+        friend Polynomial operator-(const Polynomial &lhs, const comp &rhs);
+        friend Polynomial operator-(const comp &lhs, const Polynomial &rhs);
+        friend Polynomial operator-(const Polynomial &lhs, const Polynomial &rhs);
 
-        friend auto operator-(const Polynomial &rhs);
-        friend auto operator-(const Polynomial &lhs, const comp &rhs);
-        friend auto operator-(const comp &lhs, const Polynomial &rhs);
-        friend auto operator-(const Polynomial &lhs, const Polynomial &rhs);
+        friend Polynomial operator*(const Polynomial &lhs, const comp &rhs);
+        friend Polynomial operator*(const comp &lhs, const Polynomial &rhs);
+        friend Polynomial operator*(const Polynomial &lhs, const Polynomial &rhs);
 
-        friend auto operator*(const Polynomial &lhs, const comp &rhs);
-        friend auto operator*(const comp &lhs, const Polynomial &rhs);
-        friend auto operator*(const Polynomial &lhs, const Polynomial &rhs);
+        friend Polynomial operator/(const Polynomial &lhs, const comp &rhs);
 
-        friend auto operator/(const Polynomial &lhs, const comp &rhs);
+        friend bool operator==(const Polynomial &lhs, const Polynomial &rhs);
+        friend bool operator!=(const Polynomial &lhs, const Polynomial &rhs);
 
-        friend auto operator==(const Polynomial &lhs, const Polynomial &rhs);
-        friend auto operator!=(const Polynomial &lhs, const Polynomial &rhs);
-
-        friend auto &operator<<(std::ostream &lhs, const Polynomial &rhs);
+        friend std::ostream &operator<<(std::ostream &lhs, const Polynomial &rhs);
     };
 
     Polynomial differentiate(const Polynomial &polynomial);
