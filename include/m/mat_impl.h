@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <numeric>
 
+// tmat_aug is not specialized so only include it in the general case
 #if !defined(N) && !defined(M)
 
 template <typename T, size_t N, typename A>
@@ -20,13 +21,13 @@ m::tmat<T, N, N> m::tmat_aug<T, N, A>::coefficients() const {
 }
 
 template <typename T, size_t N, typename A>
-std::array<A, N> m::tmat_aug<T, N, A>::auxilary() const {
+m::tvec<A, N> m::tmat_aug<T, N, A>::auxilary() const {
 
     return aux;
 }
 
 template <typename T, size_t N, typename A>
-std::array<A, N> m::tmat_aug<T, N, A>::solve() const {
+m::tvec<A, N> m::tmat_aug<T, N, A>::solve() const {
 
     if (singular()) throw std::invalid_argument("m::exception: solve() called on singular system");
 
@@ -38,7 +39,7 @@ size_t m::tmat_aug<T, N, A>::leadingIndex(size_t row) const {
 
     for (size_t i = 0; i < N; i++) {
 
-        if (!util::checkZero(matrix.get(i, row))) return i;
+        if (!util::isZero(matrix.get(i, row))) return i;
     }
 
     return N;
@@ -61,7 +62,7 @@ bool m::tmat_aug<T, N, A>::columnIsZero(size_t x) const {
     
     for (size_t y = 0; y < N; y++) {
 
-        if (!util::checkZero(matrix.get(x, y))) return false;
+        if (!util::isZero(matrix.get(x, y))) return false;
     }
 
     return true;
@@ -74,7 +75,7 @@ bool m::tmat_aug<T, N, A>::rowIsZero(size_t y) const {
 
     for (size_t x = 0; x < N; x++) {
 
-        if (!util::checkZero(matrix.get(x, y))) return false;
+        if (!util::isZero(matrix.get(x, y))) return false;
     }
 
     return true;
@@ -141,17 +142,21 @@ void m::tmat_aug<T, N, A>::setRow(size_t index, const m::tvec<T, N> &val, A auxV
 template <typename T, size_t N, typename A>
 void m::tmat_aug<T, N, A>::eliminateFromBelow(size_t x, size_t y) {
 
+    // Want to add a row scaled to have this value in column x
     auto targetValue = -matrix.get(x, y);
 
-    if (util::checkZero(targetValue)) return;
+    if (util::isZero(targetValue)) return;
 
+    // Look for a row to use below y
     for (size_t iy = y + 1; iy < N; iy++) {
 
+        // Continue if values to the left would be affected
         if (leadingIndex(iy) < x) continue;
 
         auto val = matrix.get(x, iy);
 
-        if (!util::checkZero(val)) {
+        // If it is zero it can't become targetValue
+        if (!util::isZero(val)) {
 
             addRow(y, iy, targetValue / val); 
             return;
@@ -164,17 +169,21 @@ void m::tmat_aug<T, N, A>::eliminateFromBelow(size_t x, size_t y) {
 template <typename T, size_t N, typename A>
 void m::tmat_aug<T, N, A>::eliminateFromRight(size_t x, size_t y) {
 
+    // Want to add a row scaled to have this value in column x
     auto targetValue = -matrix.get(x, y);
 
-    if (util::checkZero(targetValue)) return;
+    if (util::isZero(targetValue)) return;
 
     for (size_t iy = 0; iy < N; iy++) {
 
+        // We don't want to remove the row
         if (iy == y) continue;
 
         auto value = matrix.get(x, iy);
 
-        if (!util::checkZero(value) && leadingIndex(iy) >= x) {
+        // If the value is zero it can't be made into targetValue
+        // Can't affect values to the left of x
+        if (!util::isZero(value) && leadingIndex(iy) >= x) {
 
             addRow(y, iy, targetValue / value);
             return;
@@ -190,14 +199,17 @@ m::tmat_aug<T, N, A> m::tmat_aug<T, N, A>::ordered() const {
     using std::begin;
     using std::end;
 
+    // Store the current ordering of rows, i.e. 0, 1, 2, 3, ...
     std::array<size_t, N> rowIndices;
     std::iota(begin(rowIndices), end(rowIndices), 0);
 
+    // Permute the rowIndices to sort by leadingIndex
     auto compareLeadingIndex = [=] (auto a, auto b) -> bool { return leadingIndex(a) < leadingIndex(b); };
     std::sort(begin(rowIndices), end(rowIndices), compareLeadingIndex);
 
     tmat_aug<T, N, A> result{matrix, aux};
 
+    // Apply the permutation
     for (size_t i = 0; i < N; i++) {
 
         result.setRow(i, matrix.getRow(rowIndices[i]), aux[rowIndices[i]]);
@@ -211,18 +223,27 @@ m::tmat_aug<T, N, A> m::tmat_aug<T, N, A>::rowEchelon() const {
 
     auto result = ordered();
 
+    // Iterate over columns and eliminate below the diagonal
     for (size_t x = 0; x < N - 1; x++) { 
 
+        // Leave empty columns
         if (result.columnIsZero(x)) continue;
 
+        // Iterate over each row and eliminate the value in that row
         for (size_t y = x + 1; y < N; y++) {
 
+            // If the row is zero we are already done
             if (result.rowIsZero(y)) break;
 
-            if (util::checkZero(result.matrix.get(x, y))) continue;
+            // If the value is zero we are already done
+            if (util::isZero(result.matrix.get(x, y))) continue;
 
             result.eliminateFromRight(x, y);
+
+            // If we have eliminated re-order 
             result = result.ordered();
+
+            // Go back to the first row so none are missed
             y = x;
         }
     }
@@ -233,6 +254,7 @@ m::tmat_aug<T, N, A> m::tmat_aug<T, N, A>::rowEchelon() const {
 template <typename T, size_t N, typename A>
 m::tmat_aug<T, N, A> m::tmat_aug<T, N, A>::reducedRowEchelon() const {
 
+    // Start from echelon form so that half of the values to eliminate are already zero
     auto result = rowEchelon();
 
     if (result.hasZeroRow()) throw std::invalid_argument("m::exception: reducedRowEchelon() called on singular matrix");
@@ -241,8 +263,10 @@ m::tmat_aug<T, N, A> m::tmat_aug<T, N, A>::reducedRowEchelon() const {
 
         auto leadingValue = result.leadingValue(y);
 
+        // Make the diagonals 1
         result.scaleRow(y, 1 / leadingValue);
 
+        // Eliminate values above the diagonal
         for (size_t x = result.leadingIndex(y) + 1; x < N; x++) {
 
             result.eliminateFromBelow(x, y);
@@ -275,6 +299,8 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tmat_aug<T, N, A> &rhs) 
 }
 
 #endif
+
+// Defines for different template specializations
 
 #if defined(N) && defined(M)
 
@@ -338,7 +364,7 @@ m::tmat<T, N, M>::tmat(const std::array<T, N * M> &values) noexcept {
 
         for (size_t y = 0; y < M; y++) {
 
-            // NOTE: Always interpret row-major
+            // Always interpret row-major
             get(x, y) = values[x + y * N];
         }
     }
@@ -499,7 +525,7 @@ T m::tmat<T, N, M>::det() const noexcept {
     T result = 0;
     T s = 1;
 
-    // NOTE: can be any row
+    // Can be any row
     size_t row = 0;
 
     for (size_t x = 0; x < N; x++) {
@@ -517,7 +543,7 @@ T m::tmat<T, N, M>::det() const noexcept {
 TEMPLATE_NN
 bool m::tmat<T, N, M>::singular() const noexcept {
 
-    return util::checkZero(det());
+    return util::isZero(det());
 }
 
 #if defined(N) || defined(M)
@@ -592,7 +618,7 @@ m::tmat<T, N, M> m::tmat<T, N, M>::inverse() const {
 
     auto determinant = det();
 
-    if (util::checkZero(determinant)) throw std::invalid_argument("m::exception: inverse() called on singular matrix");
+    if (util::isZero(determinant)) throw std::invalid_argument("m::exception: inverse() called on singular matrix");
 
     return adjoint() / determinant;
 
@@ -605,7 +631,7 @@ m::tmat<T, N, M> m::tmat<T, N, M>::unit() const {
 
     auto determinant = det();
 
-    if (util::checkZero(determinant)) throw std::invalid_argument("m::exception: unit() called on singular matrix");
+    if (util::isZero(determinant)) throw std::invalid_argument("m::exception: unit() called on singular matrix");
 
     return *this / determinant;
 }
@@ -771,7 +797,7 @@ bool m::operator==(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
 
         for (size_t y = 0; y < M; y++) {
 
-            if (!util::checkEqual(lhs.get(x, y), rhs.get(x, y))) return false;
+            if (!util::isEqual(lhs.get(x, y), rhs.get(x, y))) return false;
         }
     }
 

@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8)
-project (Maths)
+project (m)
 
 # YCM config
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fbuiltin -g")
@@ -12,11 +12,11 @@ ENDIF()
 file(GLOB sources "src/*.cpp")
 list(REMOVE_ITEM sources "src/main.cpp")
 
-add_library(Maths ${sources})
+add_library(m ${sources})
 add_executable(testing "src/main.cpp")
 
-include_directories(Maths "${CMAKE_SOURCE_DIR}/include")
-target_link_libraries(testing Maths)
+include_directories(m "${CMAKE_SOURCE_DIR}/include")
+target_link_libraries(testing m)
 
-install(TARGETS Maths DESTINATION "/usr/lib")
+install(TARGETS m DESTINATION "/usr/lib")
 

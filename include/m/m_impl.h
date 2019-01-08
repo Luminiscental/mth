@@ -4,14 +4,14 @@
 #include <m/comp.h>
 
 template <typename T>
-bool m::util::checkZero(const T &x) {
+bool m::util::isZero(const T &x) {
 
     auto magnitude = std::abs(x);
     return magnitude <= m::EPSILON<decltype(magnitude)>;
 }
 
 template <typename T>
-bool m::util::checkEqual(const T &a, const T &b) {
+bool m::util::isEqual(const T &a, const T &b) {
 
-    return checkZero(a - b);
+    return isZero(a - b);
 }

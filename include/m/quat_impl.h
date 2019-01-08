@@ -3,7 +3,7 @@
 #include <iomanip>
 
 #define BINDING(name, value)    template <typename T> const auto &m::tquat<T>:: name () const { return value ; } \
-                                template <typename T> auto &m::tquat<T>:: name () { return value ; }
+                                template <typename T>       auto &m::tquat<T>:: name ()       { return value ; }
 
         BINDING(real, w)
         BINDING(imaginary, ijk)
@@ -30,7 +30,7 @@ m::tquat<T> m::tquat<T>::inverse() const {
 
     auto ls = magnSqr();
 
-    if (util::checkZero(ls)) throw std::invalid_argument("zero quaternion has no inverse");
+    if (util::isZero(ls)) throw std::invalid_argument("zero quaternion has no inverse");
 
     return conjugate() / ls;
 }
@@ -40,7 +40,7 @@ m::tquat<T> m::tquat<T>::unit() const {
 
     auto l = static_cast<T>(magn());
 
-    if (util::checkZero(l)) throw std::invalid_argument("zero quaternion has no unit equivalent");
+    if (util::isZero(l)) throw std::invalid_argument("zero quaternion has no unit equivalent");
 
     return *this / l;
 }
@@ -57,6 +57,7 @@ m::tquat<T> m::tquat<T>::identity() {
     return tquat(); 
 }
 
+// Rotations are represented as cos(angle/2) + sin(angle/2) * axis
 template <typename T>
 m::tquat<T> m::tquat<T>::rotation(T angle, const m::tvec<T, 3> &axis) {
 
@@ -191,10 +192,10 @@ m::tquat<T> m::operator-(T lhs, const m::tquat<T> &rhs) {
 template <typename T>
 m::tquat<T> m::operator*(const m::tquat<T> &lhs, const m::tquat<T> &rhs) {
 
-    return tquat<T>(lhs.real() * rhs.i() + lhs.i() * rhs.real() + lhs.j() * rhs.k() - lhs.k() * rhs.j(),
-                    lhs.real() * rhs.j() - lhs.i() * rhs.k() + lhs.j() * rhs.real() + lhs.k() * rhs.i(),
-                    lhs.real() * rhs.k() + lhs.i() * rhs.j() - lhs.j() * rhs.i() + lhs.k() * rhs.real(),
-                    lhs.real() * rhs.real() - lhs.i() * rhs.i() - lhs.j() * rhs.j() - lhs.k() * rhs.k());
+    return tquat<T>(lhs.real() * rhs.real() - lhs.i() * rhs.i() - lhs.j() * rhs.j() - lhs.k() * rhs.k(),  // real
+                    lhs.real() * rhs.i() + lhs.i() * rhs.real() + lhs.j() * rhs.k() - lhs.k() * rhs.j(),  // i
+                    lhs.real() * rhs.j() - lhs.i() * rhs.k() + lhs.j() * rhs.real() + lhs.k() * rhs.i(),  // j
+                    lhs.real() * rhs.k() + lhs.i() * rhs.j() - lhs.j() * rhs.i() + lhs.k() * rhs.real()); // k
 }
 
 template <typename T>
@@ -234,13 +235,13 @@ m::tquat<T> m::operator/(const m::tquat<T> &lhs, T rhs) {
 template <typename T>
 bool m::operator==(const tquat<T> &lhs, const tquat<T> &rhs) {
 
-    return util::checkEqual(lhs.real(), rhs.real()) && lhs.imag() == rhs.imag();
+    return util::isEqual(lhs.real(), rhs.real()) && lhs.imag() == rhs.imag();
 }
 
 template <typename T>
 bool m::operator==(const T &lhs, const tquat<T> &rhs) {
 
-    return util::checkEqual(lhs, rhs.real()) && rhs.imag() == tvec<T, 3>(0, 0, 0);
+    return util::isEqual(lhs, rhs.real()) && rhs.imag() == tvec<T, 3>(0, 0, 0);
 }
 
 template <typename T>
@@ -267,6 +268,7 @@ bool m::operator!=(const tquat<T> &lhs, const T &rhs) {
     return !(lhs == rhs);
 }
 
+// TODO: Make this more consistent with m::comp (i.e. bools up-front and only use brackets when needed)
 template <typename T>
 std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
 
@@ -274,13 +276,13 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
 
     lhs << std::fixed << std::setprecision(m_PRECISION) << "(";
 
-    if (!util::checkZero(rhs.real())) {
+    if (!util::isZero(rhs.real())) {
 
         lhs << rhs.real();
         nonZero = true;
     }
 
-    if (!util::checkZero(rhs.i())) {
+    if (!util::isZero(rhs.i())) {
 
         if (nonZero) {
 
@@ -296,7 +298,7 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
         lhs << "i";
     }
 
-    if (!util::checkZero(rhs.j())) {
+    if (!util::isZero(rhs.j())) {
         
         if (nonZero) {
 
@@ -312,7 +314,7 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
         lhs << "j";
     }
 
-    if (!util::checkZero(rhs.k())) {
+    if (!util::isZero(rhs.k())) {
         
         if (nonZero) {
 

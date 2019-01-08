@@ -1,6 +1,6 @@
 
-#define BINDING(name, value)   template <typename T> const T &m::tcomp<T>:: name () const noexcept { return value ; } \
-                        template <typename T> T &m::tcomp<T>:: name () noexcept { return value ; }
+#define BINDING(name, value)    template <typename T> const T &m::tcomp<T>:: name () const noexcept { return value ; } \
+                                template <typename T>       T &m::tcomp<T>:: name ()       noexcept { return value ; }
 
 BINDING(real, a)
 BINDING(imag, b)
@@ -20,12 +20,6 @@ m::tvec<T, 2> m::tcomp<T>::asPolar() const noexcept {
 }
 
 template <typename T>
-m::tcomp<T>::operator m::tvec<T, 2>() noexcept {
-
-    return tvec<T, 2>(a, b);
-}
-
-template <typename T>
 T m::tcomp<T>::absSqr() const noexcept {
 
     return a * a + b * b;
@@ -36,7 +30,7 @@ double m::tcomp<T>::abs() const noexcept {
 
     auto ls = static_cast<double>(absSqr());
     
-    if (util::checkZero(ls)) return 0.0;
+    if (util::isZero(ls)) return 0.0;
 
     return std::sqrt(ls);
 }
@@ -52,7 +46,7 @@ m::tcomp<T> m::tcomp<T>::unit() const {
 
     auto l = abs();
 
-    if (util::checkZero(l)) throw std::invalid_argument("m::exception: tcomp zero has no unit equivalent");
+    if (util::isZero(l)) throw std::invalid_argument("m::exception: tcomp zero has no unit equivalent");
 
     return *this / l;
 }
@@ -72,7 +66,7 @@ m::tcomp<T> m::tcomp<T>::inverse() const {
 
     auto ls = absSqr();
 
-    if (util::checkZero(ls)) throw std::invalid_argument("m::exception: tcomp zero has no inverse");
+    if (util::isZero(ls)) throw std::invalid_argument("m::exception: tcomp zero has no inverse");
 
     return conjugate() / ls;
 }
@@ -279,13 +273,13 @@ m::tcomp<T> m::operator/(const T &lhs, const m::tcomp<T> &rhs) {
 template <typename T>
 bool m::operator==(const m::tcomp<T> &lhs, const m::tcomp<T> &rhs) {
 
-    return util::checkEqual(lhs.real(), rhs.real()) && util::checkEqual(lhs.imag(), rhs.imag());
+    return util::isEqual(lhs.real(), rhs.real()) && util::isEqual(lhs.imag(), rhs.imag());
 }
 
 template <typename T>
 bool m::operator==(const m::tcomp<T> &lhs, const T &rhs) {
 
-    return util::checkZero(lhs.imag()) && util::checkEqual(lhs.real(), rhs);
+    return util::isZero(lhs.imag()) && util::isEqual(lhs.real(), rhs);
 }
 
 template <typename T>
@@ -315,8 +309,9 @@ bool m::operator!=(const T &lhs, const m::tcomp<T> &rhs) {
 template <typename T>
 std::ostream &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
 
-    bool realZero = util::checkZero(rhs.real());
-    bool imagZero = util::checkZero(rhs.imag());
+    bool realZero = util::isZero(rhs.real());
+    bool imagZero = util::isZero(rhs.imag());
+
     bool zero = realZero && imagZero;
     bool noneZero = !realZero && !imagZero;
 
@@ -324,6 +319,7 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
 
     lhs << std::fixed << std::setprecision(m_PRECISION);
 
+    // Bracket if there are multiple terms
     if (noneZero) lhs << "(";
 
     if (!realZero) lhs << rhs.real();

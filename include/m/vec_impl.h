@@ -81,13 +81,15 @@ const T &m::tvec<T, N>::get(size_t index) const {
     return values[index];
 }
 
-#define BINDING(name, value) template <typename T, size_t N> const T &m::tvec<T, N>:: name () const { return value ; } \
-                                   template <typename T, size_t N> T &m::tvec<T, N>:: name ()       { return value; }
+#define BINDING(name, index)    template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > index), int>::type> \
+                                const T &m::tvec<T, N>:: name () const { return this->get(index); } \
+                                template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > index), int>::type> \
+                                      T &m::tvec<T, N>:: name ()       { return this->get(index); }
 
-    BINDING(x, get(0))
-    BINDING(y, get(1))
-    BINDING(z, get(2))
-    BINDING(w, get(3))
+        BINDING(x, 0)
+        BINDING(y, 1)
+        BINDING(z, 2)
+        BINDING(w, 3)
 
 #undef BINDING
 
@@ -97,13 +99,13 @@ m::tvec<T, 2> m::tvec<T, N>::xy() const {
     return tvec<T, 2>(x(), y());
 }
 
-template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 1), int>::type>
+template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 2), int>::type>
 m::tvec<T, 2> m::tvec<T, N>::yz() const {
 
     return tvec<T, 2>(y(), z());
 }
 
-template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 1), int>::type>
+template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 3), int>::type>
 m::tvec<T, 2>  m::tvec<T, N>::zw() const {
 
     return tvec<T, 2>(z(), w());
@@ -115,7 +117,7 @@ m::tvec<T, 3>  m::tvec<T, N>::xyz() const {
     return tvec<T, 3>(x(), y(), z());
 }
 
-template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 2), int>::type>
+template <typename T, size_t N> template <size_t n, typename std::enable_if<(n == N) && (n > 3), int>::type>
 m::tvec<T, 3>  m::tvec<T, N>::yzw() const {
 
     return tvec<T, 3>(y(), z(), w());
@@ -145,7 +147,7 @@ double m::tvec<T, N>::magn() const noexcept {
 
     auto ls = static_cast<double>(magnSqr());
 
-    if (util::checkZero(ls)) return 0.0;
+    if (util::isZero(ls)) return 0.0;
 
     return std::sqrt(ls);
 }
@@ -164,11 +166,20 @@ T m::tvec<T, N>::dot(const m::tvec<T, N> &rhs) const {
 }
 
 template <typename T, size_t N>
+m::tmat<T, N, N> m::tvec<T, N>::outerProduct(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
+
+    auto lMat = m::tmat<T, 1, N>(lhs);
+    auto rMatT = m::tmat<T, N, 1>(rhs);
+
+    return lMat * rMatT;
+}
+
+template <typename T, size_t N>
 m::tvec<T, N> m::tvec<T, N>::unit() const {
 
     auto l = static_cast<T>(magn());
 
-    if (util::checkZero(l)) throw std::invalid_argument("m::exception: unit() called on zero vector");
+    if (util::isZero(l)) throw std::invalid_argument("m::exception: unit() called on zero vector");
 
     return *this / l;
 }
@@ -231,6 +242,12 @@ m::tvec<T, 3> m::vec::cross(const m::tvec<T, 3> &lhs, const m::tvec<T, 3> &rhs) 
                       lhs.get(1) * rhs.get(2) - lhs.get(2) * rhs.get(1));
 }
 
+template <typename T>
+T m::vec::det(const m::tvec<T, 2> &lhs, const m::tvec<T, 2> &rhs) {
+
+    return lhs.get(0) * rhs.get(1) - lhs.get(1) * rhs.get(0); // tmat<T, 2, 2>(lhs, rhs).det()
+}
+
 template <typename T, size_t N>
 m::tvec<T, N> m::operator+(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
 
@@ -287,7 +304,7 @@ bool m::operator==(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
 
     for (size_t i = 0; i < N; i++) {
 
-        if (!util::checkEqual(lhs.get(i), rhs.get(i))) return false;
+        if (!util::isEqual(lhs.get(i), rhs.get(i))) return false;
     }
 
     return true;

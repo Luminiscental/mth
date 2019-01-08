@@ -1,6 +1,16 @@
 #ifndef __m_polynomial_h__
 #define __m_polynomial_h__
 
+/* <m/polynomial.h> - polynomial header
+ *      This include the class Polynomial which stores a polynomial with complex coefficients. Addition, subtraction
+ *      and multiplication operators are defined as well as member functions to find values such as the degree and roots
+ *      of the stored polynomial. The polynomial can be evaluated at a point with value() or converted to a complex function
+ *      represented with std::function. Differentiation and integration is also implemented.
+ * 
+ *      This header also includes classes to represent a solution set of complex numbers and the degree of a polynomial,
+ *      including the infinite / empty degenerate cases.
+ */
+
 #include <unordered_set>
 #include <functional>
 #include <vector>
@@ -11,6 +21,8 @@
 #include <m/comp.h>
 
 namespace m {
+
+    // Forward declaration for friending
 
     class ComplexSolutions;
 
@@ -49,16 +61,18 @@ namespace m {
 
     private:
 
+        // Initializers private to hide implementation
         ComplexSolutions() noexcept;
         ComplexSolutions(std::unordered_set<comp> finiteSet) noexcept;
 
     public:
 
+        // TODO: Use getters instead
         std::unordered_set<comp> solutionSet;
         bool inf;
 
+        // Static factory functions for producting solution sets
         static ComplexSolutions empty() noexcept;
-
         static ComplexSolutions finite(std::unordered_set<comp> finiteSet) noexcept;
         
         template <typename ...Q>
@@ -85,6 +99,7 @@ namespace m {
         bool isInfinite() const;
         size_t getValue() const;
 
+        // Static factory for infinite degree to hide implementation
         static PolynomialDegree infinite();
 
         friend bool operator==(const PolynomialDegree &lhs, const PolynomialDegree &rhs);
@@ -107,7 +122,9 @@ namespace m {
         PolynomialDegree degree;
         bool degreeValid;
 
+        // Trims zero coefficients from the back of coeffs
         void updateValues();
+
         void updateDegree() noexcept;
 
     public:
@@ -123,6 +140,8 @@ namespace m {
 
         std::vector<comp> getCoeffs();
         std::vector<comp> getCoeffs() const;
+
+        // Recalculates the degree if needed
         PolynomialDegree getDegree();
         PolynomialDegree getDegree() const;
 

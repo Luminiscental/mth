@@ -114,7 +114,7 @@ m::Polynomial::operator std::function<comp(comp)>() const {
 
 void m::Polynomial::updateValues() {
 
-    while (util::checkZero(coeffs.back())) {
+    while (util::isZero(coeffs.back())) {
 
         coeffs.pop_back();
     }
@@ -126,7 +126,7 @@ void m::Polynomial::updateDegree() noexcept {
 
     auto l = coeffs.size();
 
-    while (util::checkZero(coeffs[l - 1])) {
+    while (util::isZero(coeffs[l - 1])) {
 
         if (l == 1) {
 
@@ -194,7 +194,7 @@ m::ComplexSolutions m::Polynomial::solve() {
 
         case 0: {
 
-            // NOTE: non-zero because of check for infinite degree above
+            // Non-zero because of is for infinite degree above
             return ComplexSolutions::empty();
         }
 
@@ -213,7 +213,7 @@ m::ComplexSolutions m::Polynomial::solve() {
 
                 auto denom = 2.0f * coeffs[2];
 
-                if (util::checkEqual(lesser, greater)) return roots = ComplexSolutions::finite(lesser / denom);
+                if (util::isEqual(lesser, greater)) return roots = ComplexSolutions::finite(lesser / denom);
 
                 return roots = ComplexSolutions::finite(lesser / denom, greater / denom);
         }
@@ -380,7 +380,7 @@ bool m::operator==(const Polynomial &lhs, const Polynomial &rhs) {
 
     for (size_t i = 0; i < N; i++) {
 
-        if (!util::checkEqual(lhs.coeffs[i], rhs.coeffs[i])) return false;
+        if (!util::isEqual(lhs.coeffs[i], rhs.coeffs[i])) return false;
     }
 
     return true;
@@ -404,7 +404,7 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::Polynomial &rhs) {
 
     auto cTerm = rhs.coeffs[0];
    
-    if (!util::checkZero(cTerm)) {
+    if (!util::isZero(cTerm)) {
         
         lhs << cTerm;
         nonZero = true;
@@ -414,10 +414,10 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::Polynomial &rhs) {
 
     auto lTerm = rhs.coeffs[1];
 
-    if (!util::checkZero(lTerm)) {
+    if (!util::isZero(lTerm)) {
 
         if (nonZero) lhs << " + ";
-        if (!util::checkEqual(lTerm, comp::fromCartesian(1, 0))) lhs << lTerm;
+        if (!util::isEqual(lTerm, comp::fromCartesian(1, 0))) lhs << lTerm;
         lhs << "z";
 
         nonZero = true;
@@ -427,10 +427,10 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::Polynomial &rhs) {
 
         auto term = rhs.coeffs[i];
 
-        if (util::checkZero(term)) continue;
+        if (util::isZero(term)) continue;
 
         if (nonZero) lhs << " + ";
-        if (!util::checkEqual(term, comp::fromCartesian(1, 0))) lhs << term;
+        if (!util::isEqual(term, comp::fromCartesian(1, 0))) lhs << term;
         lhs << "z^" << i;
 
         nonZero = true;

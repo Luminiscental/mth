@@ -1,12 +1,39 @@
 #ifndef __m_m_h__
 #define __m_m_h__
 
-/* NOTE: Optional preprocessor flags:
+// TODO: A name with more characters would be less of a pain
+
+/* <m/m.h> - main header
+ *      This includes general constant definitions and utility functions. It is a dependency
+ *      to be included before including any of the other headers in m.
+ */
+
+// Library info
+
+/* File naming schemes:
+ *      name.h - standard header file with class / function declarations
+ *          (manually include these)
+ *      name_impl.h - header file implementing template functions / classes
+ *          (included already in name.h)
+ *      name_content.h - header file containing the content of a class to be included multiple times by header.h for template specialization
+ *          (automatically included with a required define)
+ *      name.cpp - source file implementing non-template functions / classes
+ *          (compiled into libM)
+ */
+
+/* Class naming schemes:
+ *      tname - Basic data / value storage class templated for a scalar type T
+ *      Name - More advanced structure / object non-template class
+ */
+
+/* Optional preprocessor flags:
  *
  *      m_ROW_MAJOR - Matrix values are stored row-major rather than column-major.
  *      m_ELIMINATION - Matrix inverses are calculated by Gaussian row elimination rather than by calculating the adjoint matrix.
  *      m_PRECISION - Value passed to std::setprecision (2 if not set).
  */
+
+// Set default values
 
 #ifndef m_PRECISION
 #define m_PRECISION 2
@@ -14,24 +41,35 @@
 
 #include <limits>
 
+// TODO: Better exception / debug info
+
 namespace m {
+
+    // Smallest value above zero; used for equality iss on non-exact types
 
     template <typename T>
     constexpr T EPSILON = std::numeric_limits<T>::epsilon();
 
+    // Mathematical constants not specific to a certain class
+
     template <typename T>
-    constexpr T PI = static_cast<T>(3.14159265358979323846264338327950288419716939937510582097494459230781640629);
+    constexpr T PI =  static_cast<T>(3.14159265358979323846264338327950288419716939937510582097494459230781640629);
     
     template <typename T>
     constexpr T TAU = static_cast<T>(6.28318530717958647692528676655900576839433879875021164194988918461563281257);
 
+    template <typename T>
+    constexpr T e =   static_cast<T>(2.71828182845904523536028747135266249775724709369995957496696762772407663035);
+
+    // Global utility functions
+
     namespace util {
 
         template <typename T>
-        bool checkZero(const T &x);
+        bool isZero(const T &x);
 
         template <typename T>
-        bool checkEqual(const T &a, const T &b);
+        bool isEqual(const T &a, const T &b);
     }
 }
 

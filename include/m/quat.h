@@ -1,11 +1,19 @@
 #ifndef __m_quat_h__
 #define __m_quat_h__
 
+/* <m/quat.h> - quaternion header
+ *      Includes the template class tquat representing a quaternion with coefficients of type T. Basic
+ *      arithmetic operators are defined as well as member functions to get values such as modulus and
+ *      reciprocal. Utility functions for creating and using rotation representations are also defined.
+ */
+
 #include <ostream>
 
 #include <m/vec.h>
 
 namespace m {
+
+    // Forward declaration for friending
 
     template <typename T>
     class tquat;
@@ -81,7 +89,7 @@ namespace m {
     public:
 
 #define BINDING(name, value)    const auto & name () const; \
-                                auto & name ();
+                                      auto & name ();
 
         BINDING(real, w)
         BINDING(imaginary, ijk)
@@ -91,15 +99,19 @@ namespace m {
 
 #undef BINDING
 
+        // Default initializes to zero
         constexpr tquat() noexcept 
             :w(0), ijk(0, 0, 0) {}
 
+        // Order of coefficients is defined as real, i, j, k
         constexpr tquat(T a, T b, T c, T d) noexcept
             :w(a), ijk(b, c, d) {}
 
+        // Initialize to a real number
         constexpr tquat(T r) noexcept
             :w(r), ijk(0, 0, 0) {}
 
+        // Quaternion representation of a vector using ijk
         constexpr tquat(const tvec<T, 3> &vector) noexcept
             :w(0), ijk(vector) {}
 
@@ -108,6 +120,7 @@ namespace m {
 
         T magnSqr() const noexcept;
 
+        // Converted to double for more accurate sqrt
         double magn() const noexcept;
 
         constexpr tquat<T> conjugate() const noexcept {
@@ -115,32 +128,27 @@ namespace m {
             return tquat<T>(w, -ijk);
         }
 
+        // Returns the reciprocal
         tquat<T> inverse() const;
 
         tquat<T> unit() const;
 
+        // Returns the rotation represented by *this applied to the given vector
         tvec<T, 3> rotate(const m::tvec<T, 3> &vector) const;
 
+        // Returns 1
         static tquat<T> identity();
 
-                                                               //                        /-
-        static tquat<T> rotation(T angle, const tvec<T, 3> &axis); // NOTE: Right-handed: ---|--> axis
-                                                               //                        \-> rotation
+        // Converts euler angle and axis to quaternion representation
+        static tquat<T> rotation(T angle, const tvec<T, 3> &axis);
 
         tquat<T> &operator+=(const tquat<T> &rhs);
-
         tquat<T> &operator+=(T rhs);
-
         tquat<T> &operator-=(const tquat<T> &rhs);
-
         tquat<T> &operator-=(T rhs);
-
         tquat<T> &operator*=(const tquat<T> &rhs);
-
         tquat<T> &operator*=(T rhs);
-
         tquat<T> &operator/=(const tquat<T> &rhs);
-
         tquat<T> &operator/=(T rhs);
 
         template <typename U>
@@ -203,6 +211,8 @@ namespace m {
         template <typename U>
         friend std::ostream &operator<<(std::ostream &lhs, const tquat<U> &rhs);
     };
+
+    // Alias types for coefficients of type int, long, float, double
 
     using iquat = tquat<int>;
     using lquat = tquat<long>;
