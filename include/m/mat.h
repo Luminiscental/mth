@@ -20,7 +20,7 @@
 #include <m/quat.h>
 #include <m/comp.h>
 
-// Safeguard <m/so mat_content.h> doesn't get included anywhere else
+// Safeguard so <m/mat_content.h> doesn't get included anywhere else
 #define __m_mat_content_toggle__ 
 
 namespace m {
