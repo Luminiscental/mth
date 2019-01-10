@@ -333,3 +333,18 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
 
     return lhs << ")";
 }
+
+template <typename T>
+double std::abs(const m::tquat<T> &x) {
+
+    return x.magn();
+}
+
+template <typename T>
+size_t std::hash<m::tquat<T>>::operator()(const m::tquat<T> &x) {
+
+    auto a = x.real();
+    auto b = x.imaginary();
+
+    return hash<decltype(a)>()(a) ^ hash<decltype(b)>()(b);
+}

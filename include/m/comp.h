@@ -228,8 +228,11 @@ namespace m {
 
     using icomp = tcomp<int>;
     using lcomp = tcomp<long>;
-    using  comp = tcomp<float>;
+    using fcomp = tcomp<float>;
     using dcomp = tcomp<double>;
+
+    // TODO: Maybe move to double as default
+    using comp = fcomp;
 
     // The constant i for convenience
 
@@ -241,25 +244,26 @@ namespace std {
 
     // Overloads of common math functions in <cmath>
 
-    // TODO: Figure out how to template these while still getting overload detection
+    template <typename T>
+    double abs(const m::tcomp<T> &z);
 
-    double abs(const m::comp &z);
+    template <typename T>
+    m::tcomp<T> sqrt(const m::tcomp<T> &z);
 
-    m::comp sqrt(const m::comp &z);
+    template <typename T>
+    m::tcomp<T> exp(const m::tcomp<T> &z);
 
-    m::comp exp(const m::comp &z);
+    template <typename T>
+    m::tcomp<T> cos(const m::tcomp<T> &z);
 
-    m::comp cos(const m::comp &z);
-
-    m::comp sin(const m::comp &z);
+    template <typename T>
+    m::tcomp<T> sin(const m::tcomp<T> &z);
 
     // Hash operator for use in certain STL containers
-    
-    // TODO: Add for other types
-    template<>
-    struct hash<m::comp> {
+    template<typename T>
+    struct hash<m::tcomp<T>> {
 
-        size_t operator()(const m::comp &x) const;
+        size_t operator()(const m::tcomp<T> &x) const;
     };
 }
 

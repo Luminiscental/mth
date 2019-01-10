@@ -8,6 +8,7 @@
  */
 
 #include <ostream>
+#include <cmath>
 
 #include <m/vec.h>
 
@@ -216,8 +217,24 @@ namespace m {
 
     using iquat = tquat<int>;
     using lquat = tquat<long>;
-    using  quat = tquat<float>;
+    using fquat = tquat<float>;
     using dquat = tquat<double>;
+
+    using quat = fquat;
+}
+
+namespace std {
+
+    // Overload to call magn()
+    template <typename T>
+    double abs(const m::tquat<T> &x);
+
+    // Hash operator for use in certain STL containers
+    template <typename T>
+    struct hash<m::tquat<T>> {
+
+        size_t operator()(const m::tquat<T> &x);
+    };
 }
 
 #include <m/quat_impl.h>

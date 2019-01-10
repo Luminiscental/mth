@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <array>
 #include <type_traits>
+#include <cmath>
 
 #include <m/comp.h>
 
@@ -199,12 +200,12 @@ namespace m {
 
     // Alias types for single-digit dimension and scalar type int, long, float, double and m::comp
 
-    // TODO: Maybe move to double as default
 #define CREATE_ALIASES(n) using ivec ## n = tvec<int, n>; \
                           using lvec ## n = tvec<long, n>; \
-                          using  vec ## n = tvec<float, n>; \
+                          using fvec ## n = tvec<float, n>; \
                           using dvec ## n = tvec<double, n>; \
-                          using cvec ## n = tvec<m::comp, n>;
+                          using cvec ## n = tvec<m::comp, n>; \
+                          using vec ## n = fvec ## n;
 
     CREATE_ALIASES(1)
     CREATE_ALIASES(2)
@@ -228,6 +229,20 @@ namespace m {
                                 
     template <typename T>
     constexpr tvec<T, 3> Z_AXIS = tvec<T, 3>(0, 0, 1);
+}
+
+namespace std {
+
+    // Overload to call magn()
+    template <typename T, size_t N>
+    double abs(const m::tvec<T, N> &x);
+
+    // Hash operator for use in certain STL containers
+    template <typename T, size_t N>
+    struct hash<m::tvec<T, N>> {
+
+        size_t operator()(const m::tvec<T, N> &x);
+    };
 }
 
 #include <m/vec_impl.h>

@@ -328,3 +328,22 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tvec<T, N> &rhs) {
 
     return lhs << rhs.get(N - 1) << ")";
 }
+
+template <typename T, size_t N>
+double std::abs(const m::tvec<T, N> &x) {
+
+    return x.magn();
+}
+
+template <typename T, size_t N>
+size_t std::hash<m::tvec<T, N>>::operator()(const m::tvec<T, N> &x) {
+
+    size_t result = 0;
+
+    for (size_t i = 0; i < N; i++) {
+
+        result ^= hash<T>()(x.get(i));
+    }
+
+    return result;
+}

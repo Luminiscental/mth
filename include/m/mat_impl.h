@@ -298,6 +298,19 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tmat_aug<T, N, A> &rhs) 
     return lhs;
 }
 
+template <typename T, size_t N, size_t M>
+size_t std::hash<m::tmat<T, N, M>>::operator()(const m::tmat<T, N, M> &x) {
+
+    size_t result = 0;
+
+    for (auto row : x.rows()) {
+
+        result ^= hash<decltype(row)>()(row);
+    }
+
+    return result;
+}
+
 #endif
 
 // Defines for different template specializations

@@ -1,4 +1,6 @@
 
+#include <m/vec.h>
+
 #define BINDING(name, value)    template <typename T> const T &m::tcomp<T>:: name () const noexcept { return value ; } \
                                 template <typename T>       T &m::tcomp<T>:: name ()       noexcept { return value ; }
 
@@ -342,4 +344,55 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
     if (noneZero) lhs << ")";
 
     return lhs;
+}
+
+template <typename T>
+double std::abs(const m::tcomp<T> &z) {
+
+    return z.abs();
+}
+
+template <typename T>
+m::tcomp<T> std::sqrt(const m::tcomp<T> &z) {
+
+    auto p = z.asPolar();
+
+    p.x() = sqrt(p.x());
+    p.y() /= 2;
+
+    return m::tcomp<T>::fromPolar(p);
+}
+
+template <typename T>
+m::tcomp<T> std::exp(const m::tcomp<T> &z) {
+
+    auto c = cos(z.imag());
+    auto s = sin(z.imag());
+
+    return exp(z.real()) * (c + m::i<T> * s);
+}
+
+template <typename T>
+m::tcomp<T> std::cos(const m::tcomp<T> &z) {
+
+    auto exponent = m::i<T> * z;
+
+    return (exp(exponent) + exp(-exponent)) / static_cast<T>(2);
+}
+
+template <typename T>
+m::tcomp<T> std::sin(const m::tcomp<T> &z) {
+
+    auto exponent = m::i<T> * z;
+
+    return (exp(exponent) - exp(-exponent)) / (2.0f * m::i<T>);
+}
+
+template <typename T>
+size_t std::hash<m::tcomp<T>>::operator()(const m::tcomp<T> &z) const {
+
+    auto r = z.real();
+    auto i = z.imag();
+
+    return hash<decltype(r)>()(r) ^ hash<decltype(i)>()(i);
 }

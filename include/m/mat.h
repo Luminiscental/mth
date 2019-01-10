@@ -214,15 +214,17 @@ namespace m {
 
 #define CREATE_SQR_ALIASES(n)       using imat ## n = tmat<int, n, n>; \
                                     using lmat ## n = tmat<long, n, n>; \
-                                    using  mat ## n = tmat<float, n, n>; \
+                                    using fmat ## n = tmat<float, n, n>; \
                                     using dmat ## n = tmat<double, n, n>; \
-                                    using cmat ## n = tmat<comp, n, n>;
+                                    using cmat ## n = tmat<comp, n, n>; \
+                                    using  mat ## n = fmat ## n;
 
 #define CREATE_RECT_ALIASES(n, m)   using imat ## n ## x ## m = tmat<int, n, m>; \
                                     using lmat ## n ## x ## m = tmat<long, n, m>; \
-                                    using  mat ## n ## x ## m = tmat<float, n, m>; \
+                                    using fmat ## n ## x ## m = tmat<float, n, m>; \
                                     using dmat ## n ## x ## m = tmat<double, n, m>; \
-                                    using cmat ## n ## x ## m = tmat<comp, n, m>;
+                                    using cmat ## n ## x ## m = tmat<comp, n, m>; \
+                                    using  mat ## n ## x ## m = fmat ## n ## x ## m;
 
 #define CREATE_ALIASES(n)   CREATE_SQR_ALIASES(n) \
                             CREATE_RECT_ALIASES(n, 1) \
@@ -248,6 +250,15 @@ namespace m {
 #undef CREATE_ALIASES
 #undef CREATE_SQR_ALIASES
 
+}
+
+namespace std {
+
+    template <typename T, size_t N, size_t M>
+    struct hash<m::tmat<T, N, M>> {
+
+        size_t operator()(const m::tmat<T, N, M> &x);
+    };
 }
 
 #define N 1
