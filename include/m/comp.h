@@ -254,10 +254,25 @@ namespace std {
     m::tcomp<T> exp(const m::tcomp<T> &z);
 
     template <typename T>
+    m::tcomp<T> log(const m::tcomp<T> &z);
+
+    template <typename T>
     m::tcomp<T> cos(const m::tcomp<T> &z);
 
     template <typename T>
     m::tcomp<T> sin(const m::tcomp<T> &z);
+
+    template <typename T>
+    m::tcomp<T> pow(const m::tcomp<T> &z, const m::tcomp<T> &exponent);
+
+    template <typename T>
+    m::tcomp<T> pow(const T &base, const m::tcomp<T> &z);
+
+    template <typename T>
+    m::tcomp<T> pow(const m::tcomp<T> &z, const T &exponent);
+
+    template <typename T>
+    m::tcomp<T> pow(const m::tcomp<T> &z, size_t exponent);
 
     // Hash operator for use in certain STL containers
     template<typename T>

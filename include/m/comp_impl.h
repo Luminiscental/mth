@@ -66,10 +66,9 @@ m::tcomp<T> m::tcomp<T>::conjugate() const noexcept {
 template <typename T>
 m::tcomp<T> m::tcomp<T>::inverse() const {
 
+    if (util::isZero(*this)) throw std::invalid_argument("m::exception: tcomp zero has no inverse");
+
     auto ls = absSqr();
-
-    if (util::isZero(ls)) throw std::invalid_argument("m::exception: tcomp zero has no inverse");
-
     return conjugate() / ls;
 }
 
@@ -373,6 +372,14 @@ m::tcomp<T> std::exp(const m::tcomp<T> &z) {
 }
 
 template <typename T>
+m::tcomp<T> std::log(const m::tcomp<T> &z) {
+
+    auto p = z.asPolar();
+
+    return log(p.x()) + m::tcomp<T>::fromCartesian(0, p.y());
+}
+
+template <typename T>
 m::tcomp<T> std::cos(const m::tcomp<T> &z) {
 
     auto exponent = m::i<T> * z;
@@ -386,6 +393,37 @@ m::tcomp<T> std::sin(const m::tcomp<T> &z) {
     auto exponent = m::i<T> * z;
 
     return (exp(exponent) - exp(-exponent)) / (2.0f * m::i<T>);
+}
+
+template <typename T>
+m::tcomp<T> std::pow(const m::tcomp<T> &z, const m::tcomp<T> &exponent) {
+
+    return exp(exponent * std::log(z));
+}
+
+template <typename T>
+m::tcomp<T> std::pow(const m::tcomp<T> &z, const T &exponent) {
+
+    return exp(exponent * std::log(exponent));
+}
+
+template <typename T>
+m::tcomp<T> std::pow(const T &base, const m::tcomp<T> &z) {
+
+    return exp(z * std::log(base));
+}
+
+template <typename T>
+m::tcomp<T> std::pow(const m::tcomp<T> &z, size_t exponent) {
+
+    auto result = z;
+
+    for (size_t i = 1; i < exponent; i++) {
+
+        result *= z;
+    }
+
+    return result;
 }
 
 template <typename T>

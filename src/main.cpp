@@ -1,4 +1,6 @@
 
+#define m_PRECISION 16
+
 #include <iostream>
 
 #include <m/m.h>
@@ -7,6 +9,22 @@
 #include <m/mat.h>
 #include <m/quat.h>
 #include <m/polynomial.h>
+#include <m/series.h>
+#include <m/numeric.h>
+
+size_t factorial(size_t n) {
+
+    if (n == 0) return 1;
+
+    auto result = n;
+
+    for (size_t i = 2; i < n; i++) {
+
+        result *= i;
+    }
+
+    return result;
+}
 
 auto innerProd3(m::vec3 a, m::vec3 b) {
 
@@ -193,6 +211,62 @@ int main() {
         printThing("A(z) = " << thing);
         printThing("A'(z) = " << d);
         printThing("B'(z) = A(z) and B(0) = 0 -> B(z) = " << p);
+    }
+
+    {
+
+        printThing("-- testing limits --");
+
+        auto sincFunc = [] (m::comp z) { return std::sin(z) / z; };
+        auto sincLimit = m::numeric::limit(sincFunc, 0);
+
+        printThing("lim z->0 { sin(z)/z } = " << sincLimit);
+    }
+
+    {
+
+        printThing("-- testing polynomial interpolation --");
+
+        std::vector<m::cvec2> points;
+
+        points.push_back(m::cvec2(0, 1));
+        points.push_back(m::cvec2(1, 2));
+        points.push_back(m::cvec2(2, 1));
+
+        auto pol = m::Polynomial::interpolate(points);
+
+        printThing("(0, 1) and (1, 2) and (2, 1) gives " << pol);
+
+        std::vector<m::cvec2> line;
+
+        line.push_back(m::cvec2(0.5, 0.1));
+        line.push_back(m::cvec2(0.25, 0.1));
+        line.push_back(m::cvec2(0.125, 0.1));
+        line.push_back(m::cvec2(0.05, 0.1));
+
+        auto shouldBeConst = m::Polynomial::interpolate(line);
+
+        printThing("Points where y=0.1 gives " << shouldBeConst);
+    }
+
+    {
+
+        printThing("-- testing series --");
+
+        auto expGen = [] (size_t n) {
+
+            return m::comp(1) / static_cast<float>(factorial(n));
+        };
+
+        m::Series expSeries(expGen);
+
+        auto partialSequence = [&] (size_t n) {
+
+            return expSeries.getPartial(m::comp(1), n);
+        };
+
+        auto eApprox = m::numeric::limit(partialSequence);
+        printThing("e is roughly " << eApprox);
     }
 
     std::cout << std::endl;

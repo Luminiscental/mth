@@ -255,6 +255,62 @@ void m::Polynomial::setCoeff(size_t index, const m::comp &value) {
     degreeValid = false;
 }
 
+m::Polynomial m::Polynomial::interpolate(const std::vector<cvec2> &points) {
+
+    return interpolate(points, 0, points.size() - 1);
+}
+
+m::Polynomial m::Polynomial::interpolate(const std::vector<cvec2> &points, size_t first, size_t last) {
+
+    if (first == last) return Polynomial(points[first].y());
+
+    auto leftP = interpolate(points, first, last - 1);
+    auto rightP = interpolate(points, first + 1, last);
+
+    auto leftX = points[first].x();
+    auto rightX = points[last].x();
+
+    auto leftLinear = Polynomial(leftX, comp(-1));
+    auto rightLinear = Polynomial(-rightX, comp(1));
+
+    return (rightLinear * leftP + leftLinear * rightP) / (leftX - rightX);
+}
+
+m::Polynomial &m::Polynomial::operator+=(const m::Polynomial &rhs) {
+
+    return *this = *this + rhs;
+}
+
+m::Polynomial &m::Polynomial::operator-=(const m::Polynomial &rhs) {
+
+    return *this = *this - rhs;
+}
+
+m::Polynomial &m::Polynomial::operator*=(const m::Polynomial &rhs) {
+
+    return *this = *this * rhs;
+}
+
+m::Polynomial &m::Polynomial::operator+=(const m::comp &rhs) {
+
+    return *this = *this + rhs;
+}
+
+m::Polynomial &m::Polynomial::operator-=(const m::comp &rhs) {
+
+    return *this = *this - rhs;
+}
+
+m::Polynomial &m::Polynomial::operator*=(const m::comp &rhs) {
+
+    return *this = *this * rhs;
+}
+
+m::Polynomial &m::Polynomial::operator/=(const m::comp &rhs) {
+
+    return *this = *this / rhs;
+}
+
 m::Polynomial m::operator+(const m::Polynomial &lhs, const m::comp &rhs) {
 
     auto result = lhs;
@@ -394,6 +450,7 @@ bool m::operator!=(const Polynomial &lhs, const Polynomial &rhs) {
 
 std::ostream &m::operator<<(std::ostream &lhs, const m::Polynomial &rhs) {
 
+    // TODO: This is broken because of cpp files; find an alternative
     lhs << std::fixed << std::setprecision(m_PRECISION);
 
     if (rhs.getDegree().isInfinite()) return lhs << "0";
