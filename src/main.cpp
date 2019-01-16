@@ -221,6 +221,17 @@ int main() {
         auto sincLimit = m::numeric::limit(sincFunc, 0);
 
         printThing("lim z->0 { sin(z)/z } = " << sincLimit);
+
+        m::Polynomial num(1, 0, 1);
+        m::Polynomial denom(0, 1, 2);
+
+        auto rational = [num, denom] (size_t n) {
+
+            return num.value(m::comp(n)) / denom.value(m::comp(n));
+        };
+
+        auto lim = m::numeric::limit(rational);
+        printThing("lim z->infinity (" << num << ") / (" << denom << ") = " << lim);
     }
 
     {
@@ -255,18 +266,36 @@ int main() {
 
         auto expGen = [] (size_t n) {
 
-            return m::comp(1) / static_cast<float>(factorial(n));
+            return m::comp(1) / m::comp(factorial(n));
         };
 
         m::Series expSeries(expGen);
+        printThing("e is roughly " << expSeries.getValue(m::comp(1)));
 
-        auto partialSequence = [&] (size_t n) {
+        auto arctanCoeffs = [] (size_t n) {
 
-            return expSeries.getPartial(m::comp(1), n);
+            if (n % 2 == 0) return m::comp(0);
+
+            m::comp sign = 1;
+
+            if (n % 4 == 3) sign = -1;
+
+            return sign / m::comp(n);
         };
 
-        auto eApprox = m::numeric::limit(partialSequence);
-        printThing("e is roughly " << eApprox);
+        auto machinCoeffs = [arctanCoeffs] (size_t n) {
+
+            if (n % 2 == 0) return m::comp(0);
+
+            auto orig = arctanCoeffs(n);
+            auto over5 = orig / std::pow(m::comp(5), m::comp(n));
+            auto over239 = orig / std::pow(m::comp(239), m::comp(n));
+
+            return m::comp(4) * over5 - over239;
+        };
+
+        m::Series machin(machinCoeffs);
+        printThing("pi is roughly " << m::comp(4) * machin.getValue(m::comp(1)));
     }
 
     std::cout << std::endl;

@@ -41,6 +41,8 @@
 
 #include <limits>
 
+// TODO: Rational functions
+// TODO: Laurent series
 // TODO: Better exception / debug info
 
 namespace m {

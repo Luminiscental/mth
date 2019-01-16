@@ -14,7 +14,9 @@ std::vector<m::cvec2> sampleFunction(std::function<m::comp(m::comp)> xTransform,
     // TODO: Parametrize these numbers / choose intelligently
     for (size_t i = 1; i < 999; i++) {
 
-        auto x = xTransform(std::pow(m::comp(2), -m::comp(i)));
+        // TODO: Choose this sequence more intelligently
+        auto approachingZero = std::pow(m::comp(2), -m::comp(i));
+        auto x = xTransform(approachingZero);
         if (std::abs(x - last) < 0.00001) break;
 
         auto y = yFunc(i, x);

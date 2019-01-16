@@ -40,6 +40,7 @@ namespace m {
         comp getValue(const m::comp &z) const;
 
         static Series finite(const Polynomial &equivalent);
+        // TODO: Include n as a parameter
         static Series recursive(std::function<comp(comp)> recursion, const comp &constant);
     };
 
