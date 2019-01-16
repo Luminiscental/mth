@@ -6,7 +6,7 @@
 #include <m/numeric.h>
 #include <m/polynomial.h>
 
-std::vector<m::cvec2> sampleFunction(std::function<m::comp(m::comp)> xTransform, std::function<m::comp(size_t,m::comp)> yFunc) {
+m::Polynomial lerpTowards(std::function<m::comp(m::comp)> xTransform, std::function<m::comp(size_t,m::comp)> yFunc) {
 
     std::vector<m::cvec2> result;
     m::comp last;
@@ -25,7 +25,13 @@ std::vector<m::cvec2> sampleFunction(std::function<m::comp(m::comp)> xTransform,
         last = x;
     }
 
-    return result;
+    // number of vertices to use
+    auto n = 10;
+
+    auto lastIndex = result.size() - 1;
+    auto startIndex = lastIndex > (n - 1) ? lastIndex - n : 0;
+
+    return m::Polynomial::interpolate(result, startIndex, lastIndex);
 }
 
 m::comp m::numeric::limit(const std::function<m::comp(size_t)> &sequence) {
@@ -33,9 +39,9 @@ m::comp m::numeric::limit(const std::function<m::comp(size_t)> &sequence) {
     auto id = [] (comp z) { return z; };
     auto y = [&] (size_t index, comp x) { return sequence(index); };
 
-    auto testValues = sampleFunction(id, y);
+    auto pol = lerpTowards(id, y);
 
-    return Polynomial::interpolate(testValues).getCoeff(0);
+    return pol.getCoeff(0);
 }
 
 m::comp m::numeric::lowerLimit(const std::function<m::comp(m::comp)> &function, m::comp input) {
@@ -43,9 +49,9 @@ m::comp m::numeric::lowerLimit(const std::function<m::comp(m::comp)> &function, 
     auto x = [&] (comp small) { return input - small; };
     auto y = [&] (size_t index, comp x) { return function(x); };
 
-    auto testValues = sampleFunction(x, y);
+    auto pol = lerpTowards(x, y);
 
-    return Polynomial::interpolate(testValues).getCoeff(0);
+    return pol.getCoeff(0);
 }
 
 m::comp m::numeric::upperLimit(const std::function<m::comp(m::comp)> &function, m::comp input) {
@@ -53,9 +59,9 @@ m::comp m::numeric::upperLimit(const std::function<m::comp(m::comp)> &function, 
     auto x = [&] (comp small) { return input + small; };
     auto y = [&] (size_t index, comp x) { return function(x); };
 
-    auto testValues = sampleFunction(x, y);
+    auto pol = lerpTowards(x, y);
 
-    return Polynomial::interpolate(testValues).getCoeff(0);
+    return pol.getCoeff(0);
 }
 
 m::comp m::numeric::limit(const std::function<m::comp(m::comp)> &function, m::comp input) {

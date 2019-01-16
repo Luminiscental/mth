@@ -127,8 +127,6 @@ namespace m {
 
         void updateDegree() noexcept;
 
-        static Polynomial interpolate(const std::vector<cvec2> &points, size_t first, size_t last);
-
     public:
 
         Polynomial() noexcept;
@@ -155,6 +153,7 @@ namespace m {
 
         // Returns the lagrange interpolation polynomial intersecting the specified points
         static Polynomial interpolate(const std::vector<cvec2> &points);
+        static Polynomial interpolate(const std::vector<cvec2> &points, size_t first, size_t last);
 
         Polynomial &operator+=(const Polynomial &rhs);
         Polynomial &operator-=(const Polynomial &rhs);
