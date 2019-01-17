@@ -34,7 +34,7 @@ namespace m {
         comp limitInfNeg(const std::function<comp(comp)> &function);
     }
 
-    // Returns an approximation of the derivative using the definition
+    // Returns an approximation of the derivative using numeric::limit
     std::function<comp(comp)> differentiate(const std::function<comp(comp)> &function);
 }
 

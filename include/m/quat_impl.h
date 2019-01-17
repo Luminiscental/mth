@@ -30,8 +30,6 @@ m::tquat<T> m::tquat<T>::inverse() const {
 
     auto ls = magnSqr();
 
-    if (util::isZero(ls)) throw std::invalid_argument("zero quaternion has no inverse");
-
     return conjugate() / ls;
 }
 
@@ -39,8 +37,6 @@ template <typename T>
 m::tquat<T> m::tquat<T>::unit() const {
 
     auto l = static_cast<T>(magn());
-
-    if (util::isZero(l)) throw std::invalid_argument("zero quaternion has no unit equivalent");
 
     return *this / l;
 }
@@ -274,7 +270,7 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
 
     bool nonZero = false;
 
-    lhs << std::fixed << std::setprecision(m_PRECISION) << "(";
+    lhs << "(";
 
     if (!util::isZero(rhs.real())) {
 

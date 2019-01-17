@@ -314,8 +314,6 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
 
     if (zero) return lhs << "0";
 
-    lhs << std::fixed << std::setprecision(m_PRECISION);
-
     // Bracket if there are multiple terms
     if (noneZero) lhs << "(";
 

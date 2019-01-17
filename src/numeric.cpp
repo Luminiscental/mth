@@ -1,6 +1,4 @@
 
-#include <iostream>
-
 #include <m/m.h>
 
 #include <m/numeric.h>
@@ -124,7 +122,7 @@ std::function<m::comp(m::comp)> m::differentiate(const std::function<m::comp(m::
             return avgGradient(x, x + dx);
         };
 
-        return limit(gradientApprox, comp(0));
+        return numeric::limit(gradientApprox, comp(0));
     };
 }
 

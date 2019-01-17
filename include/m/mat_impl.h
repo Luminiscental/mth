@@ -279,8 +279,6 @@ m::tmat_aug<T, N, A> m::tmat_aug<T, N, A>::reducedRowEchelon() const {
 template <typename T, size_t N, typename A>
 std::ostream &m::operator<<(std::ostream &lhs, const m::tmat_aug<T, N, A> &rhs) {
 
-    lhs << std::fixed << std::setprecision(m_PRECISION);
-
     for (size_t y = 0; y < N; y++) {
 
         lhs << "|\t";
@@ -826,8 +824,6 @@ bool m::operator!=(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
 // TODO: Either make this less crappy or remove it
 template <typename T, size_t N, size_t M>
 std::ostream &m::operator<<(std::ostream &lhs, const m::tmat<T, N, M> &rhs) {
-
-    lhs << std::fixed << std::setprecision(m_PRECISION);
 
     for (size_t y = 0; y < M; y++) {
 

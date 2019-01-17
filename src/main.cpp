@@ -1,7 +1,6 @@
 
-#define m_PRECISION 16
-
 #include <iostream>
+#include <iomanip>
 
 #include <m/m.h>
 
@@ -51,6 +50,8 @@ auto outerProd3(m::vec3 a, m::vec3 b) {
 // TODO: Actual tests
 
 int main() {
+
+    std::cout << std::fixed << std::setprecision(16);
 
     {
 

@@ -319,7 +319,7 @@ bool m::operator!=(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
 template <typename T, size_t N>
 std::ostream &m::operator<<(std::ostream &lhs, const m::tvec<T, N> &rhs) {
 
-    lhs << std::fixed << std::setprecision(m_PRECISION) << "(";
+    lhs << "(";
 
     for (size_t i = 0; i < N - 1; i++) {
 

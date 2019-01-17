@@ -11,7 +11,6 @@ For example code see src/main.cpp
 
 * `m_ROW_MAJOR` - When set the values of matrices are stored row major rather than column-major. This doesn't affect behaviour when using relevant functions / classes, only the implementation.
 * `m_ELIMINATION` - When set the `inverse` method of `m::tmat` uses Gaussian elimination instead of recursing on minor matrices to find the adjoint.
-* `m_PRECISION` - If set this is passed to `std::setprecision` in pretty-print functions; it's the number of decimal places displayed.
 
 ### Features:
 

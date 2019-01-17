@@ -31,8 +31,6 @@ m::ComplexSolutions m::ComplexSolutions::infinite() noexcept {
 // TODO: Parametrize variable name or something idk
 std::ostream &m::operator<<(std::ostream &stream, const m::ComplexSolutions &solutions) {
 
-    stream << std::fixed << std::setprecision(m_PRECISION);
-
     if (solutions.inf) {
 
         stream << "z in C";
@@ -464,9 +462,6 @@ bool m::operator!=(const Polynomial &lhs, const Polynomial &rhs) {
 }
 
 std::ostream &m::operator<<(std::ostream &lhs, const m::Polynomial &rhs) {
-
-    // TODO: This is broken because of cpp files; find an alternative
-    lhs << std::fixed << std::setprecision(m_PRECISION);
 
     if (rhs.getDegree().isInfinite()) return lhs << "0";
 
