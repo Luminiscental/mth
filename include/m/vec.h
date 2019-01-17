@@ -205,7 +205,7 @@ namespace m {
                           using fvec ## n = tvec<float, n>; \
                           using dvec ## n = tvec<double, n>; \
                           using cvec ## n = tvec<m::comp, n>; \
-                          using vec ## n = fvec ## n;
+                          using vec ## n = dvec ## n;
 
     CREATE_ALIASES(1)
     CREATE_ALIASES(2)

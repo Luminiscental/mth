@@ -104,8 +104,18 @@ m::PolynomialDegree m::PolynomialDegree::infinite() {
 m::Polynomial::Polynomial() noexcept
     :rootsValid(true), roots(ComplexSolutions::infinite()), degreeValid(true), degree(PolynomialDegree::infinite()) {}
 
-m::Polynomial::Polynomial(std::vector<m::comp> coeffs) noexcept
-    :coeffs(coeffs), rootsValid(false), roots(ComplexSolutions::empty()), degreeValid(false), degree(0) {}
+m::Polynomial m::Polynomial::fromCoeffs(std::vector<m::comp> coeffs) noexcept {
+
+    m::Polynomial result;
+
+    result.coeffs = coeffs;
+    result.rootsValid = false;
+    result.roots = ComplexSolutions::empty();
+    result.degreeValid = false;
+    result.degree = 0;
+
+    return result;
+}
 
 m::Polynomial::operator std::function<comp(comp)>() const {
 
@@ -205,13 +215,13 @@ m::ComplexSolutions m::Polynomial::solve() {
 
         case 2: {
 
-                auto descriminant = coeffs[1] * coeffs[1] - 4.0f * coeffs[2] * coeffs[0];
+                auto descriminant = coeffs[1] * coeffs[1] - 4.0 * coeffs[2] * coeffs[0];
                 auto offset = std::sqrt(descriminant);
 
                 auto lesser = -coeffs[1] - offset;
                 auto greater = -coeffs[1] + offset;
 
-                auto denom = 2.0f * coeffs[2];
+                auto denom = 2.0 * coeffs[2];
 
                 if (util::isEqual(lesser, greater)) return roots = ComplexSolutions::finite(lesser / denom);
 
@@ -262,7 +272,7 @@ m::Polynomial m::Polynomial::interpolate(const std::vector<cvec2> &points) {
 
 m::Polynomial m::Polynomial::interpolate(const std::vector<cvec2> &points, size_t first, size_t last) {
 
-    if (first == last) return Polynomial(points[first].y());
+    if (first == last) return fromCoeffs(points[first].y());
 
     auto leftP = interpolate(points, first, last - 1);
     auto rightP = interpolate(points, first + 1, last);
@@ -270,8 +280,8 @@ m::Polynomial m::Polynomial::interpolate(const std::vector<cvec2> &points, size_
     auto leftX = points[first].x();
     auto rightX = points[last].x();
 
-    auto leftLinear = Polynomial(leftX, comp(-1));
-    auto rightLinear = Polynomial(-rightX, comp(1));
+    auto leftLinear = fromCoeffs(leftX, comp(-1));
+    auto rightLinear = fromCoeffs(-rightX, comp(1));
 
     return (rightLinear * leftP + leftLinear * rightP) / (leftX - rightX);
 }

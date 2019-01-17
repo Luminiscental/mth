@@ -220,7 +220,7 @@ namespace m {
     using fquat = tquat<float>;
     using dquat = tquat<double>;
 
-    using quat = fquat;
+    using quat = dquat;
 }
 
 namespace std {

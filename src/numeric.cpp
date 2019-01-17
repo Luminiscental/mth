@@ -9,35 +9,75 @@
 m::Polynomial lerpTowards(std::function<m::comp(m::comp)> xTransform, std::function<m::comp(size_t,m::comp)> yFunc) {
 
     std::vector<m::cvec2> result;
-    m::comp last;
+    m::comp lastX, lastY;
 
     // TODO: Parametrize these numbers / choose intelligently
-    for (size_t i = 1; i < 999; i++) {
+    for (size_t i = 2; i < 50; i++) {
 
         // TODO: Choose this sequence more intelligently
         auto approachingZero = std::pow(m::comp(2), -m::comp(i));
         auto x = xTransform(approachingZero);
-        if (std::abs(x - last) < 0.00001) break;
-
         auto y = yFunc(i, x);
+
+        if (std::isnan(y.real()) || std::isnan(y.imag())) break;
+
         result.push_back(m::cvec2(x, y));
 
-        last = x;
+        auto deltaX = std::abs(x - lastX);
+        auto deltaY = std::abs(y - lastY);
+
+        if (deltaY < 0.000000001 && deltaY > 0.00000000001) break;
+
+        lastX = x;
+        lastY = y;
     }
 
     // number of vertices to use
-    auto n = 10;
+    auto n = 5;
 
     auto lastIndex = result.size() - 1;
     auto startIndex = lastIndex > (n - 1) ? lastIndex - n : 0;
 
+    /*
+
+    std::cout << std::endl << std::endl;
+    std::cout << "Points to interpolate:" << std::endl;
+
+    for (size_t i = startIndex; i <= lastIndex; i++) {
+
+        std::cout << result[i] << std::endl;
+    }
+
+    std::cout << std::endl << std::endl;
+
+    */
+
     return m::Polynomial::interpolate(result, startIndex, lastIndex);
+}
+
+std::function<m::comp(size_t)> accelerateConvergence(const std::function<m::comp(size_t)> &sequence) {
+
+    // Shank transform
+    return [sequence] (size_t n) {
+
+        if (n == 0) return m::comp(0);
+
+        auto next = sequence(n + 1);
+        auto curr = sequence(n);
+        auto prev = sequence(n - 1);
+
+        auto step = next - curr;
+
+        return next - step * step / (step - curr + prev);
+    };
 }
 
 m::comp m::numeric::limit(const std::function<m::comp(size_t)> &sequence) {
 
+    auto accelerated = accelerateConvergence(sequence);
+
     auto id = [] (comp z) { return z; };
-    auto y = [&] (size_t index, comp x) { return sequence(index); };
+    auto y = [&] (size_t index, comp x) { return accelerated(index); };
 
     auto pol = lerpTowards(id, y);
 
@@ -71,22 +111,14 @@ m::comp m::numeric::limit(const std::function<m::comp(m::comp)> &function, m::co
 
 m::comp m::numeric::limitInfPos(const std::function<m::comp(m::comp)> &function) {
 
-    auto sequenceEquiv = [&] (size_t n) {
-
-        return function(comp(n));
-    };
-
-    return limit(sequenceEquiv);
+    auto inverted = [function] (m::comp z) { return function(z.inverse()); };
+    return upperLimit(inverted, comp(0));
 }
 
 m::comp m::numeric::limitInfNeg(const std::function<m::comp(m::comp)> &function) {
 
-    auto sequenceEquiv = [&] (size_t n) {
-
-        return function(-comp(n));
-    };
-
-    return limit(sequenceEquiv);
+    auto inverted = [function] (m::comp z) { return function(z.inverse()); };
+    return lowerLimit(inverted, comp(0));
 }
 
 std::function<m::comp(m::comp)> m::numeric::differentiate(const std::function<m::comp(m::comp)> &function) {

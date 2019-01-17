@@ -131,10 +131,10 @@ namespace m {
 
         Polynomial() noexcept;
 
-        Polynomial(std::vector<comp> coeffs) noexcept;
+        static Polynomial fromCoeffs(std::vector<comp> coeffs) noexcept;
 
         template <typename ...Q>
-        Polynomial(Q... args) noexcept;
+        static Polynomial fromCoeffs(Q... args);
 
         operator std::function<comp(comp)>() const;
 

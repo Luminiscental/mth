@@ -231,8 +231,7 @@ namespace m {
     using fcomp = tcomp<float>;
     using dcomp = tcomp<double>;
 
-    // TODO: Maybe move to double as default
-    using comp = fcomp;
+    using comp = dcomp;
 
     // The constant i for convenience
 

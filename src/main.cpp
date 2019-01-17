@@ -56,8 +56,8 @@ int main() {
 
         printThing("-- testing complex math functions --");
 
-        auto a = 1.0f + 2.0f * m::i<float>;
-        auto b = 2.0f - 3.0f * m::i<float>;
+        auto a = 1.0 + 2.0 * m::i<double>;
+        auto b = 2.0 - 3.0 * m::i<double>;
 
         printThing(a << " * " << b << " = " << (a * b));
         printThing("sqrt(" << a << ") = " << std::sqrt(a));
@@ -67,9 +67,9 @@ int main() {
         auto aPolar = a.asPolar();
 
         printThing("polar form of " << a << " is " << aPolar);
-        printThing(aPolar.x() << " * e^(i * " << aPolar.y() << ") = " << (aPolar.x() * std::exp(m::i<float> * aPolar.y())));
+        printThing(aPolar.x() << " * e^(i * " << aPolar.y() << ") = " << (aPolar.x() * std::exp(m::i<double> * aPolar.y())));
 
-        auto c = 1.0f + m::i<float>;
+        auto c = 1.0 + m::i<double>;
         auto cosC = std::cos(c);
         auto sinC = std::sin(c);
 
@@ -77,8 +77,8 @@ int main() {
         printThing("cos(c) = " << cosC);
         printThing("sin(c) = " << sinC);
 
-        printThing(cosC << " + i * " << sinC << " = " << (cosC + m::i<float> * sinC));
-        printThing("exp(ic) = " << std::exp(m::i<float> * c));
+        printThing(cosC << " + i * " << sinC << " = " << (cosC + m::i<double> * sinC));
+        printThing("exp(ic) = " << std::exp(m::i<double> * c));
     }
 
     {
@@ -86,7 +86,7 @@ int main() {
         printThing("-- testing non-square matrix multiplication and vector functions --");
 
         m::vec3 someVector(1, 3, 5);
-        m::vec3 anotherVector = 7.0f * someVector.unit();
+        m::vec3 anotherVector = 7.0 * someVector.unit();
         auto inner = innerProd3(someVector, anotherVector);
         auto outer = outerProd3(someVector, anotherVector);
 
@@ -101,13 +101,13 @@ int main() {
 
         m::vec3 initialPosition(1, 2, 1);
 
-        m::mat4 transformation = m::mat::rotation(m::PI<float> / 3, m::X_AXIS<float>)
-                               * m::mat::translation(m::vec3(1.0f, 13.0f, -2.0f));
+        m::mat4 transformation = m::mat::rotation(m::PI<double> / 3, m::X_AXIS<double>)
+                               * m::mat::translation(m::vec3(1.0, 13.0, -2.0));
         m::vec4 positionHandle(initialPosition.x(), initialPosition.y(), initialPosition.z(), 1);
 
         m::vec3 transformedPosition = (transformation * positionHandle).xyz();
 
-        m::quat additionalRotation = m::quat::rotation(m::TAU<float> / 12, m::vec3(0.5f, 0.5f, -0.1f));
+        m::quat additionalRotation = m::quat::rotation(m::TAU<double> / 12, m::vec3(0.5f, 0.5f, -0.1f));
         additionalRotation *= m::quat(2, 3, 1, 5);
         additionalRotation.real() -= 4;
 
@@ -143,7 +143,7 @@ int main() {
 
         printThing("-- testing matrix edge-cases --");
 
-        m::tmat<float, 2, 3> rectMat(1, 2,
+        m::tmat<double, 2, 3> rectMat(1, 2,
                                      3, 4,
                                      5, 6);
 
@@ -163,10 +163,10 @@ int main() {
         printThing("C^{-1} :");
         printThing(tinyInverse);
 
-        auto complicatedMatrix = m::cmat4x2(1, 3.0f * m::i<float>, -m::i<float>, 2.0f * m::i<float>,
-                                            -2.0f * m::i<float>, 3, 2, 1);
+        auto complicatedMatrix = m::cmat4x2(1, 3.0 * m::i<double>, -m::i<double>, 2.0 * m::i<double>,
+                                            -2.0 * m::i<double>, 3, 2, 1);
 
-        auto complexVector = m::cvec4(1, m::i<float>, -1, -m::i<float>);
+        auto complexVector = m::cvec4(1, m::i<double>, -1, -m::i<double>);
 
         auto complicatedProd = complicatedMatrix * complexVector;
 
@@ -180,7 +180,7 @@ int main() {
 
         printThing("-- testing polynomial arithmetic --");
 
-        m::Polynomial quadratic(1, 2, 3); // 1 + 2z + 3z^2
+        auto quadratic = m::Polynomial::fromCoeffs(1, 2, 3); // 1 + 2z + 3z^2
 
         auto roots = quadratic.solve();
         auto degree = quadratic.getDegree();
@@ -189,7 +189,7 @@ int main() {
         printThing("P has degree " << degree);
         printThing("P(z) = 0 -> " << roots);
 
-        auto quintic = m::Polynomial(1, 0, 0, 0, 0, 1); // 1 + z^5
+        auto quintic = m::Polynomial::fromCoeffs(1, 0, 0, 0, 0, 1); // 1 + z^5
         auto prod = quadratic * quintic;
 
         printThing("Q(z) = " << quintic);
@@ -203,7 +203,7 @@ int main() {
 
         printThing("-- testing analytic calculus --");
 
-        m::Polynomial thing(1, 2, 1, 2, 1, 2);
+        auto thing = m::Polynomial::fromCoeffs(1, 2, 1, 2, 1, 2);
 
         auto d = m::differentiate(thing);
         auto p = m::integrate(thing);
@@ -222,16 +222,25 @@ int main() {
 
         printThing("lim z->0 { sin(z)/z } = " << sincLimit);
 
-        m::Polynomial num(1, 0, 1);
-        m::Polynomial denom(0, 1, 2);
+        auto num = m::Polynomial::fromCoeffs(1, 0, 1);
+        auto denom = m::Polynomial::fromCoeffs(0, 1, 2);
 
         auto rational = [num, denom] (size_t n) {
 
             return num.value(m::comp(n)) / denom.value(m::comp(n));
         };
 
+        auto rationalFunc = [num, denom] (m::comp z) {
+
+            return num.value(z) / denom.value(z);
+        };
+
+        // Providing values between makes it more accurate
+
         auto lim = m::numeric::limit(rational);
-        printThing("lim z->infinity (" << num << ") / (" << denom << ") = " << lim);
+        auto limFunc = m::numeric::limitInfPos(rationalFunc);
+        printThing("lim n->infinity (" << num << ") / (" << denom << ") = " << lim);
+        printThing("lim z->infinity (" << num << ") / (" << denom << ") = " << limFunc);
     }
 
     {
@@ -291,11 +300,11 @@ int main() {
             auto over5 = orig / std::pow(m::comp(5), m::comp(n));
             auto over239 = orig / std::pow(m::comp(239), m::comp(n));
 
-            return m::comp(4) * over5 - over239;
+            return m::comp(4) * (m::comp(4) * over5 - over239);
         };
 
         m::Series machin(machinCoeffs);
-        printThing("pi is roughly " << m::comp(4) * machin.getValue(m::comp(1)));
+        printThing("pi is roughly " << machin.getValue(m::comp(1)));
     }
 
     std::cout << std::endl;

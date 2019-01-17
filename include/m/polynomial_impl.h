@@ -6,5 +6,6 @@ m::ComplexSolutions m::ComplexSolutions::finite(Q... args) noexcept {
 }
 
 template <typename ...Q>
-m::Polynomial::Polynomial(Q... args) noexcept
-    :Polynomial(std::vector<comp> {static_cast<comp>(args)...}) {}
+m::Polynomial m::Polynomial::fromCoeffs(Q... args) {
+    return fromCoeffs(std::vector<comp> {static_cast<comp>(args)...});
+}

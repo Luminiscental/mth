@@ -217,14 +217,14 @@ namespace m {
                                     using fmat ## n = tmat<float, n, n>; \
                                     using dmat ## n = tmat<double, n, n>; \
                                     using cmat ## n = tmat<comp, n, n>; \
-                                    using  mat ## n = fmat ## n;
+                                    using  mat ## n = dmat ## n;
 
 #define CREATE_RECT_ALIASES(n, m)   using imat ## n ## x ## m = tmat<int, n, m>; \
                                     using lmat ## n ## x ## m = tmat<long, n, m>; \
                                     using fmat ## n ## x ## m = tmat<float, n, m>; \
                                     using dmat ## n ## x ## m = tmat<double, n, m>; \
                                     using cmat ## n ## x ## m = tmat<comp, n, m>; \
-                                    using  mat ## n ## x ## m = fmat ## n ## x ## m;
+                                    using  mat ## n ## x ## m = dmat ## n ## x ## m;
 
 #define CREATE_ALIASES(n)   CREATE_SQR_ALIASES(n) \
                             CREATE_RECT_ALIASES(n, 1) \

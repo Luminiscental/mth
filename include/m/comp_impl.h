@@ -48,8 +48,6 @@ m::tcomp<T> m::tcomp<T>::unit() const {
 
     auto l = abs();
 
-    if (util::isZero(l)) throw std::invalid_argument("m::exception: tcomp zero has no unit equivalent");
-
     return *this / l;
 }
 
@@ -65,8 +63,6 @@ m::tcomp<T> m::tcomp<T>::conjugate() const noexcept {
 
 template <typename T>
 m::tcomp<T> m::tcomp<T>::inverse() const {
-
-    if (util::isZero(*this)) throw std::invalid_argument("m::exception: tcomp zero has no inverse");
 
     auto ls = absSqr();
     return conjugate() / ls;
@@ -392,7 +388,7 @@ m::tcomp<T> std::sin(const m::tcomp<T> &z) {
 
     auto exponent = m::i<T> * z;
 
-    return (exp(exponent) - exp(-exponent)) / (2.0f * m::i<T>);
+    return (exp(exponent) - exp(-exponent)) / (2.0 * m::i<T>);
 }
 
 template <typename T>
