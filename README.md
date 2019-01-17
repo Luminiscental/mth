@@ -5,7 +5,7 @@ No one wanted it; no one needed it, but it's here now.
 
 m is a maths library built around template classes to work with objects such as vectors, matrices and quaternions, with helper classes to deal with solving equations. No guarantees of stability or quality atm so be warned.
 
-For example code see src/main.cpp
+For example code see src/main.cpp (to build execute `build.sh` and to run execute `build/testing` or to do both pass `-r` to `build.sh`)
 
 ### Optional preprocessor flags:
 
