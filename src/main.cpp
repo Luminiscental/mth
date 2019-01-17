@@ -46,14 +46,20 @@ auto outerProd3(m::vec3 a, m::vec3 b) {
 }
 
 #define printThing(thing) std::cout << std::endl << thing << std::endl
+#define block(n, ...) {\
+    auto initialPrecision = std::cout.precision();\
+    std::cout << std::setprecision(n);\
+    __VA_ARGS__\
+    std::cout << std::setprecision(initialPrecision);\
+}
 
 // TODO: Actual tests
 
 int main() {
 
-    std::cout << std::fixed << std::setprecision(16);
+    std::cout << std::fixed;
 
-    {
+    block(2,
 
         printThing("-- testing complex math functions --");
 
@@ -80,9 +86,38 @@ int main() {
 
         printThing(cosC << " + i * " << sinC << " = " << (cosC + m::i<double> * sinC));
         printThing("exp(ic) = " << std::exp(m::i<double> * c));
-    }
+    )
 
-    {
+    block(2,
+
+        printThing("-- testing integer scalars --");
+
+        auto a = 1 + 2 * m::i<int>;
+        auto b = 2 - 3 * m::i<int>;
+
+        printThing(a << " * " << b << " = " << (a * b));
+
+        auto poorPythagoras = m::ivec2(1, 1);
+
+        printThing(poorPythagoras << " has length squaring to " << poorPythagoras.magnSqr() << ", which is " << poorPythagoras.magn());
+
+        auto flip = m::imat2::identity();
+
+        auto top = flip.getRow(0);
+        auto bottom = flip.getRow(1);
+
+        flip.setRow(0, bottom);
+        flip.setRow(1, top); 
+
+        auto asymmetric = m::ivec2(1, -1);
+
+        printThing("Transformation:");
+        printThing(flip);
+        printThing("Flipping " << poorPythagoras << " gives " << (flip * poorPythagoras));
+        printThing("Flipping " << asymmetric << " gives " << (flip * asymmetric));
+    )
+
+    block(2,
 
         printThing("-- testing non-square matrix multiplication and vector functions --");
 
@@ -94,9 +129,9 @@ int main() {
         printThing("inner(" << someVector << ", " << anotherVector << ") = " << inner);
         printThing("outer(" << someVector << ", " << anotherVector << ") =");
         printThing(outer);
-    }
+    )
 
-    {
+    block(2,
 
         printThing("-- testing matrix / quaternion transformations of 3-vectors --");
 
@@ -118,9 +153,9 @@ int main() {
         printThing(m::mat::rotation(additionalRotation) * transformation);
 
         printThing("Went from " << initialPosition << " to " << transformedPosition);
-    }
+    )
 
-    {
+    block(2,
 
         printThing("-- testing inverse of large matrix --");
 
@@ -138,9 +173,9 @@ int main() {
 
         printThing("A^{-1} :");
         printThing(bigMatrix.inverse());
-    }
+    )
 
-    {
+    block(2,
 
         printThing("-- testing matrix edge-cases --");
 
@@ -175,9 +210,9 @@ int main() {
         printThing(complicatedMatrix);
 
         printThing("D . " << complexVector << " = " << complicatedProd);
-    }
+    )
 
-    {
+    block(2,
 
         printThing("-- testing polynomial arithmetic --");
 
@@ -198,9 +233,9 @@ int main() {
 
         printThing("R(1) = " << prod.value(1));
         printThing("R has degree " << prod.getDegree());
-    }
+    )
 
-    {
+    block(2,
 
         printThing("-- testing analytic calculus --");
 
@@ -212,9 +247,9 @@ int main() {
         printThing("A(z) = " << thing);
         printThing("A'(z) = " << d);
         printThing("B'(z) = A(z) and B(0) = 0 -> B(z) = " << p);
-    }
+    )
 
-    {
+    block(8,
 
         printThing("-- testing limits --");
 
@@ -242,9 +277,9 @@ int main() {
         auto limFunc = m::numeric::limitInfPos(rationalFunc);
         printThing("lim n->infinity (" << num << ") / (" << denom << ") = " << lim);
         printThing("lim z->infinity (" << num << ") / (" << denom << ") = " << limFunc);
-    }
+    )
 
-    {
+    block(2,
 
         printThing("-- testing polynomial interpolation --");
 
@@ -268,9 +303,9 @@ int main() {
         auto shouldBeConst = m::Polynomial::interpolate(line);
 
         printThing("Points where y=0.1 gives " << shouldBeConst);
-    }
+    )
 
-    {
+    block(16,
 
         printThing("-- testing series --");
 
@@ -306,7 +341,7 @@ int main() {
 
         m::Series machin(machinCoeffs);
         printThing("pi is roughly " << machin.getValue(m::comp(1)));
-    }
+    )
 
     std::cout << std::endl;
 
