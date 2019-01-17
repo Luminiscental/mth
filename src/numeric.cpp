@@ -11,46 +11,32 @@ m::Polynomial lerpTowards(std::function<m::comp(m::comp)> xTransform, std::funct
     std::vector<m::cvec2> result;
     m::comp lastX, lastY;
 
-    // TODO: Parametrize these numbers / choose intelligently
-    for (size_t i = 2; i < 50; i++) {
+    for (size_t i = 2; i < 100; i++) {
 
-        // TODO: Choose this sequence more intelligently
         auto approachingZero = std::pow(m::comp(2), -m::comp(i));
         auto x = xTransform(approachingZero);
         auto y = yFunc(i, x);
 
-        if (std::isnan(y.real()) || std::isnan(y.imag())) break;
+        // If sequence is close enough to cause division by zero then we can probably break
+        if (std::isnan(y.real()) || std::isnan(y.imag()) || std::isnan(x.real()) || std::isnan(x.imag())) {
+
+            break;
+        }
 
         result.push_back(m::cvec2(x, y));
 
         auto deltaX = std::abs(x - lastX);
         auto deltaY = std::abs(y - lastY);
 
-        if (deltaY < 0.000000001 && deltaY > 0.00000000001) break;
-
         lastX = x;
         lastY = y;
     }
 
-    // number of vertices to use
+    // number of vertices to interpolate
     auto n = 5;
 
     auto lastIndex = result.size() - 1;
     auto startIndex = lastIndex > (n - 1) ? lastIndex - n : 0;
-
-    /*
-
-    std::cout << std::endl << std::endl;
-    std::cout << "Points to interpolate:" << std::endl;
-
-    for (size_t i = startIndex; i <= lastIndex; i++) {
-
-        std::cout << result[i] << std::endl;
-    }
-
-    std::cout << std::endl << std::endl;
-
-    */
 
     return m::Polynomial::interpolate(result, startIndex, lastIndex);
 }
@@ -121,7 +107,7 @@ m::comp m::numeric::limitInfNeg(const std::function<m::comp(m::comp)> &function)
     return lowerLimit(inverted, comp(0));
 }
 
-std::function<m::comp(m::comp)> m::numeric::differentiate(const std::function<m::comp(m::comp)> &function) {
+std::function<m::comp(m::comp)> m::differentiate(const std::function<m::comp(m::comp)> &function) {
 
     auto avgGradient = [&] (comp a, comp b) {
 

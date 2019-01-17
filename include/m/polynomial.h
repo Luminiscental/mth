@@ -137,6 +137,7 @@ namespace m {
         static Polynomial fromCoeffs(Q... args);
 
         operator std::function<comp(comp)>() const;
+        comp operator()(const comp &z) const;
 
         std::vector<comp> getCoeffs();
         std::vector<comp> getCoeffs() const;

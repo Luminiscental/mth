@@ -2,7 +2,9 @@
 #define __m_numeric_h__
 
 /* <m/numeric.h> - numeric function header
- *      compODO: Fill this in
+ *      Defines functions to numerically estimate the value of limits
+ *      and derivatives. Input functions can be any std::function on 
+ *      m::comp but non-well-behaved functions may cause issues.
  */
 
 #include <functional>
@@ -30,10 +32,10 @@ namespace m {
 
         // Returns the limit of the sequence function(-n)
         comp limitInfNeg(const std::function<comp(comp)> &function);
-
-        // Returns an approximation of the derivative using the definition
-        std::function<comp(comp)> differentiate(const std::function<comp(comp)> &function);
     }
+
+    // Returns an approximation of the derivative using the definition
+    std::function<comp(comp)> differentiate(const std::function<comp(comp)> &function);
 }
 
 #endif

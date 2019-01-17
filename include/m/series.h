@@ -2,7 +2,10 @@
 #define __m_series_h__
 
 /* <m/series.h> - series header
- *      TODO: Fill out
+ *      Defines the Series class, representing a complex power series.
+ *      This has methods for evaluating at points, finding partial sums
+ *      and full sums. It can be created either from a generating function,
+ *      a finite polynomial, or a recursive coefficient relation.
  */
 
 #include <functional>

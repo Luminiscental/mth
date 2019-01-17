@@ -117,9 +117,14 @@ m::Polynomial m::Polynomial::fromCoeffs(std::vector<m::comp> coeffs) noexcept {
     return result;
 }
 
-m::Polynomial::operator std::function<comp(comp)>() const {
+m::Polynomial::operator std::function<m::comp(m::comp)>() const {
 
     return [&] (comp z) { return this->value(z); };
+}
+
+m::comp m::Polynomial::operator()(const m::comp &z) const {
+
+    return value(z);
 }
 
 void m::Polynomial::updateValues() {
