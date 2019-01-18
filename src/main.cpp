@@ -159,14 +159,14 @@ int main() {
 
         printThing("-- testing inverse of large matrix --");
 
-        m::tmat<double, 8, 8> bigMatrix(0.0, 3.0, -1.0, 5.0, 7.0, 6.0, 2.0, -3.0,
-                                        1.0, 5.0, 2.0, -3.0, 2.0, -2.0, -2.0, 5.0,
-                                        7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0,
-                                        3.0, 2.0, -1.0, 3.0, -5.0, -6.0, -1.0, 1.0,
-                                        5.0, 3.0, 4.0, 3.0, 5.0, -2.0, -3.0, 1.0,
-                                        6.0, 4.0, 3.0, 2.0, 7.0, -5.0, -7.0, 11.0,
-                                        0.0, 2.0, 0.0, 1.5, 2.5, -3.0, 5.0, 4.0,
-                                        2.0, 4.0, 8.0, 12.0, -11.0, 2.0, 5.0, -6.0);
+        m::dmat8x8 bigMatrix(0.0, 3.0, -1.0, 5.0, 7.0, 6.0, 2.0, -3.0,
+                             1.0, 5.0, 2.0, -3.0, 2.0, -2.0, -2.0, 5.0,
+                             7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0,
+                             3.0, 2.0, -1.0, 3.0, -5.0, -6.0, -1.0, 1.0,
+                             5.0, 3.0, 4.0, 3.0, 5.0, -2.0, -3.0, 1.0,
+                             6.0, 4.0, 3.0, 2.0, 7.0, -5.0, -7.0, 11.0,
+                             0.0, 2.0, 0.0, 1.5, 2.5, -3.0, 5.0, 4.0,
+                             2.0, 4.0, 8.0, 12.0, -11.0, 2.0, 5.0, -6.0);
 
         printThing("A :");
         printThing(bigMatrix);
@@ -254,7 +254,7 @@ int main() {
         printThing("-- testing limits --");
 
         auto sincFunc = [] (m::comp z) { return std::sin(z) / z; };
-        auto sincLimit = m::numeric::limit(sincFunc, 0);
+        auto sincLimit = m::limit(sincFunc, 0);
 
         printThing("lim z->0 { sin(z)/z } = " << sincLimit);
 
@@ -273,9 +273,9 @@ int main() {
 
         // Providing values between makes it more accurate
 
-        auto lim = m::numeric::limit(rational);
-        auto limFunc = m::numeric::limitInfPos(rationalFunc);
-        printThing("lim n->infinity (" << num << ") / (" << denom << ") = " << lim);
+        auto lim = m::limit(rational);
+        auto limFunc = m::limitInfPos(rationalFunc);
+        printThing("limit of sequence (" << num << ") / (" << denom << ") = " << lim);
         printThing("lim z->infinity (" << num << ") / (" << denom << ") = " << limFunc);
     )
 
@@ -315,7 +315,15 @@ int main() {
         };
 
         m::Series expSeries(expGen);
-        printThing("e is roughly " << expSeries.getValue(m::comp(1)));
+        printThing("sum of 1/n!, n=0,1,... : " << expSeries.getValue(m::comp(1)));
+
+        auto digits3 = [] (size_t n) {
+
+            return m::comp(3) * std::pow(m::comp(10).inverse(), n + 1);
+        };
+
+        m::Series third(digits3);
+        printThing("sum of 3/10^n, n=1,2,... : " << third.getValue(m::comp(1)));
 
         auto arctanCoeffs = [] (size_t n) {
 

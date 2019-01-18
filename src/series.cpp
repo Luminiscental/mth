@@ -93,12 +93,17 @@ m::comp m::Series::getPartial(const m::comp &z, size_t index) const {
 
 m::comp m::Series::getValue(const m::comp &z) const {
 
+    auto sequence = [&] (size_t n) {
+
+        return getCoeff(n) * std::pow(z, n);
+    };
+
     auto partialSequence = [&] (size_t n) {
 
         return getPartial(z, n);
     };
 
-    return numeric::limit(partialSequence);
+    return seriesLimit(partialSequence, sequence);
 }
 
 m::Series m::differentiate(const m::Series &series) {

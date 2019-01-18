@@ -13,6 +13,8 @@
 #include <m/comp.h>
 #include <m/polynomial.h>
 
+// TODO: Rename to power series and make a general series class oops
+
 namespace m {
 
     class Series {
