@@ -21,11 +21,12 @@ For example code see src/main.cpp (to build execute `build.sh` and to run execut
 * Quaternions of any given scalar type (you get the idea) with arithmetic operators and functions for representing rotations in 3-space (and converting to the equivalent matrices).
 * Complex number representations with arithmetic and overloads for `std::exp`, `std::cos`, `std::sin` and `std::abs`.
 * Polynomials with arithmetic, a `solve()` method for finding roots and a `value()` method for evaluating.
+* Numerical calculation of the limits of sequences or of complex functions at a point.
+* Power series with complex coefficients allowing evaluation at points and differentiation/integration.
 * Differentiation and integration of polynomials.
 * Somewhat pretty printing.
 
 ### Planned features:
 
 * Numeric methods for finding roots of arbitrary functions
-* Numeric differentiation and integration of arbitrary complex functions.
 * Numerical series expansions
