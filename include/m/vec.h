@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <cmath>
 
+#include <m/m.h>
 #include <m/comp.h>
 
 namespace m {

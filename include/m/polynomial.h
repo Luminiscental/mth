@@ -18,6 +18,7 @@
 #include <iostream>
 #include <iomanip>
 
+#include <m/m.h>
 #include <m/comp.h>
 
 namespace m {

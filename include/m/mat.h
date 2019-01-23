@@ -16,6 +16,7 @@
 #include <array>
 #include <type_traits>
 
+#include <m/m.h>
 #include <m/vec.h>
 #include <m/quat.h>
 #include <m/comp.h>

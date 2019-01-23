@@ -10,6 +10,7 @@
 
 #include <functional>
 
+#include <m/m.h>
 #include <m/comp.h>
 #include <m/polynomial.h>
 

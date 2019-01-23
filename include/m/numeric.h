@@ -9,6 +9,7 @@
 
 #include <functional>
 
+#include <m/m.h>
 #include <m/comp.h>
 
 // TODO: Limit of recursive sequence

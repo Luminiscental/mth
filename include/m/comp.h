@@ -12,6 +12,8 @@
 #include <ostream>
 #include <iomanip>
 
+#include <m/m.h>
+
 namespace m {
 
     // Forward declaration to avoid circular includes

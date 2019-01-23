@@ -10,6 +10,7 @@
 #include <ostream>
 #include <cmath>
 
+#include <m/m.h>
 #include <m/vec.h>
 
 namespace m {
