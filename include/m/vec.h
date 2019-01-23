@@ -28,33 +28,31 @@ namespace m {
     class tvec;
 
     template <typename T, size_t N>
-    tvec<T, N> operator+(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+    tvec<T, N> operator+(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept;
 
     template <typename T, size_t N>
-    tvec<T, N> operator-(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+    tvec<T, N> operator-(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept;
 
     template <typename T, size_t N>
-    tvec<T, N> operator-(const tvec<T, N> &rhs);
+    tvec<T, N> operator-(const tvec<T, N> &rhs) noexcept;
 
     template <typename T, size_t N>
-    tvec<T, N> operator*(const T &lhs, const tvec<T, N> &rhs);
+    tvec<T, N> operator*(const T &lhs, const tvec<T, N> &rhs) noexcept;
 
     template <typename T, size_t N>
-    tvec<T, N> operator*(const tvec<T, N> &lhs, const T &rhs);
+    tvec<T, N> operator*(const tvec<T, N> &lhs, const T &rhs) noexcept;
 
     template <typename T, size_t N>
-    tvec<T, N> operator/(const tvec<T, N> &lhs, const T &rhs);
+    tvec<T, N> operator/(const tvec<T, N> &lhs, const T &rhs) noexcept;
 
     template <typename T, size_t N>
-    bool operator==(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+    bool operator==(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept;
 
     template <typename T, size_t N>
-    bool operator!=(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+    bool operator!=(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept;
 
     template <typename T, size_t N>
     std::ostream &operator<<(std::ostream &lhs, const tvec<T, N> &rhs);
-
-    // TODO: noexcept on operators?
 
     // N-dimensional vector with scalar type T
 
@@ -160,28 +158,28 @@ namespace m {
         tvec<T, N> &operator/=(const T &rhs);
 
         template <typename U, size_t M>
-        friend tvec<U, M> operator+(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+        friend tvec<U, M> operator+(const tvec<U, M> &lhs, const tvec<U, M> &rhs) noexcept;
 
         template <typename U, size_t M>
-        friend tvec<U, M> operator-(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+        friend tvec<U, M> operator-(const tvec<U, M> &lhs, const tvec<U, M> &rhs) noexcept;
 
         template <typename U, size_t M>
-        friend tvec<U, M> operator-(const tvec<U, M> &rhs);
+        friend tvec<U, M> operator-(const tvec<U, M> &rhs) noexcept;
 
         template <typename U, size_t M>
-        friend tvec<U, M> operator*(const U &lhs, const tvec<U, M> &rhs);
+        friend tvec<U, M> operator*(const U &lhs, const tvec<U, M> &rhs) noexcept;
 
         template <typename U, size_t M>
-        friend tvec<U, M> operator*(const tvec<U, M> &lhs, const U &rhs);
+        friend tvec<U, M> operator*(const tvec<U, M> &lhs, const U &rhs) noexcept;
 
         template <typename U, size_t M>
-        friend tvec<U, M> operator/(const tvec<U, M> &lhs, const U &rhs);
+        friend tvec<U, M> operator/(const tvec<U, M> &lhs, const U &rhs) noexcept;
 
         template <typename U, size_t M>
-        friend bool operator==(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+        friend bool operator==(const tvec<U, M> &lhs, const tvec<U, M> &rhs) noexcept;
 
         template <typename U, size_t M>
-        friend bool operator!=(const tvec<U, M> &lhs, const tvec<U, M> &rhs);
+        friend bool operator!=(const tvec<U, M> &lhs, const tvec<U, M> &rhs) noexcept;
 
         template <typename U, size_t M>
         friend std::ostream &operator<<(std::ostream &lhs, const tvec<U, M> &rhs);
@@ -235,7 +233,7 @@ namespace std {
 
     // Overload to call magn()
     template <typename T, size_t N>
-    double abs(const m::tvec<T, N> &x);
+    double abs(const m::tvec<T, N> &x) noexcept;
 
     // Hash operator for use in certain STL containers
     template <typename T, size_t N>

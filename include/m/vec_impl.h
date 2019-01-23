@@ -249,7 +249,7 @@ T m::vec::det(const m::tvec<T, 2> &lhs, const m::tvec<T, 2> &rhs) {
 }
 
 template <typename T, size_t N>
-m::tvec<T, N> m::operator+(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
+m::tvec<T, N> m::operator+(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) noexcept {
 
     auto result = lhs;
 
@@ -257,7 +257,7 @@ m::tvec<T, N> m::operator+(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
 }
 
 template <typename T, size_t N>
-m::tvec<T, N> m::operator-(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
+m::tvec<T, N> m::operator-(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) noexcept {
 
     auto result = lhs;
 
@@ -265,7 +265,7 @@ m::tvec<T, N> m::operator-(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
 }
 
 template <typename T, size_t N>
-m::tvec<T, N> m::operator-(const m::tvec<T, N> &rhs) {
+m::tvec<T, N> m::operator-(const m::tvec<T, N> &rhs) noexcept {
 
     auto result = rhs;
 
@@ -278,7 +278,7 @@ m::tvec<T, N> m::operator-(const m::tvec<T, N> &rhs) {
 }
 
 template <typename T, size_t N>
-m::tvec<T, N> m::operator*(const T &lhs, const m::tvec<T, N> &rhs) {
+m::tvec<T, N> m::operator*(const T &lhs, const m::tvec<T, N> &rhs) noexcept {
 
     auto result = rhs;
 
@@ -286,13 +286,13 @@ m::tvec<T, N> m::operator*(const T &lhs, const m::tvec<T, N> &rhs) {
 }
 
 template <typename T, size_t N>
-m::tvec<T, N> m::operator*(const m::tvec<T, N> &lhs, const T &rhs) {
+m::tvec<T, N> m::operator*(const m::tvec<T, N> &lhs, const T &rhs) noexcept {
 
     return rhs * lhs;
 }
 
 template <typename T, size_t N>
-m::tvec<T, N> m::operator/(const m::tvec<T, N> &lhs, const T &rhs) {
+m::tvec<T, N> m::operator/(const m::tvec<T, N> &lhs, const T &rhs) noexcept {
 
     tvec<T, N> result = lhs;
 
@@ -300,7 +300,7 @@ m::tvec<T, N> m::operator/(const m::tvec<T, N> &lhs, const T &rhs) {
 }
 
 template <typename T, size_t N>
-bool m::operator==(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
+bool m::operator==(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) noexcept {
 
     for (size_t i = 0; i < N; i++) {
 
@@ -311,7 +311,7 @@ bool m::operator==(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
 }
 
 template <typename T, size_t N>
-bool m::operator!=(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) {
+bool m::operator!=(const m::tvec<T, N> &lhs, const m::tvec<T, N> &rhs) noexcept {
 
     return !(lhs == rhs);
 }
@@ -330,7 +330,7 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tvec<T, N> &rhs) {
 }
 
 template <typename T, size_t N>
-double std::abs(const m::tvec<T, N> &x) {
+double std::abs(const m::tvec<T, N> &x) noexcept {
 
     return x.magn();
 }
