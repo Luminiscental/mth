@@ -821,7 +821,6 @@ bool m::operator!=(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) {
     return !(lhs == rhs);
 }
 
-// TODO: Either make this less crappy or remove it
 template <typename T, size_t N, size_t M>
 std::ostream &m::operator<<(std::ostream &lhs, const m::tmat<T, N, M> &rhs) {
 

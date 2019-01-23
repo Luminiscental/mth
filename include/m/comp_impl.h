@@ -1,4 +1,5 @@
 
+#include <m/m.h>
 #include <m/vec.h>
 
 #define BINDING(name, value)    template <typename T> const T &m::tcomp<T>:: name () const noexcept { return value ; } \

@@ -2,8 +2,6 @@
 #include <iostream>
 #include <iomanip>
 
-#include <m/m.h>
-
 #include <m/vec.h>
 #include <m/mat.h>
 #include <m/quat.h>
@@ -86,6 +84,17 @@ int main() {
 
         printThing(cosC << " + i * " << sinC << " = " << (cosC + m::i<double> * sinC));
         printThing("exp(ic) = " << std::exp(m::i<double> * c));
+    )
+
+    block(2,
+
+        printThing("-- testing quaternion arithmetic --");
+
+        auto a = m::quat(1, 2, 3, 4);
+        auto b = m::quat(0, 1, 2, 1);
+
+        printThing(a << " + " << b << " = " << (a + b));
+        printThing(a << " * " << b << " = " << (a * b));
     )
 
     block(2,

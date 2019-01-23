@@ -2,6 +2,9 @@
 #include <cmath>
 #include <iomanip>
 
+#include <m/m.h>
+#include <m/vec.h>
+
 #define BINDING(name, value)    template <typename T> const auto &m::tquat<T>:: name () const { return value ; } \
                                 template <typename T>       auto &m::tquat<T>:: name ()       { return value ; }
 
@@ -264,23 +267,33 @@ bool m::operator!=(const tquat<T> &lhs, const T &rhs) {
     return !(lhs == rhs);
 }
 
-// TODO: Make this more consistent with m::comp (i.e. bools up-front and only use brackets when needed)
 template <typename T>
 std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
 
-    bool nonZero = false;
+    bool realZero = util::isZero(rhs.real());
+    bool iZero = util::isZero(rhs.i());
+    bool jZero = util::isZero(rhs.j());
+    bool kZero = util::isZero(rhs.k());
 
-    lhs << "(";
+    bool zero = realZero && iZero && jZero && kZero;
 
-    if (!util::isZero(rhs.real())) {
+    int termCount = !realZero + !iZero + !jZero + !kZero;
+    bool multipleTerms = termCount > 1;
+
+    bool termStreamed = false;
+
+    if (zero) return lhs << "0";
+    if (multipleTerms) lhs << "(";
+
+    if (!realZero) {
 
         lhs << rhs.real();
-        nonZero = true;
+        termStreamed = true;
     }
 
-    if (!util::isZero(rhs.i())) {
+    if (!iZero) {
 
-        if (nonZero) {
+        if (termStreamed) {
 
             lhs << (rhs.i() > 0 ? " + " : " - ");
             lhs << std::abs(rhs.i());
@@ -288,15 +301,15 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
         } else {
 
             lhs << rhs.i();
-            nonZero = true;
+            termStreamed = true;
         }
 
         lhs << "i";
     }
 
-    if (!util::isZero(rhs.j())) {
-        
-        if (nonZero) {
+    if (!jZero) {
+
+        if (termStreamed) {
 
             lhs << (rhs.j() > 0 ? " + " : " - ");
             lhs << std::abs(rhs.j());
@@ -304,15 +317,15 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
         } else {
 
             lhs << rhs.j();
-            nonZero = true;
+            termStreamed = true;
         }
 
         lhs << "j";
     }
 
-    if (!util::isZero(rhs.k())) {
-        
-        if (nonZero) {
+    if (!kZero) {
+
+        if (termStreamed) {
 
             lhs << (rhs.k() > 0 ? " + " : " - ");
             lhs << std::abs(rhs.k());
@@ -320,14 +333,15 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tquat<T> &rhs) {
         } else {
 
             lhs << rhs.k();
+            termStreamed = true;
         }
 
         lhs << "k";
-    }
+    }   
 
-    if (!nonZero) lhs << "0";
+    if (multipleTerms) lhs << ")";
 
-    return lhs << ")";
+    return lhs;
 }
 
 template <typename T>
