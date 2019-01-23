@@ -136,7 +136,16 @@ namespace m {
         // TODO: Arithmetic on augmented matrices?
     };   
 
-    // TODO: Error on N = 0 and M = 0 ?
+    // 0-dimension matrices are undefined
+    
+    template <typename T, size_t N>
+    class tmat<T, N, 0>;
+
+    template <typename T, size_t M>
+    class tmat<T, 0, M>;
+
+    template <typename T>
+    class tmat<T, 0, 0>;
 
 #define M 1
 #define N 1
