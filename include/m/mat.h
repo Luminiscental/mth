@@ -217,7 +217,11 @@ namespace m {
         template <typename T>
         tmat<T, 4, 4> rotation(T angle, const tvec<T, 3> &axis);
 
-        // TODO: Ortho and perspective projections
+        template <typename T>
+        tmat<T, 4, 4> orthographic(T left, T right, T bottom, T top, T near, T far);
+
+        template <typename T>
+        tmat<T, 4, 4> perspective(T left, T right, T bottom, T top, T near, T far);
     }
 
     // Alias types for single-digit dimensions with scalar types int, long, float, double, m::comp

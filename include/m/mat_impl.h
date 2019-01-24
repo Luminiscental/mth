@@ -884,4 +884,38 @@ m::tmat<T, 4, 4> m::mat::rotation(T angle, const m::tvec<T, 3> &axis) {
     return rotation(tquat<T>::rotation(angle, axis));
 }
 
+template <typename T>
+m::tmat<T, 4, 4> m::mat::orthographic(T left, T right, T bottom, T top, T near, T far) {
+
+    auto rml = right - left;
+    auto tmb = top - bottom;
+    auto fmn = far - near;
+
+    auto rpl = right + left;
+    auto tpb = top + bottom;
+    auto fpn = far + near;
+
+    return tmat<T, 4, 4>(2 / rml, 0,       0,        -rpl / rml,
+                         0,       2 / tmb, 0,        -tpb / tmb,
+                         0,       0,       -2 / fmn, -fpn / fmn,
+                         0,       0,       0,        1);
+}
+
+template <typename T>
+m::tmat<T, 4, 4> m::mat::perspective(T left, T right, T bottom, T top, T near, T far) {
+
+    auto rml = right - left;
+    auto tmb = top - bottom;
+    auto fmn = far - near;
+
+    auto rpl = right + left;
+    auto tpb = top + bottom;
+    auto fpn = far + near;
+
+    return tmat<T, 4, 4>(2 * near / rml, 0,              rpl / rml,  0,
+                         0,              2 * near / tmb, tpb / tmb,  0,
+                         0,              0,              -fpn / fmn, -2 * far * near / fmn,
+                         0,              0,              -1,         0);
+}
+
 #endif

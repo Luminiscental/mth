@@ -36,6 +36,8 @@
 
 #include <limits>
 
+// TODO: Sequence wrapper class (e.g. for recursive sequences)
+// TODO: Non-power series
 // TODO: Rational functions
 // TODO: Laurent series
 // TODO: Better exception / debug info
