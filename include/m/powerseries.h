@@ -2,7 +2,7 @@
 #define __m_series_h__
 
 /* <m/series.h> - series header
- *      Defines the Series class, representing a complex power series.
+ *      Defines the PowerSeries class, representing a complex power series.
  *      This has methods for evaluating at points, finding partial sums
  *      and full sums. It can be created either from a generating function,
  *      a finite polynomial, or a recursive coefficient relation.
@@ -14,11 +14,9 @@
 #include <m/comp.h>
 #include <m/polynomial.h>
 
-// TODO: Rename to power series and make a general series class oops
-
 namespace m {
 
-    class Series {
+    class PowerSeries {
 
     private:
 
@@ -31,8 +29,8 @@ namespace m {
     public:
 
         // Default initializes to zero
-        Series();
-        Series(std::function<comp(size_t)> generatingFunction);
+        PowerSeries();
+        PowerSeries(std::function<comp(size_t)> generatingFunction);
 
         comp getCoeff(size_t index) const;
 
@@ -45,13 +43,13 @@ namespace m {
         // Returns the numeric limit of the partial sums at z
         comp getValue(const m::comp &z) const;
 
-        static Series finite(const Polynomial &equivalent);
+        static PowerSeries finite(const Polynomial &equivalent);
         // TODO: Include n as a parameter
-        static Series recursive(std::function<comp(comp)> recursion, const comp &constant);
+        static PowerSeries recursive(std::function<comp(comp)> recursion, const comp &constant);
     };
 
-    Series differentiate(const Series &series);
-    Series integrate(const Series &series);
+    PowerSeries differentiate(const PowerSeries &series);
+    PowerSeries integrate(const PowerSeries &series);
 }
 
 #endif

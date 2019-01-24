@@ -6,7 +6,7 @@
 #include <m/mat.h>
 #include <m/quat.h>
 #include <m/polynomial.h>
-#include <m/series.h>
+#include <m/powerseries.h>
 #include <m/numeric.h>
 
 size_t factorial(size_t n) {
@@ -326,15 +326,15 @@ int main() {
             return m::comp(1) / m::comp(factorial(n));
         };
 
-        m::Series expSeries(expGen);
-        printThing("sum of 1/n!, n=0,1,... : " << expSeries.getValue(m::comp(1)));
+        m::PowerSeries expPowerSeries(expGen);
+        printThing("sum of 1/n!, n=0,1,... : " << expPowerSeries.getValue(m::comp(1)));
 
         auto digits3 = [] (size_t n) {
 
             return m::comp(3) * std::pow(m::comp(10).inverse(), n + 1);
         };
 
-        m::Series third(digits3);
+        m::PowerSeries third(digits3);
         printThing("sum of 3/10^n, n=1,2,... : " << third.getValue(m::comp(1)));
 
         auto arctanCoeffs = [] (size_t n) {
@@ -359,7 +359,7 @@ int main() {
             return m::comp(4) * (m::comp(4) * over5 - over239);
         };
 
-        m::Series machin(machinCoeffs);
+        m::PowerSeries machin(machinCoeffs);
         printThing("pi is roughly " << machin.getValue(m::comp(1)));
     )
 

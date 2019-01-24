@@ -1,11 +1,11 @@
 
 #include <m/m.h>
 
-#include <m/series.h>
+#include <m/powerseries.h>
 
 #include <m/numeric.h>
 
-m::Series::Series() {
+m::PowerSeries::PowerSeries() {
 
     generatingFunction = [] (size_t n) {
 
@@ -13,14 +13,14 @@ m::Series::Series() {
     };
 }
 
-m::Series::Series(std::function<comp(size_t)> generatingFunction)
+m::PowerSeries::PowerSeries(std::function<comp(size_t)> generatingFunction)
     :generatingFunction(generatingFunction) {}
 
-m::Series m::Series::finite(const m::Polynomial &equivalent) {
+m::PowerSeries m::PowerSeries::finite(const m::Polynomial &equivalent) {
 
     const auto degree = equivalent.getDegree();
 
-    if (degree.isInfinite()) return Series();
+    if (degree.isInfinite()) return PowerSeries();
 
     const auto degreeValue = degree.getValue();
 
@@ -31,10 +31,10 @@ m::Series m::Series::finite(const m::Polynomial &equivalent) {
         return equivalent.getCoeff(n);
     };
 
-    return Series(gen);
+    return PowerSeries(gen);
 }
 
-m::Series m::Series::recursive(std::function<comp(comp)> recursion, const comp &constant) {
+m::PowerSeries m::PowerSeries::recursive(std::function<comp(comp)> recursion, const comp &constant) {
 
     auto generatingFunction = [&] (size_t index) {
 
@@ -49,15 +49,15 @@ m::Series m::Series::recursive(std::function<comp(comp)> recursion, const comp &
         return accumulate;
     };
 
-    return Series(generatingFunction);
+    return PowerSeries(generatingFunction);
 }
 
-m::comp m::Series::getCoeff(size_t index) const {
+m::comp m::PowerSeries::getCoeff(size_t index) const {
 
     return generatingFunction(index);
 }
 
-m::comp m::Series::getPartial(const m::comp &z, size_t index) const {
+m::comp m::PowerSeries::getPartial(const m::comp &z, size_t index) const {
 
     m::comp result;
 
@@ -91,7 +91,7 @@ m::comp m::Series::getPartial(const m::comp &z, size_t index) const {
     return result;
 }
 
-m::comp m::Series::getValue(const m::comp &z) const {
+m::comp m::PowerSeries::getValue(const m::comp &z) const {
 
     auto sequence = [&] (size_t n) {
 
@@ -106,7 +106,7 @@ m::comp m::Series::getValue(const m::comp &z) const {
     return seriesLimit(partialSequence, sequence);
 }
 
-m::Series m::differentiate(const m::Series &series) {
+m::PowerSeries m::differentiate(const m::PowerSeries &series) {
 
     auto generatingFunction = [&] (size_t index) {
 
@@ -115,10 +115,10 @@ m::Series m::differentiate(const m::Series &series) {
         return c * comp(index + 1);
     };
 
-    return Series(generatingFunction);
+    return PowerSeries(generatingFunction);
 }
 
-m::Series m::integrate(const m::Series &series) {
+m::PowerSeries m::integrate(const m::PowerSeries &series) {
 
     auto generatingFunction = [&] (size_t index) {
 
@@ -129,6 +129,6 @@ m::Series m::integrate(const m::Series &series) {
         return c / comp(index);
     };
 
-    return Series(generatingFunction);
+    return PowerSeries(generatingFunction);
 }
 
