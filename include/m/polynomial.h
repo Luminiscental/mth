@@ -62,6 +62,8 @@ namespace m {
 
     private:
 
+        char variableName;
+
         // Initializers private to hide implementation
         ComplexSolutions() noexcept;
         ComplexSolutions(std::unordered_set<comp> finiteSet) noexcept;
@@ -80,6 +82,9 @@ namespace m {
         static ComplexSolutions finite(Q... args) noexcept;
 
         static ComplexSolutions infinite() noexcept;
+
+        ComplexSolutions setVariableName(char newName);
+        char getVariableName() const;
 
         friend std::ostream &operator<<(std::ostream &lhs, const ComplexSolutions &rhs);
 
@@ -114,6 +119,9 @@ namespace m {
     class Polynomial {
 
     private:
+
+        // TODO: Use a string with more sophisticated validation
+        char variableName;
 
         std::vector<comp> coeffs;
 
@@ -152,6 +160,9 @@ namespace m {
 
         comp getCoeff(size_t index) const;
         void setCoeff(size_t index, const comp &value);
+
+        Polynomial setVariableName(char newName);
+        char getVariableName() const;
 
         // Returns the lagrange interpolation polynomial intersecting the specified points
         static Polynomial interpolate(const std::vector<cvec2> &points);

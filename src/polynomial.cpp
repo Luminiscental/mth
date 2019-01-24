@@ -4,10 +4,29 @@
 #include <m/polynomial.h>
 
 m::ComplexSolutions::ComplexSolutions() noexcept
-    :inf(false) {}
+    :variableName('z'), inf(false) {}
 
 m::ComplexSolutions::ComplexSolutions(std::unordered_set<m::comp> finiteSet) noexcept
-    :solutionSet(finiteSet), inf(false) {}
+    :variableName('z'), solutionSet(finiteSet), inf(false) {}
+
+char m::ComplexSolutions::getVariableName() const {
+
+    return variableName;
+}
+
+m::ComplexSolutions m::ComplexSolutions::setVariableName(char newName) {
+
+    if ((newName >= 'A' && newName <= 'Z') || (newName >= 'a' && newName <= 'z')) {
+
+        variableName = newName;
+
+    } else {
+
+        throw std::invalid_argument("m::exception: cannot use non-alphabet variable name");
+    }
+
+    return *this;
+}
 
 m::ComplexSolutions m::ComplexSolutions::empty() noexcept {
 
@@ -33,11 +52,11 @@ std::ostream &m::operator<<(std::ostream &stream, const m::ComplexSolutions &sol
 
     if (solutions.inf) {
 
-        stream << "z in C";
+        stream << solutions.variableName << " in C";
 
     } else if (solutions.solutionSet.empty()) {
 
-        stream << "no such z";
+        stream << "no such " << solutions.variableName;
 
     } else {
 
@@ -48,11 +67,11 @@ std::ostream &m::operator<<(std::ostream &stream, const m::ComplexSolutions &sol
 
             if (i++ == n - 1) {
 
-                stream << "z = " << root;
+                stream << solutions.variableName << " = " << root;
 
             } else {
 
-                stream << "z = " << root << ", or ";
+                stream << solutions.variableName << " = " << root << ", or ";
             }
         }
     }
@@ -100,7 +119,7 @@ m::PolynomialDegree m::PolynomialDegree::infinite() {
 }
 
 m::Polynomial::Polynomial() noexcept
-    :rootsValid(true), roots(ComplexSolutions::infinite()), degreeValid(true), degree(PolynomialDegree::infinite()) {}
+    :variableName('z'), rootsValid(true), roots(ComplexSolutions::infinite()), degreeValid(true), degree(PolynomialDegree::infinite()) {}
 
 m::Polynomial m::Polynomial::fromCoeffs(std::vector<m::comp> coeffs) noexcept {
 
@@ -165,6 +184,25 @@ std::vector<m::comp> m::Polynomial::getCoeffs() const {
     return coeffs;
 }
 
+m::Polynomial m::Polynomial::setVariableName(char newName) {
+
+    if ((newName >= 'A' && newName <= 'Z') || (newName >= 'a' && newName <= 'z')) {
+
+        variableName = newName;
+
+    } else {
+
+        throw std::invalid_argument("m::exception: cannot use non-alphabet variable name");
+    }
+
+    return *this;
+}
+
+char m::Polynomial::getVariableName() const {
+
+    return variableName;
+}
+
 m::PolynomialDegree m::Polynomial::getDegree() {
 
     if (!degreeValid) updateDegree();
@@ -201,19 +239,19 @@ m::ComplexSolutions m::Polynomial::solve() {
 
     if (!degreeValid) updateDegree();
 
-    if (degree.isInfinite()) return ComplexSolutions::infinite();
+    if (degree.isInfinite()) return roots = ComplexSolutions::infinite().setVariableName(variableName);
 
     switch (degree.getValue()) {
 
         case 0: {
 
             // Non-zero because of is for infinite degree above
-            return ComplexSolutions::empty();
+            return roots = ComplexSolutions::empty().setVariableName(variableName);
         }
 
         case 1: {
 
-            return roots = ComplexSolutions::finite(-coeffs[0] / coeffs[1]);
+            return roots = ComplexSolutions::finite(-coeffs[0] / coeffs[1]).setVariableName(variableName);
         }
 
         case 2: {
@@ -226,9 +264,9 @@ m::ComplexSolutions m::Polynomial::solve() {
 
                 auto denom = 2.0 * coeffs[2];
 
-                if (util::isEqual(lesser, greater)) return roots = ComplexSolutions::finite(lesser / denom);
+                if (util::isEqual(lesser, greater)) return roots = ComplexSolutions::finite(lesser / denom).setVariableName(variableName);
 
-                return roots = ComplexSolutions::finite(lesser / denom, greater / denom);
+                return roots = ComplexSolutions::finite(lesser / denom, greater / denom).setVariableName(variableName);
         }
 
         default: {
@@ -236,7 +274,7 @@ m::ComplexSolutions m::Polynomial::solve() {
             // TODO: Numerical solution for higher degrees
             // TODO: Cubics and quartics
             
-            return roots = ComplexSolutions::empty();
+            return roots = ComplexSolutions::empty().setVariableName(variableName);
         }
     }
 }
@@ -396,6 +434,8 @@ m::Polynomial m::operator*(const m::comp &lhs, const m::Polynomial &rhs) {
 
 m::Polynomial m::operator*(const m::Polynomial &lhs, const m::Polynomial &rhs) {
 
+    // TODO: Multivariable polynomials; compare variable names
+
     if (lhs.getDegree().isInfinite()) return rhs;
     if (rhs.getDegree().isInfinite()) return lhs;
 
@@ -485,7 +525,7 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::Polynomial &rhs) {
 
         if (nonZero) lhs << " + ";
         if (!util::isEqual(lTerm, comp::fromCartesian(1, 0))) lhs << lTerm;
-        lhs << "z";
+        lhs << rhs.variableName;
 
         nonZero = true;
     }
@@ -498,7 +538,7 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::Polynomial &rhs) {
 
         if (nonZero) lhs << " + ";
         if (!util::isEqual(term, comp::fromCartesian(1, 0))) lhs << term;
-        lhs << "z^" << i;
+        lhs << rhs.variableName << "^" << i;
 
         nonZero = true;
     }

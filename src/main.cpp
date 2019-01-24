@@ -223,7 +223,7 @@ int main() {
 
     block(2,
 
-        printThing("-- testing polynomial arithmetic --");
+        printThing("-- testing polynomial arithmetic and printing --");
 
         auto quadratic = m::Polynomial::fromCoeffs(1, 2, 3); // 1 + 2z + 3z^2
 
@@ -242,6 +242,9 @@ int main() {
 
         printThing("R(1) = " << prod.value(1));
         printThing("R has degree " << prod.getDegree());
+
+        auto inW = m::Polynomial::fromCoeffs(1, 2, 1).setVariableName('w');
+        printThing("M(w) = " << inW);
     )
 
     block(2,
