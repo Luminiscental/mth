@@ -64,15 +64,17 @@ namespace m {
 
         char variableName;
 
+        std::unordered_set<comp> solutionSet;
+        bool inf;
+
         // Initializers private to hide implementation
         ComplexSolutions() noexcept;
         ComplexSolutions(std::unordered_set<comp> finiteSet) noexcept;
 
     public:
 
-        // TODO: Use getters instead
-        std::unordered_set<comp> solutionSet;
-        bool inf;
+        std::unordered_set<comp> getSolutionSet() const;
+        bool isInfinite() const;
 
         // Static factory functions for producting solution sets
         static ComplexSolutions empty() noexcept;

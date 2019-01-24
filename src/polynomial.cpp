@@ -14,6 +14,16 @@ char m::ComplexSolutions::getVariableName() const {
     return variableName;
 }
 
+std::unordered_set<m::comp> m::ComplexSolutions::getSolutionSet() const {
+
+    return solutionSet;
+}
+
+bool m::ComplexSolutions::isInfinite() const {
+
+    return inf;
+}
+
 m::ComplexSolutions m::ComplexSolutions::setVariableName(char newName) {
 
     if ((newName >= 'A' && newName <= 'Z') || (newName >= 'a' && newName <= 'z')) {
