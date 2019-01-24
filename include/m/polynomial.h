@@ -73,7 +73,7 @@ namespace m {
 
     public:
 
-        std::unordered_set<comp> getSolutionSet() const;
+        bool contains(const comp &z) const;
         bool isInfinite() const;
 
         // Static factory functions for producting solution sets

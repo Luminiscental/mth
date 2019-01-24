@@ -14,9 +14,16 @@ char m::ComplexSolutions::getVariableName() const {
     return variableName;
 }
 
-std::unordered_set<m::comp> m::ComplexSolutions::getSolutionSet() const {
+bool m::ComplexSolutions::contains(const m::comp &z) const {
 
-    return solutionSet;
+    if (isInfinite()) {
+
+        return true;
+
+    } else {
+
+        return solutionSet.count(z) != 0;
+    }
 }
 
 bool m::ComplexSolutions::isInfinite() const {
