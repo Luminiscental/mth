@@ -59,6 +59,8 @@ m::comp m::PowerSeries::getCoeff(size_t index) const {
 
 m::comp m::PowerSeries::getPartial(const m::comp &z, size_t index) const {
 
+    if (util::isZero(z)) return getCoeff(0);
+
     m::comp result;
 
     // Calculate from scratch
@@ -92,6 +94,8 @@ m::comp m::PowerSeries::getPartial(const m::comp &z, size_t index) const {
 }
 
 m::comp m::PowerSeries::getValue(const m::comp &z) const {
+
+    if (util::isZero(z)) return getCoeff(0);
 
     auto sequence = [&] (size_t n) {
 
