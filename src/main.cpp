@@ -59,7 +59,7 @@ TEST(VecTest, DefaultInitsToZero) {
 
 TEST(VecTest, FillsValuesCorrectly) {
 
-    m::tvec<int, 7> seq(1, 2, 3, 4, 5, 6, 7);
+    m::ivec7 seq(1, 2, 3, 4, 5, 6, 7);
 
     for (int i = 0; i < 7; i++) {
 
