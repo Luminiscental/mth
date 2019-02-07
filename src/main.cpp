@@ -1,4 +1,6 @@
 
+#include <gtest/gtest.h>
+
 #include <iostream>
 #include <iomanip>
 
@@ -9,7 +11,45 @@
 #include <m/powerseries.h>
 #include <m/numeric.h>
 
-size_t factorial(size_t n) {
+TEST(VecTest, DefaultInitsToZero) {
+
+    m::vec2 new_vec;
+
+    EXPECT_EQ(new_vec, m::vec2(0, 0));
+}
+
+TEST(VecTest, FillsValuesCorrectly) {
+
+    m::tvec<int, 7> seq(1, 2, 3, 4, 5, 6, 7);
+
+    for (int i = 0; i < 7; i++) {
+
+        EXPECT_EQ(seq.get(i), i + 1);
+    }
+}
+
+TEST(VecTest, IteratesFully) {
+
+    m::vec5 list_vec(1.2, 1.3, 1.4, 1.5, 1.6);
+
+    double result = 0.0;
+
+    for (auto elem : list_vec) {
+
+        result += elem;
+    }
+
+    EXPECT_EQ(result, 1.2 + 1.3 + 1.4 + 1.5 + 1.6);
+}
+
+int main(int argc, char **argv) {
+
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+
+
+/*size_t factorial(size_t n) {
 
     if (n == 0) return 1;
 
@@ -24,7 +64,7 @@ size_t factorial(size_t n) {
 }
 
 auto innerProd3(m::vec3 a, m::vec3 b) {
-
+    
     m::mat3x1 aMatT(a);
     m::mat1x3 bMat(b);
 
@@ -53,7 +93,10 @@ auto outerProd3(m::vec3 a, m::vec3 b) {
 
 // TODO: Actual tests
 
-int main() {
+int main(int argc, char **argv) {
+
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 
     std::cout << std::fixed;
 
@@ -132,6 +175,7 @@ int main() {
 
         m::vec3 someVector(1, 3, 5);
         m::vec3 anotherVector = 7.0 * someVector.unit();
+
         auto inner = innerProd3(someVector, anotherVector);
         auto outer = outerProd3(someVector, anotherVector);
 
@@ -369,3 +413,4 @@ int main() {
 }
 
 #undef printThing
+*/
