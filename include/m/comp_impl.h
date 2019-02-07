@@ -2,6 +2,13 @@
 #include <m/m.h>
 #include <m/vec.h>
 
+template <>
+bool m::util::isZero(const m::comp &x) {
+
+    auto magnitude = std::abs(x);
+    return magnitude <= m::EPSILON<decltype(magnitude)>;
+}
+
 #define BINDING(name, value)    template <typename T> const T &m::tcomp<T>:: name () const noexcept { return value ; } \
                                 template <typename T>       T &m::tcomp<T>:: name ()       noexcept { return value ; }
 

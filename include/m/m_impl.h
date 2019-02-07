@@ -1,8 +1,6 @@
 
 #include <cmath>
 
-#include <m/comp.h>
-
 template <typename T>
 bool m::util::isZero(const T &x) {
 

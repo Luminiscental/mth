@@ -14,7 +14,7 @@
 #include <m/powerseries.h>
 #include <m/numeric.h>
 
-#define m_ASSERT_EQ(a, b) ASSERT_TRUE(m::util::isEqual(a, b))
+#define m_ASSERT_EQ(a, b) ASSERT_TRUE(m::util::isEqual(a, b)) << "Expected but did not find equality of " << a << " and " << b;
 
 TEST(CompTest, DefaultInitsToZero) {
 
@@ -44,6 +44,16 @@ TEST(CompTest, ConvertsFromPolarCorrectly) {
     m_ASSERT_EQ(up.imag(), 2.0);
     m_ASSERT_EQ(diag.real(), 1.0);
     m_ASSERT_EQ(diag.imag(), 1.0);
+}
+
+TEST(CompTest, SumsElementWise) {
+
+    m::comp a = m::comp::fromCartesian(2.0, 3.0);
+    m::comp b = m::comp::fromCartesian(1.0, -1.0);
+
+    m::comp sum = a + b;
+
+    m_ASSERT_EQ(sum, m::comp::fromCartesian(2.0 + 1.0, 3.0 - 1.0));
 }
 
 TEST(VecTest, DefaultInitsToZero) {
