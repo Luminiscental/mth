@@ -14,7 +14,11 @@
 #include <m/powerseries.h>
 #include <m/numeric.h>
 
-#define m_ASSERT_EQ(a, b) ASSERT_TRUE(m::util::isEqual(a, b)) << "Expected but did not find equality of " << a << " and " << b;
+#define m_ASSERT_EQ(a, b) ASSERT_TRUE(m::util::isEqual(a, b)) \
+    << "Expected but did not find equality of" << std::endl \
+    << "    " << #a << " which is " << a << std::endl \
+    << "and" << std::endl \
+    << "    " << #b << " which is " << b;
 
 TEST(CompTest, DefaultInitsToZero) {
 
@@ -26,34 +30,28 @@ TEST(CompTest, DefaultInitsToZero) {
 
 TEST(CompTest, FillsValuesCorrectly) {
 
-    m::comp diag = m::comp::fromCartesian(1, 1);
-    m::comp other = m::comp::fromCartesian(-1, 2);
+    m::comp z = m::comp::fromCartesian(-1, 2);
 
-    m_ASSERT_EQ(diag.real(), 1.0);
-    m_ASSERT_EQ(diag.imag(), 1.0);
-    m_ASSERT_EQ(other.real(), -1.0);
-    m_ASSERT_EQ(other.imag(), 2.0);
+    m_ASSERT_EQ(z.real(), -1.0);
+    m_ASSERT_EQ(z.imag(), 2.0);
 }
 
 TEST(CompTest, ConvertsFromPolarCorrectly) {
 
-    m::comp up = m::comp::fromPolar(2.0, m::PI<double> / 2.0);
     m::comp diag = m::comp::fromPolar(std::sqrt(2.0), m::PI<double> / 4.0);
 
-    m_ASSERT_EQ(up.real(), 0.0);
-    m_ASSERT_EQ(up.imag(), 2.0);
     m_ASSERT_EQ(diag.real(), 1.0);
     m_ASSERT_EQ(diag.imag(), 1.0);
 }
 
 TEST(CompTest, SumsElementWise) {
 
-    m::comp a = m::comp::fromCartesian(2.0, 3.0);
-    m::comp b = m::comp::fromCartesian(1.0, -1.0);
+    m::comp p = m::comp::fromCartesian(-7.0, 3.5);
+    m::comp q = m::comp::fromCartesian(3.0, 2.4);
 
-    m::comp sum = a + b;
+    m::comp sumPQ = p + q;
 
-    m_ASSERT_EQ(sum, m::comp::fromCartesian(2.0 + 1.0, 3.0 - 1.0));
+    m_ASSERT_EQ(sumPQ, m::comp::fromCartesian(3.0 - 7.0, 3.5 + 2.4));
 }
 
 TEST(VecTest, DefaultInitsToZero) {
