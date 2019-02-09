@@ -273,17 +273,19 @@ m::ComplexSolutions m::Polynomial::solve() {
 
         case 2: {
 
-                auto descriminant = coeffs[1] * coeffs[1] - 4.0 * coeffs[2] * coeffs[0];
-                auto offset = std::sqrt(descriminant);
+            using std::sqrt;
 
-                auto lesser = -coeffs[1] - offset;
-                auto greater = -coeffs[1] + offset;
+            auto descriminant = coeffs[1] * coeffs[1] - 4.0 * coeffs[2] * coeffs[0];
+            auto offset = sqrt(descriminant);
 
-                auto denom = 2.0 * coeffs[2];
+            auto lesser = -coeffs[1] - offset;
+            auto greater = -coeffs[1] + offset;
 
-                if (util::isEqual(lesser, greater)) return roots = ComplexSolutions::finite(lesser / denom).setVariableName(variableName);
+            auto denom = 2.0 * coeffs[2];
 
-                return roots = ComplexSolutions::finite(lesser / denom, greater / denom).setVariableName(variableName);
+            if (util::isEqual(lesser, greater)) return roots = ComplexSolutions::finite(lesser / denom).setVariableName(variableName);
+
+            return roots = ComplexSolutions::finite(lesser / denom, greater / denom).setVariableName(variableName);
         }
 
         default: {

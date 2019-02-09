@@ -2,6 +2,13 @@
 #include <cmath>
 
 template <typename T, size_t N>
+bool m::util::isZero(const m::tvec<T, N> &x) {
+
+    auto magnitude = std::abs(x);
+    return magnitude <= m::EPSILON<decltype(magnitude)>;
+}
+
+template <typename T, size_t N>
 m::tvec<T, N>::tvec(const std::array<T, N> &values) noexcept
     :values(values) {}
 
@@ -330,7 +337,7 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tvec<T, N> &rhs) {
 }
 
 template <typename T, size_t N>
-double std::abs(const m::tvec<T, N> &x) noexcept {
+double m::abs(const m::tvec<T, N> &x) noexcept {
 
     return x.magn();
 }

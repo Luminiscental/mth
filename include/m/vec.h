@@ -228,13 +228,12 @@ namespace m {
                                 
     template <typename T>
     constexpr tvec<T, 3> Z_AXIS = tvec<T, 3>(0, 0, 1);
+    
+    template <typename T, size_t N>
+    double abs(const m::tvec<T, N> &x) noexcept;
 }
 
 namespace std {
-
-    // Overload to call magn()
-    template <typename T, size_t N>
-    double abs(const m::tvec<T, N> &x) noexcept;
 
     // Hash operator for use in certain STL containers
     template <typename T, size_t N>

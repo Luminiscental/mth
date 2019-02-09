@@ -1,13 +1,5 @@
 
-#include <m/m.h>
 #include <m/vec.h>
-
-template <>
-bool m::util::isZero(const m::comp &x) {
-
-    auto magnitude = std::abs(x);
-    return magnitude <= m::EPSILON<decltype(magnitude)>;
-}
 
 #define BINDING(name, value)    template <typename T> const T &m::tcomp<T>:: name () const noexcept { return value ; } \
                                 template <typename T>       T &m::tcomp<T>:: name ()       noexcept { return value ; }
@@ -348,13 +340,15 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::tcomp<T> &rhs) {
 }
 
 template <typename T>
-double std::abs(const m::tcomp<T> &z) {
+double m::abs(const m::tcomp<T> &z) {
 
     return z.abs();
 }
 
 template <typename T>
-m::tcomp<T> std::sqrt(const m::tcomp<T> &z) {
+m::tcomp<T> m::sqrt(const m::tcomp<T> &z) {
+
+    using std::sqrt;
 
     auto p = z.asPolar();
 
@@ -365,7 +359,11 @@ m::tcomp<T> std::sqrt(const m::tcomp<T> &z) {
 }
 
 template <typename T>
-m::tcomp<T> std::exp(const m::tcomp<T> &z) {
+m::tcomp<T> m::exp(const m::tcomp<T> &z) {
+
+    using std::cos;
+    using std::sin;
+    using std::exp;
 
     auto c = cos(z.imag());
     auto s = sin(z.imag());
@@ -374,7 +372,9 @@ m::tcomp<T> std::exp(const m::tcomp<T> &z) {
 }
 
 template <typename T>
-m::tcomp<T> std::log(const m::tcomp<T> &z) {
+m::tcomp<T> m::log(const m::tcomp<T> &z) {
+
+    using std::log;
 
     auto p = z.asPolar();
 
@@ -382,7 +382,7 @@ m::tcomp<T> std::log(const m::tcomp<T> &z) {
 }
 
 template <typename T>
-m::tcomp<T> std::cos(const m::tcomp<T> &z) {
+m::tcomp<T> m::cos(const m::tcomp<T> &z) {
 
     auto exponent = m::i<T> * z;
 
@@ -390,7 +390,7 @@ m::tcomp<T> std::cos(const m::tcomp<T> &z) {
 }
 
 template <typename T>
-m::tcomp<T> std::sin(const m::tcomp<T> &z) {
+m::tcomp<T> m::sin(const m::tcomp<T> &z) {
 
     auto exponent = m::i<T> * z;
 
@@ -398,25 +398,31 @@ m::tcomp<T> std::sin(const m::tcomp<T> &z) {
 }
 
 template <typename T>
-m::tcomp<T> std::pow(const m::tcomp<T> &z, const m::tcomp<T> &exponent) {
+m::tcomp<T> m::pow(const m::tcomp<T> &z, const m::tcomp<T> &exponent) {
 
-    return exp(exponent * std::log(z));
+    using std::log;
+
+    return exp(exponent * log(z));
 }
 
 template <typename T>
-m::tcomp<T> std::pow(const m::tcomp<T> &z, const T &exponent) {
+m::tcomp<T> m::pow(const m::tcomp<T> &z, const T &exponent) {
 
-    return exp(exponent * std::log(exponent));
+    using std::log;
+
+    return exp(exponent * log(exponent));
 }
 
 template <typename T>
-m::tcomp<T> std::pow(const T &base, const m::tcomp<T> &z) {
+m::tcomp<T> m::pow(const T &base, const m::tcomp<T> &z) {
 
-    return exp(z * std::log(base));
+    using std::log;
+
+    return exp(z * log(base));
 }
 
 template <typename T>
-m::tcomp<T> std::pow(const m::tcomp<T> &z, size_t exponent) {
+m::tcomp<T> m::pow(const m::tcomp<T> &z, size_t exponent) {
 
     auto result = z;
 

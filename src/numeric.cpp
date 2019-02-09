@@ -6,13 +6,16 @@
 
 m::Polynomial lerpTowards(std::function<m::comp(m::comp)> xTransform, std::function<m::comp(size_t,m::comp)> yFunc) {
 
+    using std::pow;
+    using std::abs;
+
     std::vector<m::cvec2> result;
     m::comp lastX, lastY;
 
     for (size_t i = 2; i < 100; i++) {
 
         // TODO: Parametrize this sequence or choose it contextually
-        auto approachingZero = std::pow(m::comp(2), -m::comp(i));
+        auto approachingZero = pow(m::comp(2), -m::comp(i));
         auto x = xTransform(approachingZero);
         auto y = yFunc(i, x);
 
@@ -24,8 +27,8 @@ m::Polynomial lerpTowards(std::function<m::comp(m::comp)> xTransform, std::funct
 
         result.push_back(m::cvec2(x, y));
 
-        auto deltaX = std::abs(x - lastX);
-        auto deltaY = std::abs(y - lastY);
+        auto deltaX = abs(x - lastX);
+        auto deltaY = abs(y - lastY);
 
         lastX = x;
         lastY = y;

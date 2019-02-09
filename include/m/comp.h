@@ -239,11 +239,6 @@ namespace m {
 
     template <typename T>
     constexpr tcomp<T> i = tcomp<T>::fromCartesian(0, 1);
-}
-
-namespace std {
-
-    // Overloads of common math functions in <cmath>
 
     template <typename T>
     double abs(const m::tcomp<T> &z);
@@ -274,6 +269,9 @@ namespace std {
 
     template <typename T>
     m::tcomp<T> pow(const m::tcomp<T> &z, size_t exponent);
+}
+
+namespace std {
 
     // Hash operator for use in certain STL containers
     template<typename T>

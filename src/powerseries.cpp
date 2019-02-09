@@ -77,8 +77,10 @@ m::comp m::PowerSeries::getPartial(const m::comp &z, size_t index) const {
     // Add the extra terms
     } else if (lastPartialIndex < index) {
 
+        using std::pow;
+
         result = lastPartial;
-        m::comp term = std::pow(z, lastPartialIndex + 1);
+        m::comp term = pow(z, lastPartialIndex + 1);
 
         for (size_t i = lastPartialIndex + 1; i <= index; i++) {
 
@@ -99,7 +101,9 @@ m::comp m::PowerSeries::getValue(const m::comp &z) const {
 
     auto sequence = [&] (size_t n) {
 
-        return getCoeff(n) * std::pow(z, n);
+        using std::pow;
+
+        return getCoeff(n) * pow(z, n);
     };
 
     auto partialSequence = [&] (size_t n) {

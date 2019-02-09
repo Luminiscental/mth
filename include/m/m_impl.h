@@ -4,7 +4,8 @@
 template <typename T>
 bool m::util::isZero(const T &x) {
 
-    auto magnitude = std::abs(x);
+    using std::abs;
+    auto magnitude = abs(x);
     return magnitude <= m::EPSILON<decltype(magnitude)>;
 }
 

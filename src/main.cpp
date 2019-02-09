@@ -77,6 +77,41 @@ TEST(CompTest, ConvertsToPolarCorrectly) {
     m_ASSERT_EQ(prodAB, m::comp::fromPolar(-2.0, 4.1));
 }
 
+TEST(CompTest, AbsOfZeroIsZero) {
+
+    m::comp z;
+
+    m_ASSERT_ZERO(z.abs());
+}
+
+TEST(CompTest, ArgConsistentWithPolar) {
+
+    m::comp w = m::comp::fromCartesian(1.0, 2.0);
+
+    m::vec2 asPolar = w.asPolar();
+    double arg = w.arg();
+
+    m_ASSERT_EQ(arg, asPolar.y());
+}
+
+TEST(CompTest, AbsConsistentWithPolar) {
+
+    m::comp w = m::comp::fromCartesian(2.0, -3.0);
+
+    m::vec2 asPolar = w.asPolar();
+    double abs = w.abs();
+
+    m_ASSERT_EQ(abs, asPolar.x());
+}
+
+TEST(CompTest, InverseIsInverse) {
+
+    m::comp z = m::comp::fromCartesian(13.0, -2.0);
+    m::comp zInv = z.inverse();
+
+    m_ASSERT_EQ(z * zInv, (m::comp) 1.0);
+}
+
 TEST(VecTest, DefaultInitsToZero) {
 
     m::vec2 new_vec;
@@ -133,6 +168,29 @@ TEST(VecTest, CrossProdCorrectly) {
 
     m_ASSERT_ZERO(crossPQ.dot(p));
     m_ASSERT_ZERO(crossPQ.dot(q));
+}
+
+TEST(VecTest, ScalesComponenetWise) {
+
+    m::vec5 a = m::vec5(1.0, 2.0, 3.0, 4.0, 5.0);
+
+    m::vec5 doubled = 2.0 * a;
+
+    m_ASSERT_EQ(doubled, m::vec5(2.0, 4.0, 6.0, 8.0, 10.0));
+}
+
+TEST(VecTest, SqrMagnMatchesPythag) {
+
+    m::vec6 b(2.0, -1.0, 13.0, 14.0, -2.5, 1.11);
+
+    double pythag = 0.0;
+
+    for (auto elem : b) {
+
+        pythag += elem * elem;
+    }
+
+    m_ASSERT_EQ(pythag, b.magnSqr());
 }
 
 int main(int argc, char **argv) {
