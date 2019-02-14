@@ -54,12 +54,12 @@ endif()
 file(GLOB sources "${CMAKE_SOURCE_DIR}/src/*.cpp")
 list(REMOVE_ITEM sources "${CMAKE_SOURCE_DIR}/src/main.cpp")
 
-add_library(mth_lib ${sources})
+add_library(mth ${sources})
 add_executable(mth_test "${CMAKE_SOURCE_DIR}/src/main.cpp")
 add_test(NAME tests COMMAND mth_test)
 
-include_directories(mth_lib "${CMAKE_SOURCE_DIR}/include")
+include_directories(mth "${CMAKE_SOURCE_DIR}/include")
 include_directories(mth_test "${CMAKE_SOURCE_DIR}/include")
 
-target_link_libraries(mth_test mth_lib gtest_main)
+target_link_libraries(mth_test mth gtest_main)
 
