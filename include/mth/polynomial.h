@@ -1,7 +1,7 @@
-#ifndef __m_polynomial_h__
-#define __m_polynomial_h__
+#ifndef __mth_polynomial_h__
+#define __mth_polynomial_h__
 
-/* <m/polynomial.h> - polynomial header
+/* <mth/polynomial.h> - polynomial header
  *      This include the class Polynomial which stores a polynomial with complex coefficients. Addition, subtraction
  *      and multiplication operators are defined as well as member functions to find values such as the degree and roots
  *      of the stored polynomial. The polynomial can be evaluated at a point with value() or converted to a complex function
@@ -18,10 +18,10 @@
 #include <iostream>
 #include <iomanip>
 
-#include <m/m.h>
-#include <m/comp.h>
+#include <mth/mth.h>
+#include <mth/comp.h>
 
-namespace m {
+namespace mth {
 
     // Forward declaration for friending
 
@@ -204,6 +204,6 @@ namespace m {
     Polynomial integrate(const Polynomial &polynomial);
 }
 
-#include <m/polynomial_impl.h>
+#include <mth/polynomial_impl.h>
 
 #endif

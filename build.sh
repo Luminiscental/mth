@@ -7,6 +7,6 @@ pushd build
 rm -f CMakeCache.txt
 cmake ..
 make
-./test_m
+./mth_test
 
 popd

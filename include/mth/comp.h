@@ -1,7 +1,7 @@
-#ifndef __m_tcomp_h__
-#define __m_tcomp_h__
+#ifndef __mth_tcomp_h__
+#define __mth_tcomp_h__
 
-/* <m/comp.h> - complex number header
+/* <mth/comp.h> - complex number header
  *      This includes the template class tcomp representing a complex number with coefficients of type T. Basic arithmetic
  *      operators are overloaded and member functions to find values such as the modulus and argument are defined and also
  *      functions for converting between cartesian and polar form. More advanced math functions such as std::exp and std::cos
@@ -12,9 +12,9 @@
 #include <ostream>
 #include <iomanip>
 
-#include <m/m.h>
+#include <mth/mth.h>
 
-namespace m {
+namespace mth {
 
     // Forward declaration to avoid circular includes
     template <typename T, size_t N>
@@ -241,46 +241,46 @@ namespace m {
     constexpr tcomp<T> i = tcomp<T>::fromCartesian(0, 1);
 
     template <typename T>
-    double abs(const m::tcomp<T> &z);
+    double abs(const mth::tcomp<T> &z);
 
     template <typename T>
-    m::tcomp<T> sqrt(const m::tcomp<T> &z);
+    mth::tcomp<T> sqrt(const mth::tcomp<T> &z);
 
     template <typename T>
-    m::tcomp<T> exp(const m::tcomp<T> &z);
+    mth::tcomp<T> exp(const mth::tcomp<T> &z);
 
     template <typename T>
-    m::tcomp<T> log(const m::tcomp<T> &z);
+    mth::tcomp<T> log(const mth::tcomp<T> &z);
 
     template <typename T>
-    m::tcomp<T> cos(const m::tcomp<T> &z);
+    mth::tcomp<T> cos(const mth::tcomp<T> &z);
 
     template <typename T>
-    m::tcomp<T> sin(const m::tcomp<T> &z);
+    mth::tcomp<T> sin(const mth::tcomp<T> &z);
 
     template <typename T>
-    m::tcomp<T> pow(const m::tcomp<T> &z, const m::tcomp<T> &exponent);
+    mth::tcomp<T> pow(const mth::tcomp<T> &z, const mth::tcomp<T> &exponent);
 
     template <typename T>
-    m::tcomp<T> pow(const T &base, const m::tcomp<T> &z);
+    mth::tcomp<T> pow(const T &base, const mth::tcomp<T> &z);
 
     template <typename T>
-    m::tcomp<T> pow(const m::tcomp<T> &z, const T &exponent);
+    mth::tcomp<T> pow(const mth::tcomp<T> &z, const T &exponent);
 
     template <typename T>
-    m::tcomp<T> pow(const m::tcomp<T> &z, size_t exponent);
+    mth::tcomp<T> pow(const mth::tcomp<T> &z, size_t exponent);
 }
 
 namespace std {
 
     // Hash operator for use in certain STL containers
     template<typename T>
-    struct hash<m::tcomp<T>> {
+    struct hash<mth::tcomp<T>> {
 
-        size_t operator()(const m::tcomp<T> &x) const;
+        size_t operator()(const mth::tcomp<T> &x) const;
     };
 }
 
-#include <m/comp_impl.h>
+#include <mth/comp_impl.h>
 
 #endif

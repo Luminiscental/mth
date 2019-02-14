@@ -1,9 +1,9 @@
-#ifndef __m_m_h__
-#define __m_m_h__
+#ifndef __mth_mth_h__
+#define __mth_mth_h__
 
 // TODO: A name with more characters would be less of a pain
 
-/* <m/m.h> - main header
+/* <mth/mth.h> - main header
  *      This includes general constant definitions and utility functions. It is a dependency
  *      to be included before including any of the other headers in m.
  */
@@ -28,8 +28,8 @@
 
 /* Optional preprocessor flags:
  *
- *      m_ROW_MAJOR - Matrix values are stored row-major rather than column-major.
- *      m_ELIMINATION - Matrix inverses are calculated by Gaussian row elimination rather than by calculating the adjoint matrix.
+ *      mth_ROW_MAJOR - Matrix values are stored row-major rather than column-major.
+ *      mth_ELIMINATION - Matrix inverses are calculated by Gaussian row elimination rather than by calculating the adjoint matrix.
  */
 
 // Set default values
@@ -42,7 +42,7 @@
 // TODO: Laurent series
 // TODO: Better exception / debug info
 
-namespace m {
+namespace mth {
 
     // Smallest value above zero; used for equality iss on non-exact types
 
@@ -72,6 +72,6 @@ namespace m {
     }
 }
 
-#include <m/m_impl.h>
+#include <mth/mth_impl.h>
 
 #endif

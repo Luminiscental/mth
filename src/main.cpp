@@ -4,20 +4,20 @@
 #include <iostream>
 #include <iomanip>
 
-#include <m/comp.h>
-#include <m/quat.h>
+#include <mth/comp.h>
+#include <mth/quat.h>
 
-#include <m/vec.h>
-#include <m/mat.h>
+#include <mth/vec.h>
+#include <mth/mat.h>
 
-#include <m/polynomial.h>
-#include <m/powerseries.h>
-#include <m/numeric.h>
+#include <mth/polynomial.h>
+#include <mth/powerseries.h>
+#include <mth/numeric.h>
 
-#define m_ASSERT_ZERO(a) ASSERT_TRUE(m::util::isZero(a)) \
+#define mth_ASSERT_ZERO(a) ASSERT_TRUE(mth::util::isZero(a)) \
     << "Expected " << #a << " which is " << a << " to be zero" << std::endl;
 
-#define m_ASSERT_EQ(a, b) ASSERT_TRUE(m::util::isEqual(a, b)) \
+#define mth_ASSERT_EQ(a, b) ASSERT_TRUE(mth::util::isEqual(a, b)) \
     << "Expected but did not find equality of" << std::endl \
     << "    " << #a << " which is " << a << std::endl \
     << "and" << std::endl \
@@ -25,119 +25,119 @@
 
 TEST(CompTest, DefaultInitsToZero) {
 
-    m::comp z;
+    mth::comp z;
 
-    m_ASSERT_EQ(z.real(), 0.0);
-    m_ASSERT_EQ(z.imag(), 0.0);
+    mth_ASSERT_EQ(z.real(), 0.0);
+    mth_ASSERT_EQ(z.imag(), 0.0);
 }
 
 TEST(CompTest, FillsValuesCorrectly) {
 
-    auto z = m::comp::fromCartesian(-1, 2);
+    auto z = mth::comp::fromCartesian(-1, 2);
 
-    m_ASSERT_EQ(z.real(), -1.0);
-    m_ASSERT_EQ(z.imag(), 2.0);
+    mth_ASSERT_EQ(z.real(), -1.0);
+    mth_ASSERT_EQ(z.imag(), 2.0);
 }
 
 TEST(CompTest, ConvertsFromPolarCorrectly) {
 
-    auto diag = m::comp::fromPolar(std::sqrt(2.0), m::PI<double> / 4.0);
+    auto diag = mth::comp::fromPolar(std::sqrt(2.0), mth::PI<double> / 4.0);
 
-    m_ASSERT_EQ(diag.real(), 1.0);
-    m_ASSERT_EQ(diag.imag(), 1.0);
+    mth_ASSERT_EQ(diag.real(), 1.0);
+    mth_ASSERT_EQ(diag.imag(), 1.0);
 }
 
 TEST(CompTest, SumsElementWise) {
 
-    auto p = m::comp::fromCartesian(-7.0, 3.5);
-    auto q = m::comp::fromCartesian(3.0, 2.4);
+    auto p = mth::comp::fromCartesian(-7.0, 3.5);
+    auto q = mth::comp::fromCartesian(3.0, 2.4);
 
     auto sumPQ = p + q;
 
-    m_ASSERT_EQ(sumPQ, m::comp::fromCartesian(3.0 - 7.0, 3.5 + 2.4));
+    mth_ASSERT_EQ(sumPQ, mth::comp::fromCartesian(3.0 - 7.0, 3.5 + 2.4));
 }
 
 TEST(CompTest, MultipliesCorrectly) {
 
-    auto a = m::comp::fromCartesian(3.0, 2.0);
-    auto b = m::comp::fromCartesian(-1.0, 1.0);
+    auto a = mth::comp::fromCartesian(3.0, 2.0);
+    auto b = mth::comp::fromCartesian(-1.0, 1.0);
 
     auto prodAB = a * b;
 
-    m_ASSERT_EQ(prodAB, m::comp::fromCartesian(-5.0, 1.0));
+    mth_ASSERT_EQ(prodAB, mth::comp::fromCartesian(-5.0, 1.0));
 }
 
 TEST(CompTest, ConvertsToPolarCorrectly) {
 
-    auto a = m::comp::fromPolar(2.0, 3.0);
-    auto b = m::comp::fromPolar(-1.0, 1.1);
+    auto a = mth::comp::fromPolar(2.0, 3.0);
+    auto b = mth::comp::fromPolar(-1.0, 1.1);
 
     auto prodAB = a * b;
 
-    m_ASSERT_EQ(prodAB, m::comp::fromPolar(-2.0, 4.1));
+    mth_ASSERT_EQ(prodAB, mth::comp::fromPolar(-2.0, 4.1));
 }
 
 TEST(CompTest, AbsOfZeroIsZero) {
 
-    m::comp z;
+    mth::comp z;
 
-    m_ASSERT_ZERO(z.abs());
+    mth_ASSERT_ZERO(z.abs());
 }
 
 TEST(CompTest, ArgConsistentWithPolar) {
 
-    m::comp w = m::comp::fromCartesian(1.0, 2.0);
+    mth::comp w = mth::comp::fromCartesian(1.0, 2.0);
 
-    m::vec2 asPolar = w.asPolar();
+    mth::vec2 asPolar = w.asPolar();
     double arg = w.arg();
 
-    m_ASSERT_EQ(arg, asPolar.y());
+    mth_ASSERT_EQ(arg, asPolar.y());
 }
 
 TEST(CompTest, AbsConsistentWithPolar) {
 
-    m::comp w = m::comp::fromCartesian(2.0, -3.0);
+    mth::comp w = mth::comp::fromCartesian(2.0, -3.0);
 
-    m::vec2 asPolar = w.asPolar();
+    mth::vec2 asPolar = w.asPolar();
     double abs = w.abs();
 
-    m_ASSERT_EQ(abs, asPolar.x());
+    mth_ASSERT_EQ(abs, asPolar.x());
 }
 
 TEST(CompTest, InverseIsInverse) {
 
-    m::comp z = m::comp::fromCartesian(13.0, -2.0);
-    m::comp zInv = z.inverse();
+    mth::comp z = mth::comp::fromCartesian(13.0, -2.0);
+    mth::comp zInv = z.inverse();
 
-    m_ASSERT_EQ(z * zInv, (m::comp) 1.0);
+    mth_ASSERT_EQ(z * zInv, (mth::comp) 1.0);
 }
 
 TEST(VecTest, DefaultInitsToZero) {
 
-    m::vec2 new_vec;
+    mth::vec2 new_vec;
 
     double x = new_vec.x();
     double y = new_vec.y();
 
-    m_ASSERT_EQ(x, 0.0);
-    m_ASSERT_EQ(y, 0.0);
+    mth_ASSERT_EQ(x, 0.0);
+    mth_ASSERT_EQ(y, 0.0);
 }
 
 TEST(VecTest, FillsValuesCorrectly) {
 
-    m::ivec7 seq(1, 2, 3, 4, 5, 6, 7);
+    mth::ivec7 seq(1, 2, 3, 4, 5, 6, 7);
 
     for (int i = 0; i < 7; i++) {
 
         double elem = seq.get(i);
         double oneIndexed = i + 1;
-        m_ASSERT_EQ(elem, oneIndexed);
+        mth_ASSERT_EQ(elem, oneIndexed);
     }
 }
 
 TEST(VecTest, IteratesFully) {
 
-    m::vec5 list_vec(1.2, 1.3, 1.4, 1.5, 1.6);
+    mth::vec5 list_vec(1.2, 1.3, 1.4, 1.5, 1.6);
 
     double result = 0.0;
 
@@ -146,42 +146,42 @@ TEST(VecTest, IteratesFully) {
         result += elem;
     }
 
-    m_ASSERT_EQ(result, 1.2 + 1.3 + 1.4 + 1.5 + 1.6);
+    mth_ASSERT_EQ(result, 1.2 + 1.3 + 1.4 + 1.5 + 1.6);
 }
 
 TEST(VecTest, DotProdCorrectly) {
 
-    auto x = m::ivec3(1, 3, 2);
-    auto y = m::ivec3(2, 4, -1);
+    auto x = mth::ivec3(1, 3, 2);
+    auto y = mth::ivec3(2, 4, -1);
 
     auto dotXY = x.dot(y);
 
-    m_ASSERT_EQ(dotXY, 12);
+    mth_ASSERT_EQ(dotXY, 12);
 }
 
 TEST(VecTest, CrossProdCorrectly) {
 
-    m::vec3 p = m::vec3(1.0, 2.0, -1.0);
-    m::vec3 q = m::vec3(2.0, 1.0, -2.0);
+    mth::vec3 p = mth::vec3(1.0, 2.0, -1.0);
+    mth::vec3 q = mth::vec3(2.0, 1.0, -2.0);
 
-    m::vec3 crossPQ = m::vec::cross(p, q);
+    mth::vec3 crossPQ = mth::vec::cross(p, q);
 
-    m_ASSERT_ZERO(crossPQ.dot(p));
-    m_ASSERT_ZERO(crossPQ.dot(q));
+    mth_ASSERT_ZERO(crossPQ.dot(p));
+    mth_ASSERT_ZERO(crossPQ.dot(q));
 }
 
 TEST(VecTest, ScalesComponenetWise) {
 
-    m::vec5 a = m::vec5(1.0, 2.0, 3.0, 4.0, 5.0);
+    mth::vec5 a = mth::vec5(1.0, 2.0, 3.0, 4.0, 5.0);
 
-    m::vec5 doubled = 2.0 * a;
+    mth::vec5 doubled = 2.0 * a;
 
-    m_ASSERT_EQ(doubled, m::vec5(2.0, 4.0, 6.0, 8.0, 10.0));
+    mth_ASSERT_EQ(doubled, mth::vec5(2.0, 4.0, 6.0, 8.0, 10.0));
 }
 
 TEST(VecTest, SqrMagnMatchesPythag) {
 
-    m::vec6 b(2.0, -1.0, 13.0, 14.0, -2.5, 1.11);
+    mth::vec6 b(2.0, -1.0, 13.0, 14.0, -2.5, 1.11);
 
     double pythag = 0.0;
 
@@ -190,8 +190,14 @@ TEST(VecTest, SqrMagnMatchesPythag) {
         pythag += elem * elem;
     }
 
-    m_ASSERT_EQ(pythag, b.magnSqr());
+    mth_ASSERT_EQ(pythag, b.magnSqr());
 }
+
+// TODO: Test mat
+// TODO: Test quat
+// TODO: Test polynomial
+// TODO: Test powerseries
+// TODO: Test numeric functions
 
 int main(int argc, char **argv) {
 

@@ -1,20 +1,20 @@
 
-#include <m/m.h>
+#include <mth/mth.h>
 
-#include <m/polynomial.h>
+#include <mth/polynomial.h>
 
-m::ComplexSolutions::ComplexSolutions() noexcept
+mth::ComplexSolutions::ComplexSolutions() noexcept
     :variableName('z'), inf(false) {}
 
-m::ComplexSolutions::ComplexSolutions(std::unordered_set<m::comp> finiteSet) noexcept
+mth::ComplexSolutions::ComplexSolutions(std::unordered_set<mth::comp> finiteSet) noexcept
     :variableName('z'), solutionSet(finiteSet), inf(false) {}
 
-char m::ComplexSolutions::getVariableName() const {
+char mth::ComplexSolutions::getVariableName() const {
 
     return variableName;
 }
 
-bool m::ComplexSolutions::contains(const m::comp &z) const {
+bool mth::ComplexSolutions::contains(const mth::comp &z) const {
 
     if (isInfinite()) {
 
@@ -26,12 +26,12 @@ bool m::ComplexSolutions::contains(const m::comp &z) const {
     }
 }
 
-bool m::ComplexSolutions::isInfinite() const {
+bool mth::ComplexSolutions::isInfinite() const {
 
     return inf;
 }
 
-m::ComplexSolutions m::ComplexSolutions::setVariableName(char newName) {
+mth::ComplexSolutions mth::ComplexSolutions::setVariableName(char newName) {
 
     if ((newName >= 'A' && newName <= 'Z') || (newName >= 'a' && newName <= 'z')) {
 
@@ -39,23 +39,23 @@ m::ComplexSolutions m::ComplexSolutions::setVariableName(char newName) {
 
     } else {
 
-        throw std::invalid_argument("m::exception: cannot use non-alphabet variable name");
+        throw std::invalid_argument("mth::exception: cannot use non-alphabet variable name");
     }
 
     return *this;
 }
 
-m::ComplexSolutions m::ComplexSolutions::empty() noexcept {
+mth::ComplexSolutions mth::ComplexSolutions::empty() noexcept {
 
     return ComplexSolutions();
 }
 
-m::ComplexSolutions m::ComplexSolutions::finite(std::unordered_set<m::comp> finiteSet) noexcept {
+mth::ComplexSolutions mth::ComplexSolutions::finite(std::unordered_set<mth::comp> finiteSet) noexcept {
 
     return ComplexSolutions(finiteSet);
 }
 
-m::ComplexSolutions m::ComplexSolutions::infinite() noexcept {
+mth::ComplexSolutions mth::ComplexSolutions::infinite() noexcept {
 
     ComplexSolutions result;
 
@@ -65,7 +65,7 @@ m::ComplexSolutions m::ComplexSolutions::infinite() noexcept {
 }
 
 // TODO: Parametrize variable name or something idk
-std::ostream &m::operator<<(std::ostream &stream, const m::ComplexSolutions &solutions) {
+std::ostream &mth::operator<<(std::ostream &stream, const mth::ComplexSolutions &solutions) {
 
     if (solutions.inf) {
 
@@ -96,51 +96,51 @@ std::ostream &m::operator<<(std::ostream &stream, const m::ComplexSolutions &sol
     return stream;
 }
 
-bool m::operator==(const m::PolynomialDegree &lhs, const m::PolynomialDegree &rhs) {
+bool mth::operator==(const mth::PolynomialDegree &lhs, const mth::PolynomialDegree &rhs) {
 
     if (lhs.isInfinite()) return rhs.isInfinite();
 
     return lhs.getValue() == rhs.getValue();
 }
 
-bool m::operator!=(const m::PolynomialDegree &lhs, const m::PolynomialDegree &rhs) {
+bool mth::operator!=(const mth::PolynomialDegree &lhs, const mth::PolynomialDegree &rhs) {
 
     return !(lhs == rhs);
 }
 
-std::ostream &m::operator<<(std::ostream &lhs, const m::PolynomialDegree &rhs) {
+std::ostream &mth::operator<<(std::ostream &lhs, const mth::PolynomialDegree &rhs) {
 
     if (rhs.inf) return lhs << "infinity";
 
     return lhs << rhs.value;
 }
 
-m::PolynomialDegree::PolynomialDegree(size_t value)
+mth::PolynomialDegree::PolynomialDegree(size_t value)
     :value(value), inf(false) {}
 
-bool m::PolynomialDegree::isInfinite() const {
+bool mth::PolynomialDegree::isInfinite() const {
 
     return inf;
 }
 
-size_t m::PolynomialDegree::getValue() const {
+size_t mth::PolynomialDegree::getValue() const {
 
     return value;
 }
 
-m::PolynomialDegree m::PolynomialDegree::infinite() {
+mth::PolynomialDegree mth::PolynomialDegree::infinite() {
 
     PolynomialDegree result(0);
     result.inf = true;
     return result;
 }
 
-m::Polynomial::Polynomial() noexcept
+mth::Polynomial::Polynomial() noexcept
     :variableName('z'), rootsValid(true), roots(ComplexSolutions::infinite()), degreeValid(true), degree(PolynomialDegree::infinite()) {}
 
-m::Polynomial m::Polynomial::fromCoeffs(std::vector<m::comp> coeffs) noexcept {
+mth::Polynomial mth::Polynomial::fromCoeffs(std::vector<mth::comp> coeffs) noexcept {
 
-    m::Polynomial result;
+    mth::Polynomial result;
 
     result.coeffs = coeffs;
     result.rootsValid = false;
@@ -151,17 +151,17 @@ m::Polynomial m::Polynomial::fromCoeffs(std::vector<m::comp> coeffs) noexcept {
     return result;
 }
 
-m::Polynomial::operator std::function<m::comp(m::comp)>() const {
+mth::Polynomial::operator std::function<mth::comp(mth::comp)>() const {
 
     return [&] (comp z) { return this->value(z); };
 }
 
-m::comp m::Polynomial::operator()(const m::comp &z) const {
+mth::comp mth::Polynomial::operator()(const mth::comp &z) const {
 
     return value(z);
 }
 
-void m::Polynomial::updateValues() {
+void mth::Polynomial::updateValues() {
 
     while (util::isZero(coeffs.back())) {
 
@@ -169,7 +169,7 @@ void m::Polynomial::updateValues() {
     }
 }
 
-void m::Polynomial::updateDegree() noexcept {
+void mth::Polynomial::updateDegree() noexcept {
 
     degreeValid = true;
 
@@ -189,19 +189,19 @@ void m::Polynomial::updateDegree() noexcept {
     degree = PolynomialDegree(l - 1);
 }
 
-std::vector<m::comp> m::Polynomial::getCoeffs() {
+std::vector<mth::comp> mth::Polynomial::getCoeffs() {
 
     updateValues();
 
     return coeffs;
 }
 
-std::vector<m::comp> m::Polynomial::getCoeffs() const {
+std::vector<mth::comp> mth::Polynomial::getCoeffs() const {
 
     return coeffs;
 }
 
-m::Polynomial m::Polynomial::setVariableName(char newName) {
+mth::Polynomial mth::Polynomial::setVariableName(char newName) {
 
     if ((newName >= 'A' && newName <= 'Z') || (newName >= 'a' && newName <= 'z')) {
 
@@ -209,35 +209,35 @@ m::Polynomial m::Polynomial::setVariableName(char newName) {
 
     } else {
 
-        throw std::invalid_argument("m::exception: cannot use non-alphabet variable name");
+        throw std::invalid_argument("mth::exception: cannot use non-alphabet variable name");
     }
 
     return *this;
 }
 
-char m::Polynomial::getVariableName() const {
+char mth::Polynomial::getVariableName() const {
 
     return variableName;
 }
 
-m::PolynomialDegree m::Polynomial::getDegree() {
+mth::PolynomialDegree mth::Polynomial::getDegree() {
 
     if (!degreeValid) updateDegree();
 
     return degree;
 }
 
-m::PolynomialDegree m::Polynomial::getDegree() const {
+mth::PolynomialDegree mth::Polynomial::getDegree() const {
 
     Polynomial c = *this;
 
     return c.getDegree();
 }
 
-m::comp m::Polynomial::value(m::comp x) const {
+mth::comp mth::Polynomial::value(mth::comp x) const {
 
-    m::comp result = 0;
-    m::comp v = 1;
+    mth::comp result = 0;
+    mth::comp v = 1;
 
     for (auto coeff : coeffs) {
 
@@ -248,7 +248,7 @@ m::comp m::Polynomial::value(m::comp x) const {
     return result;
 }
 
-m::ComplexSolutions m::Polynomial::solve() {
+mth::ComplexSolutions mth::Polynomial::solve() {
 
     if (rootsValid) return roots;
 
@@ -298,14 +298,14 @@ m::ComplexSolutions m::Polynomial::solve() {
     }
 }
 
-m::comp m::Polynomial::getCoeff(size_t index) const {
+mth::comp mth::Polynomial::getCoeff(size_t index) const {
 
     if (index >= coeffs.size()) return comp::fromCartesian(0, 0);
 
     return coeffs[index];
 }
 
-void m::Polynomial::setCoeff(size_t index, const m::comp &value) {
+void mth::Polynomial::setCoeff(size_t index, const mth::comp &value) {
 
     if (index >= coeffs.size()) {
 
@@ -325,12 +325,12 @@ void m::Polynomial::setCoeff(size_t index, const m::comp &value) {
     degreeValid = false;
 }
 
-m::Polynomial m::Polynomial::interpolate(const std::vector<cvec2> &points) {
+mth::Polynomial mth::Polynomial::interpolate(const std::vector<cvec2> &points) {
 
     return interpolate(points, 0, points.size() - 1);
 }
 
-m::Polynomial m::Polynomial::interpolate(const std::vector<cvec2> &points, size_t first, size_t last) {
+mth::Polynomial mth::Polynomial::interpolate(const std::vector<cvec2> &points, size_t first, size_t last) {
 
     if (first == last) return fromCoeffs(points[first].y());
 
@@ -346,42 +346,42 @@ m::Polynomial m::Polynomial::interpolate(const std::vector<cvec2> &points, size_
     return (rightLinear * leftP + leftLinear * rightP) / (leftX - rightX);
 }
 
-m::Polynomial &m::Polynomial::operator+=(const m::Polynomial &rhs) {
+mth::Polynomial &mth::Polynomial::operator+=(const mth::Polynomial &rhs) {
 
     return *this = *this + rhs;
 }
 
-m::Polynomial &m::Polynomial::operator-=(const m::Polynomial &rhs) {
+mth::Polynomial &mth::Polynomial::operator-=(const mth::Polynomial &rhs) {
 
     return *this = *this - rhs;
 }
 
-m::Polynomial &m::Polynomial::operator*=(const m::Polynomial &rhs) {
+mth::Polynomial &mth::Polynomial::operator*=(const mth::Polynomial &rhs) {
 
     return *this = *this * rhs;
 }
 
-m::Polynomial &m::Polynomial::operator+=(const m::comp &rhs) {
+mth::Polynomial &mth::Polynomial::operator+=(const mth::comp &rhs) {
 
     return *this = *this + rhs;
 }
 
-m::Polynomial &m::Polynomial::operator-=(const m::comp &rhs) {
+mth::Polynomial &mth::Polynomial::operator-=(const mth::comp &rhs) {
 
     return *this = *this - rhs;
 }
 
-m::Polynomial &m::Polynomial::operator*=(const m::comp &rhs) {
+mth::Polynomial &mth::Polynomial::operator*=(const mth::comp &rhs) {
 
     return *this = *this * rhs;
 }
 
-m::Polynomial &m::Polynomial::operator/=(const m::comp &rhs) {
+mth::Polynomial &mth::Polynomial::operator/=(const mth::comp &rhs) {
 
     return *this = *this / rhs;
 }
 
-m::Polynomial m::operator+(const m::Polynomial &lhs, const m::comp &rhs) {
+mth::Polynomial mth::operator+(const mth::Polynomial &lhs, const mth::comp &rhs) {
 
     auto result = lhs;
 
@@ -390,12 +390,12 @@ m::Polynomial m::operator+(const m::Polynomial &lhs, const m::comp &rhs) {
     return result;
 }
 
-m::Polynomial m::operator+(const m::comp &lhs, const m::Polynomial &rhs) {
+mth::Polynomial mth::operator+(const mth::comp &lhs, const mth::Polynomial &rhs) {
 
     return rhs + lhs;
 }
 
-m::Polynomial m::operator+(const m::Polynomial &lhs, const m::Polynomial &rhs) {
+mth::Polynomial mth::operator+(const mth::Polynomial &lhs, const mth::Polynomial &rhs) {
 
     auto result = lhs;
 
@@ -407,7 +407,7 @@ m::Polynomial m::operator+(const m::Polynomial &lhs, const m::Polynomial &rhs) {
     return result;
 }
 
-m::Polynomial m::operator-(const m::Polynomial &rhs) {
+mth::Polynomial mth::operator-(const mth::Polynomial &rhs) {
 
     auto result = rhs;
 
@@ -419,22 +419,22 @@ m::Polynomial m::operator-(const m::Polynomial &rhs) {
     return result;
 }
 
-m::Polynomial m::operator-(const m::Polynomial &lhs, const m::comp &rhs) {
+mth::Polynomial mth::operator-(const mth::Polynomial &lhs, const mth::comp &rhs) {
 
     return lhs + (-rhs);
 }
 
-m::Polynomial m::operator-(const m::comp &lhs, const m::Polynomial &rhs) {
+mth::Polynomial mth::operator-(const mth::comp &lhs, const mth::Polynomial &rhs) {
 
     return lhs + (-rhs);
 }
 
-m::Polynomial m::operator-(const m::Polynomial &lhs, const m::Polynomial &rhs) {
+mth::Polynomial mth::operator-(const mth::Polynomial &lhs, const mth::Polynomial &rhs) {
 
     return lhs + (-rhs);
 }
 
-m::Polynomial m::operator*(const m::Polynomial &lhs, const m::comp &rhs) {
+mth::Polynomial mth::operator*(const mth::Polynomial &lhs, const mth::comp &rhs) {
 
     auto result = lhs;
 
@@ -446,12 +446,12 @@ m::Polynomial m::operator*(const m::Polynomial &lhs, const m::comp &rhs) {
     return result;
 }
 
-m::Polynomial m::operator*(const m::comp &lhs, const m::Polynomial &rhs) {
+mth::Polynomial mth::operator*(const mth::comp &lhs, const mth::Polynomial &rhs) {
 
     return rhs * lhs;
 }
 
-m::Polynomial m::operator*(const m::Polynomial &lhs, const m::Polynomial &rhs) {
+mth::Polynomial mth::operator*(const mth::Polynomial &lhs, const mth::Polynomial &rhs) {
 
     // TODO: Multivariable polynomials; compare variable names
 
@@ -483,7 +483,7 @@ m::Polynomial m::operator*(const m::Polynomial &lhs, const m::Polynomial &rhs) {
     return result;
 }
 
-m::Polynomial m::operator/(const m::Polynomial &lhs, const m::comp &rhs) {
+mth::Polynomial mth::operator/(const mth::Polynomial &lhs, const mth::comp &rhs) {
 
     auto result = lhs;
 
@@ -495,7 +495,7 @@ m::Polynomial m::operator/(const m::Polynomial &lhs, const m::comp &rhs) {
     return result;
 }
 
-bool m::operator==(const Polynomial &lhs, const Polynomial &rhs) {
+bool mth::operator==(const Polynomial &lhs, const Polynomial &rhs) {
 
     auto lDeg = lhs.getDegree();
     auto rDeg = rhs.getDegree();
@@ -514,13 +514,13 @@ bool m::operator==(const Polynomial &lhs, const Polynomial &rhs) {
     return true;
 }
 
-bool m::operator!=(const Polynomial &lhs, const Polynomial &rhs) {
+bool mth::operator!=(const Polynomial &lhs, const Polynomial &rhs) {
 
 
     return !(lhs == rhs);
 }
 
-std::ostream &m::operator<<(std::ostream &lhs, const m::Polynomial &rhs) {
+std::ostream &mth::operator<<(std::ostream &lhs, const mth::Polynomial &rhs) {
 
     if (rhs.getDegree().isInfinite()) return lhs << "0";
 
@@ -565,7 +565,7 @@ std::ostream &m::operator<<(std::ostream &lhs, const m::Polynomial &rhs) {
     return lhs;
 }
 
-m::Polynomial m::differentiate(const m::Polynomial &polynomial) {
+mth::Polynomial mth::differentiate(const mth::Polynomial &polynomial) {
 
     if (polynomial.getDegree().isInfinite()) return Polynomial();
 
@@ -575,13 +575,13 @@ m::Polynomial m::differentiate(const m::Polynomial &polynomial) {
 
     for (size_t i = 1; i < N + 1; i++) {
 
-        result.setCoeff(i - 1, m::comp::fromCartesian(i, 0) * polynomial.getCoeff(i));
+        result.setCoeff(i - 1, mth::comp::fromCartesian(i, 0) * polynomial.getCoeff(i));
     }
 
     return result;
 }
 
-m::Polynomial m::integrate(const m::Polynomial &polynomial) {
+mth::Polynomial mth::integrate(const mth::Polynomial &polynomial) {
 
     if (polynomial.getDegree().isInfinite()) return Polynomial();
 
@@ -591,7 +591,7 @@ m::Polynomial m::integrate(const m::Polynomial &polynomial) {
 
     for (size_t i = 0; i < N + 1; i++) {
 
-        result.setCoeff(i + 1, polynomial.getCoeff(i) / m::comp::fromCartesian(i + 1, 0)); 
+        result.setCoeff(i + 1, polynomial.getCoeff(i) / mth::comp::fromCartesian(i + 1, 0)); 
     }
 
     return result;

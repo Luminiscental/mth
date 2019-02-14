@@ -1,5 +1,5 @@
 
-#ifdef __m_mat_content_toggle__
+#ifdef __mth_mat_content_toggle__
 
 // template <typename T, size_t N, size_t M>
 // class tmat {
@@ -43,7 +43,7 @@ public:
     constexpr tmat(Q... args) noexcept
         :values{static_cast<T>(args)...} {
 
-#ifndef m_ROW_MAJOR
+#ifndef mth_ROW_MAJOR
 
         this->values = static_cast<std::array<T, N * M>>(transpose().values);
 

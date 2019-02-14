@@ -1,21 +1,21 @@
 
-#include <m/m.h>
+#include <mth/mth.h>
 
-#include <m/numeric.h>
-#include <m/polynomial.h>
+#include <mth/numeric.h>
+#include <mth/polynomial.h>
 
-m::Polynomial lerpTowards(std::function<m::comp(m::comp)> xTransform, std::function<m::comp(size_t,m::comp)> yFunc) {
+mth::Polynomial lerpTowards(std::function<mth::comp(mth::comp)> xTransform, std::function<mth::comp(size_t,mth::comp)> yFunc) {
 
     using std::pow;
     using std::abs;
 
-    std::vector<m::cvec2> result;
-    m::comp lastX, lastY;
+    std::vector<mth::cvec2> result;
+    mth::comp lastX, lastY;
 
     for (size_t i = 2; i < 100; i++) {
 
         // TODO: Parametrize this sequence or choose it contextually
-        auto approachingZero = pow(m::comp(2), -m::comp(i));
+        auto approachingZero = pow(mth::comp(2), -mth::comp(i));
         auto x = xTransform(approachingZero);
         auto y = yFunc(i, x);
 
@@ -25,7 +25,7 @@ m::Polynomial lerpTowards(std::function<m::comp(m::comp)> xTransform, std::funct
             break;
         }
 
-        result.push_back(m::cvec2(x, y));
+        result.push_back(mth::cvec2(x, y));
 
         auto deltaX = abs(x - lastX);
         auto deltaY = abs(y - lastY);
@@ -40,10 +40,10 @@ m::Polynomial lerpTowards(std::function<m::comp(m::comp)> xTransform, std::funct
     auto lastIndex = result.size() - 1;
     auto startIndex = lastIndex > (n - 1) ? lastIndex - n : 0;
 
-    return m::Polynomial::interpolate(result, startIndex, lastIndex);
+    return mth::Polynomial::interpolate(result, startIndex, lastIndex);
 }
 
-std::function<m::comp(size_t)> shankTransform(const std::function<m::comp(size_t)> &partialSum, const std::function<m::comp(size_t)> &sequence) {
+std::function<mth::comp(size_t)> shankTransform(const std::function<mth::comp(size_t)> &partialSum, const std::function<mth::comp(size_t)> &sequence) {
 
     return [partialSum, sequence] (size_t n) {
 
@@ -57,11 +57,11 @@ std::function<m::comp(size_t)> shankTransform(const std::function<m::comp(size_t
     };
 }
 
-std::function<m::comp(size_t)> aitkenTransform(const std::function<m::comp(size_t)> &sequence) {
+std::function<mth::comp(size_t)> aitkenTransform(const std::function<mth::comp(size_t)> &sequence) {
 
     return [sequence] (size_t n) {
 
-        if (n == 0) return m::comp(0);
+        if (n == 0) return mth::comp(0);
 
         auto next = sequence(n + 1);
         auto curr = sequence(n);
@@ -73,7 +73,7 @@ std::function<m::comp(size_t)> aitkenTransform(const std::function<m::comp(size_
     };
 }
 
-m::comp m::limit(const std::function<m::comp(size_t)> &sequence) {
+mth::comp mth::limit(const std::function<mth::comp(size_t)> &sequence) {
 
     auto accelerated = aitkenTransform(sequence);
 
@@ -85,7 +85,7 @@ m::comp m::limit(const std::function<m::comp(size_t)> &sequence) {
     return pol.getCoeff(0);
 }
 
-m::comp m::seriesLimit(const std::function<m::comp(size_t)> &partialSum, const std::function<m::comp(size_t)> &sequence) {
+mth::comp mth::seriesLimit(const std::function<mth::comp(size_t)> &partialSum, const std::function<mth::comp(size_t)> &sequence) {
 
     auto accelerated = shankTransform(partialSum, sequence);
 
@@ -97,7 +97,7 @@ m::comp m::seriesLimit(const std::function<m::comp(size_t)> &partialSum, const s
     return pol.getCoeff(0);
 }
 
-m::comp m::lowerLimit(const std::function<m::comp(m::comp)> &function, m::comp input) {
+mth::comp mth::lowerLimit(const std::function<mth::comp(mth::comp)> &function, mth::comp input) {
 
     auto x = [&] (comp small) { return input - small; };
     auto y = [&] (size_t index, comp x) { return function(x); };
@@ -107,7 +107,7 @@ m::comp m::lowerLimit(const std::function<m::comp(m::comp)> &function, m::comp i
     return pol.getCoeff(0);
 }
 
-m::comp m::upperLimit(const std::function<m::comp(m::comp)> &function, m::comp input) {
+mth::comp mth::upperLimit(const std::function<mth::comp(mth::comp)> &function, mth::comp input) {
 
     auto x = [&] (comp small) { return input + small; };
     auto y = [&] (size_t index, comp x) { return function(x); };
@@ -117,24 +117,24 @@ m::comp m::upperLimit(const std::function<m::comp(m::comp)> &function, m::comp i
     return pol.getCoeff(0);
 }
 
-m::comp m::limit(const std::function<m::comp(m::comp)> &function, m::comp input) {
+mth::comp mth::limit(const std::function<mth::comp(mth::comp)> &function, mth::comp input) {
 
     return lowerLimit(function, input);
 }
 
-m::comp m::limitInfPos(const std::function<m::comp(m::comp)> &function) {
+mth::comp mth::limitInfPos(const std::function<mth::comp(mth::comp)> &function) {
 
-    auto inverted = [function] (m::comp z) { return function(z.inverse()); };
+    auto inverted = [function] (mth::comp z) { return function(z.inverse()); };
     return upperLimit(inverted, comp(0));
 }
 
-m::comp m::limitInfNeg(const std::function<m::comp(m::comp)> &function) {
+mth::comp mth::limitInfNeg(const std::function<mth::comp(mth::comp)> &function) {
 
-    auto inverted = [function] (m::comp z) { return function(z.inverse()); };
+    auto inverted = [function] (mth::comp z) { return function(z.inverse()); };
     return lowerLimit(inverted, comp(0));
 }
 
-std::function<m::comp(m::comp)> m::differentiate(const std::function<m::comp(m::comp)> &function) {
+std::function<mth::comp(mth::comp)> mth::differentiate(const std::function<mth::comp(mth::comp)> &function) {
 
     auto avgGradient = [&] (comp a, comp b) {
 
@@ -146,7 +146,7 @@ std::function<m::comp(m::comp)> m::differentiate(const std::function<m::comp(m::
 
     return [&] (comp x) {
 
-        auto gradientApprox = [&] (m::comp dx) {
+        auto gradientApprox = [&] (mth::comp dx) {
 
             return avgGradient(x, x + dx);
         };

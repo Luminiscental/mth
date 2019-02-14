@@ -1,7 +1,7 @@
-#ifndef __m_vec_h__
-#define __m_vec_h__
+#ifndef __mth_vec_h__
+#define __mth_vec_h__
 
-/* <m/vec.h> - vector header
+/* <mth/vec.h> - vector header
  *      This includes the tvec template class representing a cartesian vector of arbitrary scalar type for dimensions
  *      greater than zero. Included are vector-space operations as well as the inner and outer product. The cross product
  *      and its 2-dimensional equivalent det(a, b) are also defined.
@@ -13,10 +13,10 @@
 #include <type_traits>
 #include <cmath>
 
-#include <m/m.h>
-#include <m/comp.h>
+#include <mth/mth.h>
+#include <mth/comp.h>
 
-namespace m {
+namespace mth {
 
     // Forward declaration to avoid circular includes
 
@@ -197,13 +197,13 @@ namespace m {
         T det(const tvec<T, 2> &lhs, const tvec<T, 2> &rhs);
     }
 
-    // Alias types for single-digit dimension and scalar type int, long, float, double and m::comp
+    // Alias types for single-digit dimension and scalar type int, long, float, double and mth::comp
 
 #define CREATE_ALIASES(n) using ivec ## n = tvec<int, n>; \
                           using lvec ## n = tvec<long, n>; \
                           using fvec ## n = tvec<float, n>; \
                           using dvec ## n = tvec<double, n>; \
-                          using cvec ## n = tvec<m::comp, n>; \
+                          using cvec ## n = tvec<mth::comp, n>; \
                           using vec ## n = dvec ## n;
 
     CREATE_ALIASES(1)
@@ -230,19 +230,19 @@ namespace m {
     constexpr tvec<T, 3> Z_AXIS = tvec<T, 3>(0, 0, 1);
     
     template <typename T, size_t N>
-    double abs(const m::tvec<T, N> &x) noexcept;
+    double abs(const mth::tvec<T, N> &x) noexcept;
 }
 
 namespace std {
 
     // Hash operator for use in certain STL containers
     template <typename T, size_t N>
-    struct hash<m::tvec<T, N>> {
+    struct hash<mth::tvec<T, N>> {
 
-        size_t operator()(const m::tvec<T, N> &x);
+        size_t operator()(const mth::tvec<T, N> &x);
     };
 }
 
-#include <m/vec_impl.h>
+#include <mth/vec_impl.h>
 
 #endif

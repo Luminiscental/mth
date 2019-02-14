@@ -1,11 +1,11 @@
 
-#include <m/m.h>
+#include <mth/mth.h>
 
-#include <m/powerseries.h>
+#include <mth/powerseries.h>
 
-#include <m/numeric.h>
+#include <mth/numeric.h>
 
-m::PowerSeries::PowerSeries() {
+mth::PowerSeries::PowerSeries() {
 
     generatingFunction = [] (size_t n) {
 
@@ -13,10 +13,10 @@ m::PowerSeries::PowerSeries() {
     };
 }
 
-m::PowerSeries::PowerSeries(std::function<comp(size_t)> generatingFunction)
+mth::PowerSeries::PowerSeries(std::function<comp(size_t)> generatingFunction)
     :generatingFunction(generatingFunction) {}
 
-m::PowerSeries m::PowerSeries::finite(const m::Polynomial &equivalent) {
+mth::PowerSeries mth::PowerSeries::finite(const mth::Polynomial &equivalent) {
 
     const auto degree = equivalent.getDegree();
 
@@ -34,7 +34,7 @@ m::PowerSeries m::PowerSeries::finite(const m::Polynomial &equivalent) {
     return PowerSeries(gen);
 }
 
-m::PowerSeries m::PowerSeries::recursive(std::function<comp(comp)> recursion, const comp &constant) {
+mth::PowerSeries mth::PowerSeries::recursive(std::function<comp(comp)> recursion, const comp &constant) {
 
     auto generatingFunction = [&] (size_t index) {
 
@@ -52,21 +52,21 @@ m::PowerSeries m::PowerSeries::recursive(std::function<comp(comp)> recursion, co
     return PowerSeries(generatingFunction);
 }
 
-m::comp m::PowerSeries::getCoeff(size_t index) const {
+mth::comp mth::PowerSeries::getCoeff(size_t index) const {
 
     return generatingFunction(index);
 }
 
-m::comp m::PowerSeries::getPartial(const m::comp &z, size_t index) const {
+mth::comp mth::PowerSeries::getPartial(const mth::comp &z, size_t index) const {
 
     if (util::isZero(z)) return getCoeff(0);
 
-    m::comp result;
+    mth::comp result;
 
     // Calculate from scratch
     if (lastPartialIndex == 0 || lastPartialIndex > index) {
 
-        m::comp term(1);
+        mth::comp term(1);
 
         for (size_t i = 0; i <= index; i++) {
 
@@ -80,7 +80,7 @@ m::comp m::PowerSeries::getPartial(const m::comp &z, size_t index) const {
         using std::pow;
 
         result = lastPartial;
-        m::comp term = pow(z, lastPartialIndex + 1);
+        mth::comp term = pow(z, lastPartialIndex + 1);
 
         for (size_t i = lastPartialIndex + 1; i <= index; i++) {
 
@@ -95,7 +95,7 @@ m::comp m::PowerSeries::getPartial(const m::comp &z, size_t index) const {
     return result;
 }
 
-m::comp m::PowerSeries::getValue(const m::comp &z) const {
+mth::comp mth::PowerSeries::getValue(const mth::comp &z) const {
 
     if (util::isZero(z)) return getCoeff(0);
 
@@ -114,7 +114,7 @@ m::comp m::PowerSeries::getValue(const m::comp &z) const {
     return seriesLimit(partialSequence, sequence);
 }
 
-m::PowerSeries m::differentiate(const m::PowerSeries &series) {
+mth::PowerSeries mth::differentiate(const mth::PowerSeries &series) {
 
     auto generatingFunction = [&] (size_t index) {
 
@@ -126,7 +126,7 @@ m::PowerSeries m::differentiate(const m::PowerSeries &series) {
     return PowerSeries(generatingFunction);
 }
 
-m::PowerSeries m::integrate(const m::PowerSeries &series) {
+mth::PowerSeries mth::integrate(const mth::PowerSeries &series) {
 
     auto generatingFunction = [&] (size_t index) {
 

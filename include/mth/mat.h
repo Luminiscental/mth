@@ -1,7 +1,7 @@
-#ifndef __m_mat_h__
-#define __m_mat_h__
+#ifndef __mth_mat_h__
+#define __mth_mat_h__
 
-/* <m/mat.h> - matrix header
+/* <mth/mat.h> - matrix header
  *      This includes the tmat template class representing an N by M matrix of coefficients of type T. Addition
  *      and subtraction operations are defined along with multiplication and also division for square matrices.
  *      Member functions to find the determinant and various related constructs such as the inverse and adjoint
@@ -16,15 +16,15 @@
 #include <array>
 #include <type_traits>
 
-#include <m/m.h>
-#include <m/vec.h>
-#include <m/quat.h>
-#include <m/comp.h>
+#include <mth/mth.h>
+#include <mth/vec.h>
+#include <mth/quat.h>
+#include <mth/comp.h>
 
-// Safeguard so <m/mat_content.h> doesn't get included anywhere else
-#define __m_mat_content_toggle__ 
+// Safeguard so <mth/mat_content.h> doesn't get included anywhere else
+#define __mth_mat_content_toggle__ 
 
-namespace m {
+namespace mth {
 
     // Forward declaration for friending
 
@@ -79,7 +79,7 @@ namespace m {
 
     private:
 
-        m::tvec<A, N> aux;
+        mth::tvec<A, N> aux;
 
         // TODO: Augment non-square matrices?
         tmat<T, N, N> matrix;
@@ -96,10 +96,10 @@ namespace m {
         tmat_aug(const tmat<T, N, N> &matrix, const std::array<A, N> &aux) noexcept;
 
         tmat<T, N, N> coefficients() const; 
-        m::tvec<A, N> auxilary() const;
+        mth::tvec<A, N> auxilary() const;
 
         // TODO: degenerate solution cases
-        m::tvec<A, N> solve() const;
+        mth::tvec<A, N> solve() const;
 
         // Index of first non-zero coefficient, returns N on empty rows
         size_t leadingIndex(size_t row) const;
@@ -154,7 +154,7 @@ namespace m {
     template <typename T>
     class tmat<T, N, M> {
 
-#include <m/mat_content.h>
+#include <mth/mat_content.h>
 
     };
 
@@ -167,7 +167,7 @@ namespace m {
     template <typename T, size_t M>
     class tmat<T, N, M> {
 
-#include <m/mat_content.h>
+#include <mth/mat_content.h>
 
     };
 
@@ -179,7 +179,7 @@ namespace m {
     template <typename T, size_t N>
     class tmat<T, N, M> {
 
-#include <m/mat_content.h>
+#include <mth/mat_content.h>
 
     };
 
@@ -189,7 +189,7 @@ namespace m {
     template <typename T, size_t N, size_t M>
     class tmat {
 
-#include <m/mat_content.h>
+#include <mth/mat_content.h>
 
     };
 
@@ -224,7 +224,7 @@ namespace m {
         tmat<T, 4, 4> perspective(T left, T right, T bottom, T top, T near, T far);
     }
 
-    // Alias types for single-digit dimensions with scalar types int, long, float, double, m::comp
+    // Alias types for single-digit dimensions with scalar types int, long, float, double, mth::comp
 
 #define CREATE_SQR_ALIASES(n)       using imat ## n = tmat<int, n, n>; \
                                     using lmat ## n = tmat<long, n, n>; \
@@ -269,9 +269,9 @@ namespace m {
 namespace std {
 
     template <typename T, size_t N, size_t M>
-    struct hash<m::tmat<T, N, M>> {
+    struct hash<mth::tmat<T, N, M>> {
 
-        size_t operator()(const m::tmat<T, N, M> &x);
+        size_t operator()(const mth::tmat<T, N, M> &x);
     };
 }
 
@@ -279,7 +279,7 @@ namespace std {
 #define M 1
 
 // Implement tmat<T, 1, 1>
-#include <m/mat_impl.h>
+#include <mth/mat_impl.h>
 
 #undef M
 #undef N
@@ -287,20 +287,20 @@ namespace std {
 #define N 1
 
 // Implement tmat<T, 1, M> for M > 1
-#include <m/mat_impl.h>
+#include <mth/mat_impl.h>
 
 #undef N
 
 #define M 1
 
 // Implement tmat<T, N, 1> for N > 1
-#include <m/mat_impl.h>
+#include <mth/mat_impl.h>
 
 #undef M
 
 // Implement tmat<T, N, M> for N > 1 and M > 1
-#include <m/mat_impl.h>
+#include <mth/mat_impl.h>
 
-#undef __m_mat_content_toggle__
+#undef __mth_mat_content_toggle__
 
 #endif

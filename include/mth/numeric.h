@@ -1,20 +1,20 @@
-#ifndef __m_numeric_h__
-#define __m_numeric_h__
+#ifndef __mth_numeric_h__
+#define __mth_numeric_h__
 
-/* <m/numeric.h> - numeric function header
+/* <mth/numeric.h> - numeric function header
  *      Defines functions to numerically estimate the value of limits
  *      and derivatives. Input functions can be any std::function on 
- *      m::comp but non-well-behaved functions may cause issues.
+ *      mth::comp but non-well-behaved functions may cause issues.
  */
 
 #include <functional>
 
-#include <m/m.h>
-#include <m/comp.h>
+#include <mth/mth.h>
+#include <mth/comp.h>
 
 // TODO: Limit of recursive sequence
 
-namespace m {
+namespace mth {
 
     // Returns an approximation of the limit at infinity of a sequence
     comp limit(const std::function<comp(size_t)> &sequence);

@@ -1,7 +1,7 @@
-#ifndef __m_quat_h__
-#define __m_quat_h__
+#ifndef __mth_quat_h__
+#define __mth_quat_h__
 
-/* <m/quat.h> - quaternion header
+/* <mth/quat.h> - quaternion header
  *      Includes the template class tquat representing a quaternion with coefficients of type T. Basic
  *      arithmetic operators are defined as well as member functions to get values such as modulus and
  *      reciprocal. Utility functions for creating and using rotation representations are also defined.
@@ -10,10 +10,10 @@
 #include <ostream>
 #include <cmath>
 
-#include <m/m.h>
-#include <m/vec.h>
+#include <mth/mth.h>
+#include <mth/vec.h>
 
-namespace m {
+namespace mth {
 
     // Forward declaration for friending
 
@@ -136,7 +136,7 @@ namespace m {
         tquat<T> unit() const;
 
         // Returns the rotation represented by *this applied to the given vector
-        tvec<T, 3> rotate(const m::tvec<T, 3> &vector) const;
+        tvec<T, 3> rotate(const mth::tvec<T, 3> &vector) const;
 
         // Returns 1
         static tquat<T> identity();
@@ -228,16 +228,16 @@ namespace std {
 
     // Overload to call magn()
     template <typename T>
-    double abs(const m::tquat<T> &x);
+    double abs(const mth::tquat<T> &x);
 
     // Hash operator for use in certain STL containers
     template <typename T>
-    struct hash<m::tquat<T>> {
+    struct hash<mth::tquat<T>> {
 
-        size_t operator()(const m::tquat<T> &x);
+        size_t operator()(const mth::tquat<T> &x);
     };
 }
 
-#include <m/quat_impl.h>
+#include <mth/quat_impl.h>
 
 #endif
