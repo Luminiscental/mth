@@ -1,5 +1,5 @@
-#ifndef __mth_quat_h__
-#define __mth_quat_h__
+#ifndef mth_quat_h__
+#define mth_quat_h__
 
 /* <mth/quat.h> - quaternion header
  *      Includes the template class tquat representing a quaternion with coefficients of type T. Basic

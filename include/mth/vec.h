@@ -1,5 +1,5 @@
-#ifndef __mth_vec_h__
-#define __mth_vec_h__
+#ifndef mth_vec_h__
+#define mth_vec_h__
 
 /* <mth/vec.h> - vector header
  *      This includes the tvec template class representing a cartesian vector of arbitrary scalar type for dimensions
@@ -66,52 +66,52 @@ namespace mth {
 
         // Iterator functions
 
-        auto begin() {
+        constexpr auto begin() noexcept {
 
             return values.begin();
         }
 
-        auto begin() const {
+        constexpr auto begin() const noexcept {
 
             return cbegin();
         }
 
-        auto end() {
+        constexpr auto end() noexcept {
 
             return values.end();
         }
 
-        auto end() const {
+        constexpr auto end() const noexcept {
 
             return cend();
         }
 
-        auto cbegin() const {
+        constexpr auto cbegin() const noexcept {
 
             return values.cbegin();
         }
 
-        auto cend() const {
+        constexpr auto cend() const noexcept {
 
             return values.cend();
         }
 
-        auto rbegin() {
+        constexpr auto rbegin() noexcept {
 
             return values.rbegin();
         }
 
-        auto rend() {
+        constexpr auto rend() noexcept {
 
             return values.rend();
         }
 
-        auto crbegin() const {
+        constexpr auto crbegin() const noexcept {
 
             return values.crbegin();
         }
 
-        auto crend() const {
+        constexpr auto crend() const noexcept {
 
             return values.crend();
         }

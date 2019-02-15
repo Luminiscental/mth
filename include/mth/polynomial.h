@@ -1,5 +1,5 @@
-#ifndef __mth_polynomial_h__
-#define __mth_polynomial_h__
+#ifndef mth_polynomial_h__
+#define mth_polynomial_h__
 
 /* <mth/polynomial.h> - polynomial header
  *      This include the class Polynomial which stores a polynomial with complex coefficients. Addition, subtraction
@@ -19,6 +19,7 @@
 #include <iomanip>
 
 #include <mth/mth.h>
+#include <mth/vec.h>
 #include <mth/comp.h>
 
 namespace mth {
@@ -81,7 +82,10 @@ namespace mth {
         static ComplexSolutions finite(std::unordered_set<comp> finiteSet) noexcept;
         
         template <typename ...Q>
-        static ComplexSolutions finite(Q... args) noexcept;
+        static ComplexSolutions finite(Q... args) noexcept {
+
+            return ComplexSolutions(std::unordered_set<mth::comp>({args...}));
+        }
 
         static ComplexSolutions infinite() noexcept;
 
@@ -145,7 +149,10 @@ namespace mth {
         static Polynomial fromCoeffs(std::vector<comp> coeffs) noexcept;
 
         template <typename ...Q>
-        static Polynomial fromCoeffs(Q... args);
+        static Polynomial fromCoeffs(Q... args) {
+
+            return fromCoeffs(std::vector<comp> {static_cast<comp>(args)...});
+        }
 
         operator std::function<comp(comp)>() const;
         comp operator()(const comp &z) const;
@@ -203,7 +210,5 @@ namespace mth {
     Polynomial differentiate(const Polynomial &polynomial);
     Polynomial integrate(const Polynomial &polynomial);
 }
-
-#include <mth/polynomial_impl.h>
 
 #endif

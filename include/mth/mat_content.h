@@ -1,5 +1,5 @@
 
-#ifdef __mth_mat_content_toggle__
+#ifdef mth_mat_content_toggle__
 
 #if defined(N) && defined(M)
 

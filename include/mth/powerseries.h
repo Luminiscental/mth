@@ -1,5 +1,5 @@
-#ifndef __mth_series_h__
-#define __mth_series_h__
+#ifndef mth_series_h__
+#define mth_series_h__
 
 /* <mth/series.h> - series header
  *      Defines the PowerSeries class, representing a complex power series.

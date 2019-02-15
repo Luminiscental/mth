@@ -1,5 +1,5 @@
-#ifndef __mth_tcomp_h__
-#define __mth_tcomp_h__
+#ifndef mth_tcomp_h__
+#define mth_tcomp_h__
 
 /* <mth/comp.h> - complex number header
  *      This includes the template class tcomp representing a complex number with coefficients of type T. Basic arithmetic
@@ -18,74 +18,7 @@ namespace mth {
 
     // Forward declaration to avoid circular includes
     template <typename T, size_t N>
-    class tvec; 
-
-    // Forward declaration for friending
-
-    template <typename T>
-    class tcomp;
-
-    // TODO: Template for arbitrary scalars since implicit type conversion can't happen (and also in other classes)
-
-    template <typename T>
-    tcomp<T> operator+(const tcomp<T> &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    tcomp<T> operator+(const tcomp<T> &lhs, const T &rhs); 
-
-    template <typename T>
-    tcomp<T> operator+(const T &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    tcomp<T> operator-(const tcomp<T> &rhs);
-
-    template <typename T>
-    tcomp<T> operator-(const tcomp<T> &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    tcomp<T> operator-(const tcomp<T> &lhs, const T &rhs);
-
-    template <typename T>
-    tcomp<T> operator-(const T &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    tcomp<T> operator*(const tcomp<T> &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    tcomp<T> operator*(const tcomp<T> &lhs, const T &rhs);
-
-    template <typename T>
-    tcomp<T> operator*(const T &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    tcomp<T> operator/(const tcomp<T> &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    tcomp<T> operator/(const tcomp<T> &lhs, const T &rhs);
-
-    template <typename T>
-    tcomp<T> operator/(const T &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    bool operator==(const tcomp<T> &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    bool operator==(const tcomp<T> &lhs, const T &rhs);
-
-    template <typename T>
-    bool operator==(const T &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    bool operator!=(const tcomp<T> &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    bool operator!=(const tcomp<T> &lhs, const T &rhs);
-
-    template <typename T>
-    bool operator!=(const T &lhs, const tcomp<T> &rhs);
-
-    template <typename T>
-    std::ostream &operator<<(std::ostream &lhs, const tcomp<T> &rhs);
+    class tvec;
 
     template <typename T>
     class tcomp {
@@ -113,8 +46,8 @@ namespace mth {
         constexpr tcomp(const T &a) noexcept
             :a(a), b(0) {}
 
-#define BINDING(name, value)    const T & name () const noexcept; \
-                                      T & name ()       noexcept;
+#define BINDING(name, value)    constexpr const T & name () const noexcept { return value; }\
+                                constexpr       T & name ()       noexcept { return value; }
 
         BINDING(real, a)
         BINDING(imag, b)
@@ -133,108 +66,152 @@ namespace mth {
         }
 
         // Convert to vector forms
-        tvec<T, 2> asCartesian() const noexcept;
+        constexpr tvec<T, 2> asCartesian() const noexcept {
+
+            return tvec<T, 2>(a, b);
+        }
 
         // Converts abs and arg from double to T so possible loss of information
-        tvec<T, 2> asPolar() const noexcept;
+        constexpr tvec<T, 2> asPolar() const noexcept {
 
-        T absSqr() const noexcept;
+            return tvec<T, 2>(static_cast<T>(abs()), static_cast<T>(arg()));
+        }
+
+        constexpr T absSqr() const noexcept {
+
+            return a * a + b * b;
+        }
 
         // Converted to double for more precision in sqrt / atan2
-        double abs() const noexcept;
-        double arg() const noexcept;
+        constexpr double abs() const noexcept {
+
+            auto ls = static_cast<double>(absSqr());
+            
+            if (util::isZero(ls)) return 0.0;
+
+            return std::sqrt(ls);
+        }
+
+        constexpr double arg() const noexcept {
+
+            return std::atan2(static_cast<double>(b), static_cast<double>(a));
+        }
 
         // Returns z / |z|
-        tcomp<T> unit() const;
+        constexpr tcomp<T> unit() const noexcept {
 
-        tcomp<T> conjugate() const noexcept;
+            auto l = abs();
+
+            return *this / l;
+        }
+
+        constexpr tcomp<T> conjugate() const noexcept {
+
+            tcomp<T> result = a;
+
+            result.b = -b;
+
+            return result;
+        }
 
         // Returns 1 / z
-        tcomp<T> inverse() const;
+        constexpr tcomp<T> inverse() const noexcept {
+
+            auto ls = absSqr();
+            return conjugate() / ls;
+        }
 
         // Returns the complex representation of a rotation about the origin in 2-dimensions (CCW)
         // - equivalent to fromPolar(1, angle)
-        static tcomp<T> rotation(const T &angle);
+        constexpr static tcomp<T> rotation(const T &angle) noexcept {
 
-        constexpr static tcomp<T> fromCartesian(const T &x, const T &y) {
+            auto a = static_cast<double>(angle);
+
+            auto c = static_cast<T>(std::cos(a));
+            auto s = static_cast<T>(std::sin(a));
+
+            return tcomp<T>(c, s);
+        }
+
+        constexpr static tcomp<T> fromCartesian(const T &x, const T &y) noexcept {
 
             return tcomp<T>(x, y);
         }
 
-        static tcomp<T> fromCartesian(const tvec<T, 2> &vec);
+        constexpr static tcomp<T> fromCartesian(const tvec<T, 2> &vec) noexcept {
 
-        static tcomp<T> fromPolar(const T &radius, const T &angle);
+            return fromCartesian(vec.x(), vec.y());
+        }
 
-        static tcomp<T> fromPolar(const tvec<T, 2> &polar);
+        constexpr static tcomp<T> fromPolar(const T &radius, const T &angle) noexcept {
 
-        tcomp<T> &operator+=(const tcomp<T> &rhs);
-        tcomp<T> &operator+=(const T &rhs);
-        tcomp<T> &operator-=(const tcomp<T> &rhs);
-        tcomp<T> &operator-=(const T &rhs);
-        tcomp<T> &operator*=(const tcomp <T> &rhs);
-        tcomp<T> &operator*=(const T &rhs);
-        tcomp<T> &operator/=(const tcomp<T> &rhs);
-        tcomp<T> &operator/=(const T &rhs);
+            return radius * rotation(angle);
+        }
 
-        template <typename U>
-        friend tcomp<U> operator+(const tcomp<U> &lhs, const tcomp<U> &rhs);
+        constexpr static tcomp<T> fromPolar(const tvec<T, 2> &polar) noexcept {
 
-        template <typename U>
-        friend tcomp<U> operator+(const tcomp<U> &lhs, const U &rhs); 
+            return fromPolar(polar.x(), polar.y());
+        }
 
-        template <typename U>
-        friend tcomp<U> operator+(const U &lhs, const tcomp<U> &rhs);
+        constexpr tcomp<T> &operator+=(const tcomp<T> &rhs) noexcept {
 
-        template <typename U>
-        friend tcomp<U> operator-(const tcomp<U> &rhs);
+            a += rhs.a;
+            b += rhs.b;
 
-        template <typename U>
-        friend tcomp<U> operator-(const tcomp<U> &lhs, const tcomp<U> &rhs);
+            return *this;
+        }
 
-        template <typename U>
-        friend tcomp<U> operator-(const tcomp<U> &lhs, const U &rhs);
+        constexpr tcomp<T> &operator+=(const T &rhs) noexcept {
 
-        template <typename U>
-        friend tcomp<U> operator-(const U &lhs, const tcomp<U> &rhs);
+            a += rhs;
 
-        template <typename U>
-        friend tcomp<U> operator*(const tcomp<U> &lhs, const tcomp<U> &rhs);
+            return *this;
+        }
 
-        template <typename U>
-        friend tcomp<U> operator*(const tcomp<U> &lhs, const U &rhs);
+        constexpr tcomp<T> &operator-=(const tcomp<T> &rhs) noexcept {
 
-        template <typename U>
-        friend tcomp<U> operator*(const U &lhs, const tcomp<U> &rhs);
+            a -= rhs.a;
+            b -= rhs.b;
 
-        template <typename U>
-        friend tcomp<U> operator/(const tcomp<U> &lhs, const tcomp<U> &rhs);
+            return *this;
+        }
 
-        template <typename U>
-        friend tcomp<U> operator/(const tcomp<U> &lhs, const U &rhs);
+        constexpr tcomp<T> &operator-=(const T &rhs) noexcept {
 
-        template <typename U>
-        friend tcomp<U> operator/(const U &lhs, const tcomp<U> &rhs);
+            a -= rhs;
 
-        template <typename U>
-        friend bool operator==(const tcomp<U> &lhs, const tcomp<U> &rhs);
+            return *this;
+        }
 
-        template <typename U>
-        friend bool operator==(const tcomp<U> &lhs, const U &rhs);
+        constexpr tcomp<T> &operator*=(const tcomp <T> &rhs) noexcept {
 
-        template <typename U>
-        friend bool operator==(const U &lhs, const tcomp<U> &rhs);
+            *this = *this * rhs;
 
-        template <typename U>
-        friend bool operator!=(const tcomp<U> &lhs, const tcomp<U> &rhs);
+            return *this;
+        }
 
-        template <typename U>
-        friend bool operator!=(const tcomp<U> &lhs, const U &rhs);
+        constexpr tcomp<T> &operator*=(const T &rhs) noexcept {
 
-        template <typename U>
-        friend bool operator!=(const U &lhs, const tcomp<U> &rhs);
+            a *= rhs;
+            b *= rhs;
 
-        template <typename U>
-        friend std::ostream &operator<<(std::ostream &lhs, const tcomp<U> &rhs);
+            return *this;
+        }
+
+        constexpr tcomp<T> &operator/=(const tcomp<T> &rhs) noexcept {
+
+            *this = *this / rhs;
+
+            return *this;
+        }
+
+        constexpr tcomp<T> &operator/=(const T &rhs) noexcept {
+
+            a /= rhs;
+            b /= rhs;
+
+            return *this;
+        }
     };
 
     // Alias types for coefficient types int, long, float, double 
@@ -252,34 +229,275 @@ namespace mth {
     constexpr tcomp<T> i = tcomp<T>::fromCartesian(0, 1);
 
     template <typename T>
-    double abs(const mth::tcomp<T> &z);
+    constexpr double abs(const mth::tcomp<T> &z) noexcept {
+
+        return z.abs();
+    }
 
     template <typename T>
-    mth::tcomp<T> sqrt(const mth::tcomp<T> &z);
+    constexpr mth::tcomp<T> sqrt(const mth::tcomp<T> &z) noexcept {
+
+        using std::sqrt;
+
+        auto p = z.asPolar();
+
+        p.x() = sqrt(p.x());
+        p.y() /= 2;
+
+        return mth::tcomp<T>::fromPolar(p);
+    }
 
     template <typename T>
-    mth::tcomp<T> exp(const mth::tcomp<T> &z);
+    constexpr mth::tcomp<T> exp(const mth::tcomp<T> &z) noexcept {
+
+        using std::cos;
+        using std::sin;
+        using std::exp;
+
+        auto c = cos(z.imag());
+        auto s = sin(z.imag());
+
+        return exp(z.real()) * (c + mth::i<T> * s);
+    }
 
     template <typename T>
-    mth::tcomp<T> log(const mth::tcomp<T> &z);
+    constexpr mth::tcomp<T> log(const mth::tcomp<T> &z) noexcept {
+
+        using std::log;
+
+        auto p = z.asPolar();
+
+        return log(p.x()) + mth::tcomp<T>::fromCartesian(0, p.y());
+    }
 
     template <typename T>
-    mth::tcomp<T> cos(const mth::tcomp<T> &z);
+    constexpr mth::tcomp<T> cos(const mth::tcomp<T> &z) noexcept {
+
+        auto exponent = mth::i<T> * z;
+
+        return (exp(exponent) + exp(-exponent)) / static_cast<T>(2);
+    }
 
     template <typename T>
-    mth::tcomp<T> sin(const mth::tcomp<T> &z);
+    constexpr mth::tcomp<T> sin(const mth::tcomp<T> &z) noexcept {
+
+        auto exponent = mth::i<T> * z;
+
+        return (exp(exponent) - exp(-exponent)) / (2.0 * mth::i<T>);
+    }
 
     template <typename T>
-    mth::tcomp<T> pow(const mth::tcomp<T> &z, const mth::tcomp<T> &exponent);
+    constexpr mth::tcomp<T> pow(const mth::tcomp<T> &z, const mth::tcomp<T> &exponent) noexcept {
+
+        using std::log;
+
+        return exp(exponent * log(z));
+    }
 
     template <typename T>
-    mth::tcomp<T> pow(const T &base, const mth::tcomp<T> &z);
+    constexpr mth::tcomp<T> pow(const T &base, const mth::tcomp<T> &z) noexcept {
+
+        using std::log;
+
+        return exp(z * log(base));
+    }
 
     template <typename T>
-    mth::tcomp<T> pow(const mth::tcomp<T> &z, const T &exponent);
+    constexpr mth::tcomp<T> pow(const mth::tcomp<T> &z, const T &exponent) noexcept {
+
+        using std::log;
+
+        return exp(exponent * log(z));
+    }
 
     template <typename T>
-    mth::tcomp<T> pow(const mth::tcomp<T> &z, size_t exponent);
+    constexpr mth::tcomp<T> pow(const mth::tcomp<T> &z, size_t exponent) noexcept {
+
+        auto result = z;
+
+        for (size_t i = 1; i < exponent; i++) {
+
+            result *= z;
+        }
+
+        return result;
+    }
+
+    // TODO: Template for arbitrary scalars since implicit type conversion can't happen (and also in other classes)
+
+    template <typename T>
+    constexpr tcomp<T> operator+(const tcomp<T> &lhs, const tcomp<T> &rhs) noexcept {
+
+        tcomp<T> result = lhs;
+
+        return result += rhs;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator+(const tcomp<T> &lhs, const T &rhs) noexcept {
+
+        tcomp<T> result = lhs;
+
+        return result += rhs;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator+(const T &lhs, const tcomp<T> &rhs) noexcept {
+
+        return rhs + lhs;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator-(const tcomp<T> &rhs) noexcept {
+
+        tcomp<T> result = rhs;
+
+        result.real() = -result.real();
+        result.imag() = -result.imag();
+
+        return result;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator-(const tcomp<T> &lhs, const tcomp<T> &rhs) noexcept {
+
+        tcomp<T> result = lhs;
+
+        return result -= rhs;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator-(const tcomp<T> &lhs, const T &rhs) noexcept {
+
+        tcomp<T> result = lhs;
+
+        return result -= rhs;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator-(const T &lhs, const tcomp<T> &rhs) noexcept {
+
+        tcomp<T> result = lhs;
+
+        return result -= rhs;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator*(const tcomp<T> &lhs, const tcomp<T> &rhs) noexcept {
+
+        tcomp<T> result;
+
+        result.real() = lhs.real() * rhs.real() - lhs.imag() * rhs.imag();
+        result.imag() = lhs.real() * rhs.imag() + lhs.imag() * rhs.real();
+
+        return result;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator*(const tcomp<T> &lhs, const T &rhs) noexcept {
+
+        tcomp<T> result = lhs;
+
+        return result *= rhs;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator*(const T &lhs, const tcomp<T> &rhs) noexcept {
+
+        return rhs * lhs;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator/(const tcomp<T> &lhs, const tcomp<T> &rhs) noexcept {
+
+        return lhs * rhs.inverse();
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator/(const tcomp<T> &lhs, const T &rhs) noexcept {
+
+        tcomp<T> result = lhs;
+
+        return result /= rhs;
+    }
+
+    template <typename T>
+    constexpr tcomp<T> operator/(const T &lhs, const tcomp<T> &rhs) noexcept {
+
+        return lhs * rhs.inverse();
+    }
+
+    template <typename T>
+    constexpr bool operator==(const tcomp<T> &lhs, const tcomp<T> &rhs) noexcept {
+
+        return util::isEqual(lhs.real(), rhs.real()) && util::isEqual(lhs.imag(), rhs.imag());
+    }
+
+    template <typename T>
+    constexpr bool operator==(const tcomp<T> &lhs, const T &rhs) noexcept {
+
+        return util::isZero(lhs.imag()) && util::isEqual(lhs.real(), rhs);
+    }
+
+    template <typename T>
+    constexpr bool operator==(const T &lhs, const tcomp<T> &rhs) noexcept {
+
+        return rhs == lhs;
+    }
+
+    template <typename T>
+    constexpr bool operator!=(const tcomp<T> &lhs, const tcomp<T> &rhs) noexcept {
+
+        return !(lhs == rhs);
+    }
+
+    template <typename T>
+    constexpr bool operator!=(const tcomp<T> &lhs, const T &rhs) noexcept {
+
+        return !(lhs == rhs);
+    }
+
+    template <typename T>
+    constexpr bool operator!=(const T &lhs, const tcomp<T> &rhs) noexcept {
+
+        return !(lhs == rhs);
+    }
+
+    template <typename T>
+    std::ostream &operator<<(std::ostream &lhs, const tcomp<T> &rhs) {
+
+        bool realZero = util::isZero(rhs.real());
+        bool imagZero = util::isZero(rhs.imag());
+
+        bool zero = realZero && imagZero;
+        bool noneZero = !realZero && !imagZero;
+
+        if (zero) return lhs << "0";
+
+        // Bracket if there are multiple terms
+        if (noneZero) lhs << "(";
+
+        if (!realZero) lhs << rhs.real();
+
+        if (!imagZero) {
+
+            if (!realZero) {
+
+                lhs << (rhs.imag() > 0 ? " + " : " - ");
+                lhs << std::abs(rhs.imag());
+
+            } else {
+
+                lhs << rhs.imag();
+            }
+
+            lhs << "i";
+        }
+
+        if (noneZero) lhs << ")";
+
+        return lhs;
+    }
 }
 
 namespace std {
@@ -288,10 +506,14 @@ namespace std {
     template<typename T>
     struct hash<mth::tcomp<T>> {
 
-        size_t operator()(const mth::tcomp<T> &x) const;
+        size_t operator()(const mth::tcomp<T> &z) const {
+
+            auto r = z.real();
+            auto i = z.imag();
+
+            return hash<decltype(r)>()(r) ^ hash<decltype(i)>()(i);
+        }
     };
 }
-
-#include <mth/comp_impl.h>
 
 #endif

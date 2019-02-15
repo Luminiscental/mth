@@ -1,5 +1,5 @@
-#ifndef __mth_mth_h__
-#define __mth_mth_h__
+#ifndef mth_mth_h__
+#define mth_mth_h__
 
 // TODO: A name with more characters would be less of a pain
 

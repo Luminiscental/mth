@@ -1,5 +1,5 @@
-#ifndef __mth_mat_h__
-#define __mth_mat_h__
+#ifndef mth_mat_h__
+#define mth_mat_h__
 
 /* <mth/mat.h> - matrix header
  *      This includes the tmat template class representing an N by M matrix of coefficients of type T. Addition
@@ -24,7 +24,7 @@
 #include <mth/comp.h>
 
 // Safeguard so <mth/mat_content.h> doesn't get included anywhere else
-#define __mth_mat_content_toggle__ 
+#define mth_mat_content_toggle__ 
 
 namespace mth {
 
@@ -625,6 +625,6 @@ namespace std {
     };
 }
 
-#undef __mth_mat_content_toggle__
+#undef mth_mat_content_toggle__
 
 #endif

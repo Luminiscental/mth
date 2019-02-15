@@ -1,5 +1,5 @@
-#ifndef __mth_numeric_h__
-#define __mth_numeric_h__
+#ifndef mth_numeric_h__
+#define mth_numeric_h__
 
 /* <mth/numeric.h> - numeric function header
  *      Defines functions to numerically estimate the value of limits
