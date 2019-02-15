@@ -203,7 +203,7 @@ TEST(VecTest, SqrMagnMatchesPythag) {
     mth_ASSERT_EQ(pythag, b.magnSqr());
 }
 
-TEST(MatText, Invert2x2) {
+TEST(MatTest, Invert2x2) {
 
     mth::mat2 a(1, 2,
                 2, 3);
