@@ -120,6 +120,17 @@ namespace mth {
         constexpr tquat(T r, const tvec<T, 3> &vector) noexcept
             :w(r), ijk(vector) {}
 
+        template <typename U>
+        constexpr operator tquat<U>() const noexcept {
+
+            tquat<U> result;
+
+            result.w = static_cast<U>(w);
+            result.ijk = static_cast<tvec<U, 3>>(ijk);
+
+            return result;
+        }
+
         T magnSqr() const noexcept;
 
         // Converted to double for more accurate sqrt

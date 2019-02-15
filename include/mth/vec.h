@@ -23,38 +23,6 @@ namespace mth {
     template <typename T, size_t N, size_t M>
     class tmat;
 
-    // Forward declaration for friending
-
-    template <typename T, size_t N>
-    class tvec;
-
-    template <typename T, size_t N>
-    tvec<T, N> operator+(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept;
-
-    template <typename T, size_t N>
-    tvec<T, N> operator-(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept;
-
-    template <typename T, size_t N>
-    tvec<T, N> operator-(const tvec<T, N> &rhs) noexcept;
-
-    template <typename T, size_t N>
-    tvec<T, N> operator*(const T &lhs, const tvec<T, N> &rhs) noexcept;
-
-    template <typename T, size_t N>
-    tvec<T, N> operator*(const tvec<T, N> &lhs, const T &rhs) noexcept;
-
-    template <typename T, size_t N>
-    tvec<T, N> operator/(const tvec<T, N> &lhs, const T &rhs) noexcept;
-
-    template <typename T, size_t N>
-    bool operator==(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept;
-
-    template <typename T, size_t N>
-    bool operator!=(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept;
-
-    template <typename T, size_t N>
-    std::ostream &operator<<(std::ostream &lhs, const tvec<T, N> &rhs);
-
     // N-dimensional vector with scalar type T
 
     template <typename T, size_t N>
@@ -71,47 +39,104 @@ namespace mth {
             values.fill(0);
         }
 
-        tvec(const std::array<T, N> &values) noexcept;
+        constexpr tvec(const std::array<T, N> &values) noexcept
+            :values(values) {}
 
         template <typename ...Q, typename std::enable_if<sizeof...(Q) == N, int>::type = 0>
         constexpr tvec(Q... args) noexcept
             :values{static_cast<T>(args)...} {}
 
-        constexpr operator std::array<T, N>() noexcept {
+        constexpr operator std::array<T, N>() const noexcept {
 
             return values;
         }
 
+        template <typename U>
+        constexpr operator tvec<U, N>() const noexcept {
+
+            tvec<U, N> result;
+
+            for (size_t i = 0; i < N; i++) {
+
+                result.get(i) = static_cast<U>(get(i));
+            }
+
+            return result;
+        }
+
         // Iterator functions
 
-        auto begin();
-        auto begin() const;
-        auto end();
-        auto end() const;
+        auto begin() {
 
-        auto cbegin() const;
-        auto cend() const;
+            return values.begin();
+        }
 
-        auto rbegin();
-        auto rend();
+        auto begin() const {
 
-        auto crbegin() const;
-        auto crend() const;
+            return cbegin();
+        }
+
+        auto end() {
+
+            return values.end();
+        }
+
+        auto end() const {
+
+            return cend();
+        }
+
+        auto cbegin() const {
+
+            return values.cbegin();
+        }
+
+        auto cend() const {
+
+            return values.cend();
+        }
+
+        auto rbegin() {
+
+            return values.rbegin();
+        }
+
+        auto rend() {
+
+            return values.rend();
+        }
+
+        auto crbegin() const {
+
+            return values.crbegin();
+        }
+
+        auto crend() const {
+
+            return values.crend();
+        }
 
         constexpr size_t size() const noexcept {
 
             return N;
         }
 
-        T &get(size_t index);
-        const T &get(size_t index) const;
+        constexpr T &get(size_t index) noexcept {
+
+            return values[index];
+        }
+
+        constexpr const T &get(size_t index) const noexcept {
+
+            return values[index];
+        }
 
         // Elements for N <= 4 are named
 
 #define BINDING(name, index)    template <size_t n = N, typename std::enable_if<(n == N) && (n > index), int>::type = 0> \
-                                const T & name () const; \
+                                constexpr const T & name () const noexcept { return get(index); } \
                                 template <size_t n = N, typename std::enable_if<(n == N) && (n > index), int>::type = 0> \
-                                      T & name ();
+                                constexpr       T & name ()       noexcept { return get(index); }
 
         BINDING(x, 0)
         BINDING(y, 1)
@@ -124,77 +149,233 @@ namespace mth {
         // TODO: Look into returning references here
 
         template <size_t n = N, typename std::enable_if<(n == N) && (n > 1), int>::type = 0>
-        tvec<T, 2> xy() const;
+        constexpr tvec<T, 2> xy() const noexcept {
+
+            return tvec<T, 2>(get(0), get(1));
+        }
 
         template <size_t n = N, typename std::enable_if<(n == N) && (n > 2), int>::type = 0>
-        tvec<T, 2> yz() const;
+        constexpr tvec<T, 2> yz() const noexcept {
+
+            return tvec<T, 2>(get(1), get(2));
+        }
 
         template <size_t n = N, typename std::enable_if<(n == N) && (n > 3), int>::type = 0>
-        tvec<T, 2> zw() const;
+        constexpr tvec<T, 2> zw() const noexcept {
+
+            return tvec<T, 2>(get(2), get(3));
+        }
         
         template <size_t n = N, typename std::enable_if<(n == N) && (n > 2), int>::type = 0>
-        tvec<T, 3> xyz() const;
+        constexpr tvec<T, 3> xyz() const noexcept {
+
+            return tvec<T, 3>(get(0), get(1), get(2));
+        }
 
         template <size_t n = N, typename std::enable_if<(n == N) && (n > 3), int>::type = 0>
-        tvec<T, 3> yzw() const;
+        constexpr tvec<T, 3> yzw() const noexcept {
+
+            return tvec<T, 3>(get(1), get(2), get(3));
+        }
 
         template <size_t n = N, typename std::enable_if<(n == N) && (n > 3), int>::type = 0>
-        tvec<T, 4> xyzw() const;
+        constexpr tvec<T, 4> xyzw() const noexcept {
 
-        T magnSqr() const noexcept;
+            return tvec<T, 4>(get(0), get(1), get(2), get(3));
+        }
+
+        constexpr T magnSqr() const noexcept {
+
+            auto result = static_cast<T>(0);
+
+            for (const auto &value : *this) {
+
+                result += value * value;
+            }
+
+            return result;
+        }
 
         // Type is cast to double for more accurate square rooting
-        double magn() const noexcept;
+        constexpr double magn() const noexcept {
+
+            auto ls = static_cast<double>(magnSqr());
+
+            return std::sqrt(ls);
+        }
         
-        T dot(const tvec<T, N> &rhs) const;
-        static T dot(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
-        static tmat<T, N, N> outerProduct(const tvec<T, N> &lhs, const tvec<T, N> &rhs);
+        constexpr T dot(const tvec<T, N> &rhs) const noexcept {
+
+            T result = 0;
+
+            for (size_t i = 0; i < N; i++) {
+
+                result += get(i) * rhs.get(i);
+            }
+
+            return result;
+        }
+
+        constexpr static tmat<T, N, N> outerProduct(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept {
+
+            auto lMat = mth::tmat<T, 1, N>(lhs);
+            auto rMatT = mth::tmat<T, N, 1>(rhs);
+
+            return lMat * rMatT;
+        }
+
+        constexpr static T dot(const mth::tvec<T, N> &lhs, const mth::tvec<T, N> &rhs) {
+
+            return lhs.dot(rhs);
+        }
 
         // Returns a unit vector in the same direction as *this
-        tvec<T, N> unit() const;
+        constexpr tvec<T, N> unit() const noexcept {
 
-        tvec<T, N> &operator+=(const tvec<T, N> &rhs);
-        tvec<T, N> &operator-=(const tvec<T, N> &rhs);
-        tvec<T, N> &operator*=(const T &rhs);
-        tvec<T, N> &operator/=(const T &rhs);
+            auto l = static_cast<T>(magn());
 
-        template <typename U, size_t M>
-        friend tvec<U, M> operator+(const tvec<U, M> &lhs, const tvec<U, M> &rhs) noexcept;
+            return *this / l;
+        }
 
-        template <typename U, size_t M>
-        friend tvec<U, M> operator-(const tvec<U, M> &lhs, const tvec<U, M> &rhs) noexcept;
+        constexpr tvec<T, N> &operator+=(const tvec<T, N> &rhs) noexcept {
 
-        template <typename U, size_t M>
-        friend tvec<U, M> operator-(const tvec<U, M> &rhs) noexcept;
+            for (size_t i = 0; i < N; i++) {
 
-        template <typename U, size_t M>
-        friend tvec<U, M> operator*(const U &lhs, const tvec<U, M> &rhs) noexcept;
+                this->get(i) += rhs.get(i);
+            }
 
-        template <typename U, size_t M>
-        friend tvec<U, M> operator*(const tvec<U, M> &lhs, const U &rhs) noexcept;
+            return *this;
+        }
 
-        template <typename U, size_t M>
-        friend tvec<U, M> operator/(const tvec<U, M> &lhs, const U &rhs) noexcept;
+        constexpr tvec<T, N> &operator-=(const tvec<T, N> &rhs) noexcept {
 
-        template <typename U, size_t M>
-        friend bool operator==(const tvec<U, M> &lhs, const tvec<U, M> &rhs) noexcept;
+            for (size_t i = 0; i < N; i++) {
 
-        template <typename U, size_t M>
-        friend bool operator!=(const tvec<U, M> &lhs, const tvec<U, M> &rhs) noexcept;
+                this->get(i) -= rhs.get(i);
+            }
 
-        template <typename U, size_t M>
-        friend std::ostream &operator<<(std::ostream &lhs, const tvec<U, M> &rhs);
+            return *this;
+        }
+
+        constexpr tvec<T, N> &operator*=(const T &rhs) noexcept {
+
+            for (size_t i = 0; i < N; i++) {
+
+                this->get(i) *= rhs;
+            }
+
+            return *this;
+        }
+
+        constexpr tvec<T, N> &operator/=(const T &rhs) noexcept {
+
+            for (size_t i = 0; i < N; i++) {
+
+                this->get(i) /= rhs;
+            }
+
+            return *this;
+        }
     };
+
+    template <typename T, size_t N>
+    constexpr tvec<T, N> operator+(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept {
+
+        auto result = lhs;
+
+        return result += rhs;
+    }
+
+    template <typename T, size_t N>
+    constexpr tvec<T, N> operator-(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept {
+
+        auto result = lhs;
+
+        return result -= rhs;
+    }
+
+    template <typename T, size_t N>
+    constexpr tvec<T, N> operator-(const tvec<T, N> &rhs) noexcept {
+
+        auto result = rhs;
+
+        for (size_t i = 0; i < N; i++) {
+
+            result.get(i) = -rhs.get(i);
+        }
+
+        return result;
+    }
+
+    template <typename T, size_t N>
+    constexpr tvec<T, N> operator*(const T &lhs, const tvec<T, N> &rhs) noexcept {
+
+        auto result = rhs;
+
+        return result *= lhs;
+    }
+
+    template <typename T, size_t N>
+    constexpr tvec<T, N> operator*(const tvec<T, N> &lhs, const T &rhs) noexcept {
+
+        return rhs * lhs;
+    }
+
+    template <typename T, size_t N>
+    constexpr tvec<T, N> operator/(const tvec<T, N> &lhs, const T &rhs) noexcept {
+
+        tvec<T, N> result = lhs;
+
+        return result /= rhs;
+    }
+
+    template <typename T, size_t N>
+    constexpr bool operator==(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept {
+
+        for (size_t i = 0; i < N; i++) {
+
+            if (!util::isEqual(lhs.get(i), rhs.get(i))) return false;
+        }
+
+        return true;
+    }
+
+    template <typename T, size_t N>
+    constexpr bool operator!=(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept {
+
+        return !(lhs == rhs);
+    }
+
+    template <typename T, size_t N>
+    std::ostream &operator<<(std::ostream &lhs, const tvec<T, N> &rhs) {
+
+        lhs << "(";
+
+        for (size_t i = 0; i < N - 1; i++) {
+
+            lhs << rhs.get(i) << ", ";
+        }
+
+        return lhs << rhs.get(N - 1) << ")";
+    }
 
     // Specialized "static" functions
 
     namespace vec {
 
         template <typename T>
-        tvec<T, 3> cross(const tvec<T, 3> &lhs, const tvec<T, 3> &rhs);
+        constexpr tvec<T, 3> cross(const tvec<T, 3> &lhs, const tvec<T, 3> &rhs) noexcept {
+
+            return tvec<T, 3>(lhs.get(1) * rhs.get(2) - lhs.get(2) * rhs.get(1),
+                              lhs.get(2) * rhs.get(0) - lhs.get(0) * rhs.get(2),
+                              lhs.get(0) * rhs.get(1) - lhs.get(1) * rhs.get(0));
+        }
 
         template <typename T>
-        T det(const tvec<T, 2> &lhs, const tvec<T, 2> &rhs);
+        T constexpr det(const tvec<T, 2> &lhs, const tvec<T, 2> &rhs) noexcept {
+
+            return lhs.get(0) * rhs.get(1) - lhs.get(1) * rhs.get(0); // tmat<T, 2, 2>(lhs, rhs).det()
+        }
     }
 
     // Alias types for single-digit dimension and scalar type int, long, float, double and mth::comp
@@ -230,7 +411,17 @@ namespace mth {
     constexpr tvec<T, 3> Z_AXIS = tvec<T, 3>(0, 0, 1);
     
     template <typename T, size_t N>
-    double abs(const mth::tvec<T, N> &x) noexcept;
+    constexpr double abs(const mth::tvec<T, N> &x) noexcept {
+
+        return x.magn();
+    }
+
+    template <typename T, size_t N>
+    constexpr bool util::isZero(const mth::tvec<T, N> &x) noexcept {
+
+        auto magnitude = std::abs(x);
+        return magnitude <= mth::EPSILON<decltype(magnitude)>;
+    }
 }
 
 namespace std {
@@ -239,10 +430,18 @@ namespace std {
     template <typename T, size_t N>
     struct hash<mth::tvec<T, N>> {
 
-        size_t operator()(const mth::tvec<T, N> &x);
+        size_t operator()(const mth::tvec<T, N> &x) {
+
+            size_t result = 0;
+
+            for (size_t i = 0; i < N; i++) {
+
+                result ^= hash<T>()(x.get(i));
+            }
+
+            return result;
+        }
     };
 }
-
-#include <mth/vec_impl.h>
 
 #endif

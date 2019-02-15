@@ -121,6 +121,17 @@ namespace mth {
 
 #undef BINDING
 
+        template <typename U>
+        constexpr operator tcomp<U>() const noexcept {
+
+            tcomp<U> result;
+
+            result.a = static_cast<U>(a);
+            result.b = static_cast<U>(b);
+
+            return result;
+        }
+
         // Convert to vector forms
         tvec<T, 2> asCartesian() const noexcept;
 

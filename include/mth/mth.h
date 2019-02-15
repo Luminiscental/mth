@@ -32,8 +32,7 @@
  *      mth_ELIMINATION - Matrix inverses are calculated by Gaussian row elimination rather than by calculating the adjoint matrix.
  */
 
-// Set default values
-
+#include <cmath>
 #include <limits>
 
 // TODO: Sequence wrapper class (e.g. for recursive sequences)
@@ -65,13 +64,19 @@ namespace mth {
     namespace util {
 
         template <typename T>
-        bool isZero(const T &x);
+        constexpr bool isZero(const T &x) noexcept {
+
+            using std::abs;
+            auto magnitude = abs(x);
+            return magnitude <= mth::EPSILON<decltype(magnitude)>;
+        }
 
         template <typename T>
-        bool isEqual(const T &a, const T &b);
+        constexpr bool isEqual(const T &a, const T &b) noexcept {
+
+            return isZero(a - b);
+        }
     }
 }
-
-#include <mth/mth_impl.h>
 
 #endif
