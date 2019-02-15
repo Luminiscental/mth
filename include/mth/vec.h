@@ -121,12 +121,22 @@ namespace mth {
             return N;
         }
 
-        constexpr T &get(size_t index) noexcept {
+        constexpr T &get(size_t index) {
+
+            return values.at(index);
+        }
+
+        constexpr const T &get(size_t index) const {
+
+            return values.at(index);
+        }
+
+        constexpr T &operator[](size_t index) noexcept {
 
             return values[index];
         }
 
-        constexpr const T &get(size_t index) const noexcept {
+        constexpr const T &operator[](size_t index) const noexcept {
 
             return values[index];
         }
@@ -210,7 +220,7 @@ namespace mth {
 
             for (size_t i = 0; i < N; i++) {
 
-                result += get(i) * rhs.get(i);
+                result += get(i) * rhs[i];
             }
 
             return result;
@@ -241,7 +251,7 @@ namespace mth {
 
             for (size_t i = 0; i < N; i++) {
 
-                this->get(i) += rhs.get(i);
+                this->get(i) += rhs[i];
             }
 
             return *this;
@@ -251,7 +261,7 @@ namespace mth {
 
             for (size_t i = 0; i < N; i++) {
 
-                this->get(i) -= rhs.get(i);
+                this->get(i) -= rhs[i];
             }
 
             return *this;
@@ -301,7 +311,7 @@ namespace mth {
 
         for (size_t i = 0; i < N; i++) {
 
-            result.get(i) = -rhs.get(i);
+            result[i] = -rhs[i];
         }
 
         return result;
@@ -334,7 +344,7 @@ namespace mth {
 
         for (size_t i = 0; i < N; i++) {
 
-            if (!util::isEqual(lhs.get(i), rhs.get(i))) return false;
+            if (!util::isEqual(lhs[i], rhs[i])) return false;
         }
 
         return true;
@@ -353,10 +363,10 @@ namespace mth {
 
         for (size_t i = 0; i < N - 1; i++) {
 
-            lhs << rhs.get(i) << ", ";
+            lhs << rhs[i] << ", ";
         }
 
-        return lhs << rhs.get(N - 1) << ")";
+        return lhs << rhs[N - 1] << ")";
     }
 
     // Specialized "static" functions
@@ -366,15 +376,15 @@ namespace mth {
         template <typename T>
         constexpr tvec<T, 3> cross(const tvec<T, 3> &lhs, const tvec<T, 3> &rhs) noexcept {
 
-            return tvec<T, 3>(lhs.get(1) * rhs.get(2) - lhs.get(2) * rhs.get(1),
-                              lhs.get(2) * rhs.get(0) - lhs.get(0) * rhs.get(2),
-                              lhs.get(0) * rhs.get(1) - lhs.get(1) * rhs.get(0));
+            return tvec<T, 3>(lhs[1] * rhs[2] - lhs[2] * rhs[1],
+                              lhs[2] * rhs[0] - lhs[0] * rhs[2],
+                              lhs[0] * rhs[1] - lhs[1] * rhs[0]);
         }
 
         template <typename T>
         T constexpr det(const tvec<T, 2> &lhs, const tvec<T, 2> &rhs) noexcept {
 
-            return lhs.get(0) * rhs.get(1) - lhs.get(1) * rhs.get(0); // tmat<T, 2, 2>(lhs, rhs).det()
+            return lhs[0] * rhs[1] - lhs[1] * rhs[0]; // tmat<T, 2, 2>(lhs, rhs).det()
         }
     }
 
@@ -415,13 +425,6 @@ namespace mth {
 
         return x.magn();
     }
-
-    template <typename T, size_t N>
-    constexpr bool util::isZero(const mth::tvec<T, N> &x) noexcept {
-
-        auto magnitude = std::abs(x);
-        return magnitude <= mth::EPSILON<decltype(magnitude)>;
-    }
 }
 
 namespace std {
@@ -436,7 +439,7 @@ namespace std {
 
             for (size_t i = 0; i < N; i++) {
 
-                result ^= hash<T>()(x.get(i));
+                result ^= hash<T>()(x[i]);
             }
 
             return result;

@@ -57,6 +57,11 @@ public:
     // These are ambiguous / redundant for 1x1 matrices
 #if !defined(N) || !defined(M)
 
+    constexpr tmat(T value) noexcept {
+
+        values.fill(value);
+    }
+
     // Constructors take a list of rows, never a list of columns for consistency with value lists
     constexpr tmat(const std::array<tvec<T, N>, M> &rows) noexcept {
 

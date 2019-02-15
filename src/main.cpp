@@ -1,4 +1,7 @@
 
+#define mth_ELIMINATION
+#define mth_ROW_MAJOR
+
 #include <gtest/gtest.h>
 
 #include <iostream>
@@ -22,6 +25,12 @@
     << "    " << #a << " which is " << a << std::endl \
     << "and" << std::endl \
     << "    " << #b << " which is " << b;
+
+#define mth_ASSERT_LESS(a, b) ASSERT_TRUE(a < b) \
+    << "Expected " << std::endl \
+    << "    " << #a << " which is " << a << std::endl \
+    << "to be less than" << std::endl \
+    << "    " << #b << " which is " << b << std::endl;
 
 TEST(CompTest, DefaultInitsToZero) {
 
@@ -73,8 +82,9 @@ TEST(CompTest, ConvertsToPolarCorrectly) {
     auto b = mth::comp::fromPolar(-1.0, 1.1);
 
     auto prodAB = a * b;
+    auto diff = prodAB - mth::comp::fromPolar(-2.0, 4.1);
 
-    mth_ASSERT_EQ(prodAB, mth::comp::fromPolar(-2.0, 4.1));
+    mth_ASSERT_LESS(diff.abs(), 0.000000001);
 }
 
 TEST(CompTest, AbsOfZeroIsZero) {
@@ -191,6 +201,44 @@ TEST(VecTest, SqrMagnMatchesPythag) {
     }
 
     mth_ASSERT_EQ(pythag, b.magnSqr());
+}
+
+TEST(MatText, Invert2x2) {
+
+    mth::mat2 a(1, 2,
+                2, 3);
+
+    mth::mat2 aInv = a.inverse();
+
+    mth_ASSERT_EQ(aInv, mth::mat2(-3, 2, 2, -1));
+}
+
+TEST(MatTest, Invert9x9) {
+
+    mth::mat9 bigMatrix(1, 2, 3, 2, 4, 3, 2, 5, 6,
+                        5, 2, 4, 3, 1, 6, 7, 4, 5,
+                        2, 5, 3, 5, 7, 9, 6, 4, 2,
+                        4, 1, 2, 1, 1, 6, 3, 7, 2,
+                        3, 7, 5, 8, 4, 5, 3, 6, 2,
+                        9, 8, 9, 5, 3, 6, 2, 4, 1,
+                        5, 2, 3, 7, 8, 7, 9, 3, 7,
+                        1, 5, 2, 7, 5, 6, 3, 8, 2,
+                        1, 6, 3, 4, 2, 8, 7, 9, 5);
+
+    mth::mat9 bigInv = bigMatrix.inverse();
+    mth::mat9 diff = bigMatrix * bigInv - mth::mat9::identity();
+
+    double sum = 0.0;
+
+    for (auto row : diff.rows()) {
+
+        for (auto value : row) {
+
+            sum += value;
+        }
+    }
+
+    mth_ASSERT_LESS(sum, 0.000000001);
 }
 
 // TODO: Test mat

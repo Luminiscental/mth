@@ -51,7 +51,7 @@ namespace mth {
     // Mathematical constants not specific to a certain class
 
     template <typename T>
-    constexpr T PI =  static_cast<T>(3.14159265358979323846264338327950288419716939937510582097494459230781640629);
+    constexpr T PI =  static_cast<T>(3.141592653589793238462643383279502884197169399375100582097494459230781640629);
     
     template <typename T>
     constexpr T TAU = static_cast<T>(6.28318530717958647692528676655900576839433879875021164194988918461563281257);
@@ -66,6 +66,20 @@ namespace mth {
         template <typename T>
         constexpr bool isZero(const T &x) noexcept {
 
+            return x == static_cast<T>(0);
+        }
+
+        template <>
+        constexpr bool isZero(const float &x) noexcept {
+
+            using std::abs;
+            auto magnitude = abs(x);
+            return magnitude <= mth::EPSILON<decltype(magnitude)>;
+        }
+
+        template <>
+        constexpr bool isZero(const double &x) noexcept {
+
             using std::abs;
             auto magnitude = abs(x);
             return magnitude <= mth::EPSILON<decltype(magnitude)>;
@@ -73,6 +87,18 @@ namespace mth {
 
         template <typename T>
         constexpr bool isEqual(const T &a, const T &b) noexcept {
+
+            return a == b;
+        }
+
+        template <>
+        constexpr bool isEqual(const double &a, const double &b) noexcept {
+
+            return isZero(a - b);
+        }
+        
+        template <>
+        constexpr bool isEqual(const float &a, const float &b) noexcept {
 
             return isZero(a - b);
         }
