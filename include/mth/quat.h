@@ -15,71 +15,6 @@
 
 namespace mth {
 
-    // Forward declaration for friending
-
-    template <typename T>
-    class tquat;
-
-    template <typename T>
-    tquat<T> operator+(const tquat<T> &lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    tquat<T> operator+(const tquat<T> &lhs, T rhs);
-
-    template <typename T>
-    tquat<T> operator+(T lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    tquat<T> operator-(const tquat<T> &rhs);
-
-    template <typename T>
-    tquat<T> operator-(const tquat<T> &lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    tquat<T> operator-(const tquat<T> &lhs, T rhs);
-
-    template <typename T>
-    tquat<T> operator-(T lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    tquat<T> operator*(const tquat<T> &lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    tquat<T> operator*(T lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    tquat<T> operator*(const tquat<T> &lhs, T rhs);
-
-    template <typename T>
-    tquat<T> operator/(const tquat<T> &lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    tquat<T> operator/(T lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    tquat<T> operator/(const tquat<T> &lhs, T rhs);
-
-    template <typename T>
-    bool operator==(const tquat<T> &lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    bool operator==(const T &lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    bool operator==(const tquat<T> &lhs, const T &rhs);
-
-    template <typename T>
-    bool operator!=(const tquat<T> &lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    bool operator!=(const T &lhs, const tquat<T> &rhs);
-
-    template <typename T>
-    bool operator!=(const tquat<T> &lhs, const T &rhs);
-
-    template <typename T>
-    std::ostream &operator<<(std::ostream &lhs, const tquat<T> &rhs);
-
     template <typename T>
     class tquat {
 
@@ -90,8 +25,8 @@ namespace mth {
 
     public:
 
-#define BINDING(name, value)    const auto & name () const; \
-                                      auto & name ();
+#define BINDING(name, value)    constexpr const auto & name () const noexcept { return value; } \
+                                constexpr       auto & name ()       noexcept { return value; }
 
         BINDING(real, w)
         BINDING(imaginary, ijk)
@@ -131,10 +66,16 @@ namespace mth {
             return result;
         }
 
-        T magnSqr() const noexcept;
+        constexpr T magnSqr() const noexcept {
+
+            return w * w + ijk.magnSqr();
+        }
 
         // Converted to double for more accurate sqrt
-        double magn() const noexcept;
+        constexpr double magn() const noexcept {
+
+            return std::sqrt(static_cast<double>(magnSqr()));
+        }
 
         constexpr tquat<T> conjugate() const noexcept {
 
@@ -142,88 +83,311 @@ namespace mth {
         }
 
         // Returns the reciprocal
-        tquat<T> inverse() const;
+        constexpr tquat<T> inverse() const noexcept {
 
-        tquat<T> unit() const;
+            auto ls = magnSqr();
+
+            return conjugate() / ls;
+        }
+
+        constexpr tquat<T> unit() const noexcept {
+
+            auto l = static_cast<T>(magn());
+
+            return *this / l;
+        }
 
         // Returns the rotation represented by *this applied to the given vector
-        tvec<T, 3> rotate(const mth::tvec<T, 3> &vector) const;
+        constexpr tvec<T, 3> rotate(const mth::tvec<T, 3> &vector) const noexcept {
+
+            return (*this * tquat<T>(vector) * inverse()).imaginary();
+        }
 
         // Returns 1
-        static tquat<T> identity();
+        constexpr static tquat<T> identity() noexcept {
+            
+            return tquat(); 
+        }
 
         // Converts euler angle and axis to quaternion representation
-        static tquat<T> rotation(T angle, const tvec<T, 3> &axis);
+        constexpr static tquat<T> rotation(T angle, const tvec<T, 3> &axis) noexcept {
 
-        tquat<T> &operator+=(const tquat<T> &rhs);
-        tquat<T> &operator+=(T rhs);
-        tquat<T> &operator-=(const tquat<T> &rhs);
-        tquat<T> &operator-=(T rhs);
-        tquat<T> &operator*=(const tquat<T> &rhs);
-        tquat<T> &operator*=(T rhs);
-        tquat<T> &operator/=(const tquat<T> &rhs);
-        tquat<T> &operator/=(T rhs);
+            auto halfAngle = static_cast<double>(angle) / 2.0;
 
-        template <typename U>
-        friend tquat<U> operator+(const tquat<U> &lhs, const tquat<U> &rhs);
+            auto c = static_cast<T>(std::cos(halfAngle));
+            auto s = static_cast<T>(std::sin(halfAngle));
 
-        template <typename U>
-        friend tquat<U> operator+(const tquat<U> &lhs, U rhs);
+            return c + s * tquat<T>(axis);
+        }
 
-        template <typename U>
-        friend tquat<U> operator+(U lhs, const tquat<U> &rhs);
+        constexpr tquat<T> &operator+=(const tquat<T> &rhs) noexcept {
 
-        template <typename U>
-        friend tquat<U> operator-(const tquat<U> &rhs);
+            w += rhs.w;
+            ijk += rhs.ijk;
 
-        template <typename U>
-        friend tquat<U> operator-(const tquat<U> &lhs, const tquat<U> &rhs);
+            return *this;
+        }
 
-        template <typename U>
-        friend tquat<U> operator-(const tquat<U> &lhs, U rhs);
+        constexpr tquat<T> &operator+=(T rhs) noexcept {
 
-        template <typename U>
-        friend tquat<U> operator-(U lhs, const tquat<U> &rhs);
+            w += rhs;
 
-        template <typename U>
-        friend tquat<U> operator*(const tquat<U> &lhs, const tquat<U> &rhs);
+            return *this;
+        }
 
-        template <typename U>
-        friend tquat<U> operator*(U lhs, const tquat<U> &rhs);
+        constexpr tquat<T> &operator-=(const tquat<T> &rhs) noexcept {
 
-        template <typename U>
-        friend tquat<U> operator*(const tquat<U> &lhs, U rhs);
+            w -= rhs.w;
+            ijk -= rhs.ijk;
 
-        template <typename U>
-        friend tquat<U> operator/(const tquat<U> &lhs, const tquat<U> &rhs);
+            return *this;
+        }
 
-        template <typename U>
-        friend tquat<U> operator/(U lhs, const tquat<U> &rhs);
+        constexpr tquat<T> &operator-=(T rhs) noexcept {
 
-        template <typename U>
-        friend tquat<U> operator/(const tquat<U> &lhs, U rhs);
+            w -= rhs;
 
-        template <typename U>
-        friend bool operator==(const tquat<U> &lhs, const tquat<U> &rhs);
+            return *this;
+        }
 
-        template <typename U>
-        friend bool operator==(const U &lhs, const tquat<U> &rhs);
+        constexpr tquat<T> &operator*=(const tquat<T> &rhs) noexcept {
 
-        template <typename U>
-        friend bool operator==(const tquat<U> &lhs, const U &rhs);
+            *this = *this * rhs;
 
-        template <typename U>
-        friend bool operator!=(const tquat<U> &lhs, const tquat<U> &rhs);
+            return *this;
+        }
 
-        template <typename U>
-        friend bool operator!=(const U &lhs, const tquat<U> &rhs);
+        constexpr tquat<T> &operator*=(T rhs) noexcept {
 
-        template <typename U>
-        friend bool operator!=(const tquat<U> &lhs, const U &rhs);
+            w *= rhs;
+            ijk *= rhs;
 
-        template <typename U>
-        friend std::ostream &operator<<(std::ostream &lhs, const tquat<U> &rhs);
+            return *this;
+        }
+
+        constexpr tquat<T> &operator/=(const tquat<T> &rhs) noexcept {
+
+            *this = *this / rhs;
+
+            return *this;
+        }
+
+        constexpr tquat<T> &operator/=(T rhs) noexcept {
+
+            w /= rhs;
+            ijk /= rhs;
+
+            return *this;
+        }
     };
+
+    template <typename T>
+    constexpr tquat<T> operator+(const tquat<T> &lhs, const tquat<T> &rhs) noexcept {
+
+        tquat<T> result = lhs;
+
+        return result += rhs;
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator+(const tquat<T> &lhs, T rhs) noexcept {
+
+        tquat<T> result = lhs;
+
+        return result += rhs;
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator+(T lhs, const tquat<T> &rhs) noexcept {
+
+        return rhs + lhs;
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator-(const tquat<T> &rhs) noexcept {
+
+        return tquat<T>(-rhs.w, -rhs.ijk);
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator-(const tquat<T> &lhs, const tquat<T> &rhs) noexcept {
+
+        tquat<T> result = lhs;
+
+        return result -= rhs;
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator-(const tquat<T> &lhs, T rhs) noexcept {
+
+        tquat<T> result = lhs;
+
+        return result -= rhs;
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator-(T lhs, const tquat<T> &rhs) noexcept {
+
+        tquat<T> result = lhs;
+
+        return result -= rhs;
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator*(const tquat<T> &lhs, const tquat<T> &rhs) noexcept {
+
+        return tquat<T>(lhs.real() * rhs.real() - lhs.i() * rhs.i() - lhs.j() * rhs.j() - lhs.k() * rhs.k(),  // real
+                        lhs.real() * rhs.i() + lhs.i() * rhs.real() + lhs.j() * rhs.k() - lhs.k() * rhs.j(),  // i
+                        lhs.real() * rhs.j() - lhs.i() * rhs.k() + lhs.j() * rhs.real() + lhs.k() * rhs.i(),  // j
+                        lhs.real() * rhs.k() + lhs.i() * rhs.j() - lhs.j() * rhs.i() + lhs.k() * rhs.real()); // k
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator*(T lhs, const tquat<T> &rhs) noexcept {
+
+        tquat<T> result = rhs;
+
+        return result *= lhs;
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator*(const tquat<T> &lhs, T rhs) noexcept {
+
+        return rhs * lhs;
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator/(const tquat<T> &lhs, const tquat<T> &rhs) noexcept {
+
+        return lhs * rhs.inverse();
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator/(T lhs, const tquat<T> &rhs) noexcept {
+
+        return tquat<T>(lhs) / rhs;
+    }
+
+    template <typename T>
+    constexpr tquat<T> operator/(const tquat<T> &lhs, T rhs) noexcept {
+
+        tquat<T> result = lhs;
+
+        return result /= rhs;
+    }
+
+    template <typename T>
+    constexpr bool operator==(const tquat<T> &lhs, const tquat<T> &rhs) noexcept {
+
+        return util::isEqual(lhs.real(), rhs.real()) && lhs.imag() == rhs.imag();
+    }
+
+    template <typename T>
+    constexpr bool operator==(const T &lhs, const tquat<T> &rhs) noexcept {
+
+        return util::isEqual(lhs, rhs.real()) && rhs.imag() == tvec<T, 3>(0, 0, 0);
+    }
+
+    template <typename T>
+    constexpr bool operator==(const tquat<T> &lhs, const T &rhs) noexcept {
+
+        return rhs == lhs;
+    }
+
+    template <typename T>
+    constexpr bool operator!=(const tquat<T> &lhs, const tquat<T> &rhs) noexcept {
+
+        return !(lhs == rhs);
+    }
+
+    template <typename T>
+    constexpr bool operator!=(const T &lhs, const tquat<T> &rhs) noexcept {
+
+        return !(lhs == rhs);
+    }
+
+    template <typename T>
+    constexpr bool operator!=(const tquat<T> &lhs, const T &rhs) noexcept {
+
+        return !(lhs == rhs);
+    }
+
+    template <typename T>
+    std::ostream &operator<<(std::ostream &lhs, const tquat<T> &rhs) {
+
+        bool realZero = util::isZero(rhs.real());
+        bool iZero = util::isZero(rhs.i());
+        bool jZero = util::isZero(rhs.j());
+        bool kZero = util::isZero(rhs.k());
+
+        bool zero = realZero && iZero && jZero && kZero;
+
+        int termCount = !realZero + !iZero + !jZero + !kZero;
+        bool multipleTerms = termCount > 1;
+
+        bool termStreamed = false;
+
+        if (zero) return lhs << "0";
+        if (multipleTerms) lhs << "(";
+
+        if (!realZero) {
+
+            lhs << rhs.real();
+            termStreamed = true;
+        }
+
+        if (!iZero) {
+
+            if (termStreamed) {
+
+                lhs << (rhs.i() > 0 ? " + " : " - ");
+                lhs << std::abs(rhs.i());
+
+            } else {
+
+                lhs << rhs.i();
+                termStreamed = true;
+            }
+
+            lhs << "i";
+        }
+
+        if (!jZero) {
+
+            if (termStreamed) {
+
+                lhs << (rhs.j() > 0 ? " + " : " - ");
+                lhs << std::abs(rhs.j());
+
+            } else {
+
+                lhs << rhs.j();
+                termStreamed = true;
+            }
+
+            lhs << "j";
+        }
+
+        if (!kZero) {
+
+            if (termStreamed) {
+
+                lhs << (rhs.k() > 0 ? " + " : " - ");
+                lhs << std::abs(rhs.k());
+
+            } else {
+
+                lhs << rhs.k();
+                termStreamed = true;
+            }
+
+            lhs << "k";
+        }   
+
+        if (multipleTerms) lhs << ")";
+
+        return lhs;
+    }
 
     // Alias types for coefficients of type int, long, float, double
 
@@ -239,17 +403,23 @@ namespace std {
 
     // Overload to call magn()
     template <typename T>
-    double abs(const mth::tquat<T> &x);
+    constexpr double abs(const mth::tquat<T> &x) noexcept {
+
+        return x.magn();
+    }
 
     // Hash operator for use in certain STL containers
     template <typename T>
     struct hash<mth::tquat<T>> {
 
-        size_t operator()(const mth::tquat<T> &x);
+        size_t operator()(const mth::tquat<T> &x) {
+
+            auto a = x.real();
+            auto b = x.imaginary();
+
+            return hash<decltype(a)>()(a) ^ hash<decltype(b)>()(b);
+        }
     };
 }
-
-// TODO!: Refactor to remove this
-#include <mth/quat_impl.h>
 
 #endif
