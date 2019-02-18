@@ -51,7 +51,7 @@ TEST(CompTest, FillsValuesCorrectly) {
 
 TEST(CompTest, ConvertsFromPolarCorrectly) {
 
-    auto diag = mth::comp::fromPolar(std::sqrt(2.0), mth::PI<double> / 4.0);
+    auto diag = mth::comp::fromPolar(std::sqrt(2.0), mth::pi<double> / 4.0);
 
     mth_ASSERT_EQ(diag.real(), 1.0);
     mth_ASSERT_EQ(diag.imag(), 1.0);
@@ -242,7 +242,7 @@ TEST(MatTest, Invert9x9) {
     mth_ASSERT_LESS(sum, 0.000000001);
 }
 
-TEST(SeriesTest, GetCloseLimit) {
+TEST(SeriesTest, GetCloseLimitForPi) {
 
     mth::Series piSeries([] (size_t index) {
 
@@ -255,9 +255,28 @@ TEST(SeriesTest, GetCloseLimit) {
         return sqrt(12) * (odd * powThree).inverse();
     });
 
-    double diff = (piSeries.getLimit() - mth::PI<mth::comp>).abs();
+    double diff = (piSeries.getLimit() - mth::pi<mth::comp>).abs();
 
     mth_ASSERT_LESS(diff, 0.000001);
+}
+
+TEST(SeriesTest, GetCloseLimitForE) {
+
+    mth::Series eSeries([] (size_t index) {
+
+        return mth::comp(mth::factorial(index)).inverse();
+    });
+
+    double diff = (eSeries.getLimit() - mth::e<mth::comp>).abs();
+
+    mth_ASSERT_LESS(diff, 0.000001);
+}
+
+TEST(SeriesTest, TrivialLimitIsAccurate) {
+
+    mth::Series trivialSeries = mth::Series::finite(1.0, 2.0, 3.0, 4.0);
+
+    mth_ASSERT_EQ(trivialSeries.getLimit(), (mth::comp)(1.0 + 2.0 + 3.0 + 4.0));
 }
 
 // TODO: Test mat

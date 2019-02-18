@@ -46,18 +46,20 @@ namespace mth {
     // Smallest value above zero; used for equality iss on non-exact types
 
     template <typename T>
-    constexpr T EPSILON = std::numeric_limits<T>::epsilon();
+    constexpr T epsilon = std::numeric_limits<T>::epsilon();
 
     // Mathematical constants not specific to a certain class
 
     template <typename T>
-    constexpr T PI =  static_cast<T>(3.141592653589793238462643383279502884197169399375100582097494459230781640629);
+    constexpr T pi =  static_cast<T>(3.141592653589793238462643383279502884197169399375100582097494459230781640629);
     
     template <typename T>
-    constexpr T TAU = static_cast<T>(6.28318530717958647692528676655900576839433879875021164194988918461563281257);
+    constexpr T tau = static_cast<T>(6.28318530717958647692528676655900576839433879875021164194988918461563281257);
 
     template <typename T>
     constexpr T e =   static_cast<T>(2.71828182845904523536028747135266249775724709369995957496696762772407663035);
+
+    double factorial(size_t n);
 
     // Global utility functions
 
@@ -74,7 +76,7 @@ namespace mth {
 
             using std::abs;
             auto magnitude = abs(x);
-            return magnitude <= mth::EPSILON<decltype(magnitude)>;
+            return magnitude <= mth::epsilon<decltype(magnitude)>;
         }
 
         template <>
@@ -82,7 +84,7 @@ namespace mth {
 
             using std::abs;
             auto magnitude = abs(x);
-            return magnitude <= mth::EPSILON<decltype(magnitude)>;
+            return magnitude <= mth::epsilon<decltype(magnitude)>;
         }
 
         template <typename T>
