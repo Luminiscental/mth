@@ -57,61 +57,14 @@ mth::comp mth::PowerSeries::getCoeff(size_t index) const {
     return generatingFunction(index);
 }
 
-mth::comp mth::PowerSeries::getPartial(const mth::comp &z, size_t index) const {
+mth::Series mth::PowerSeries::series(const mth::comp &z) const {
 
-    if (util::isZero(z)) return getCoeff(0);
-
-    mth::comp result;
-
-    // Calculate from scratch
-    if (lastPartialIndex == 0 || lastPartialIndex > index) {
-
-        mth::comp term(1);
-
-        for (size_t i = 0; i <= index; i++) {
-
-            result += getCoeff(i) * term;
-            term *= z;
-        }
-
-    // Add the extra terms
-    } else if (lastPartialIndex < index) {
+    return Series([&] (size_t index) {
 
         using std::pow;
+        return generatingFunction(index) * pow(z, index);
 
-        result = lastPartial;
-        mth::comp term = pow(z, lastPartialIndex + 1);
-
-        for (size_t i = lastPartialIndex + 1; i <= index; i++) {
-
-            result += getCoeff(i) * term;
-            term *= z;
-        }
-    }
-
-    lastPartialIndex = index;
-    lastPartial = result;
-
-    return result;
-}
-
-mth::comp mth::PowerSeries::getValue(const mth::comp &z) const {
-
-    if (util::isZero(z)) return getCoeff(0);
-
-    auto sequence = [&] (size_t n) {
-
-        using std::pow;
-
-        return getCoeff(n) * pow(z, n);
-    };
-
-    auto partialSequence = [&] (size_t n) {
-
-        return getPartial(z, n);
-    };
-
-    return seriesLimit(partialSequence, sequence);
+    });
 }
 
 mth::PowerSeries mth::differentiate(const mth::PowerSeries &series) {

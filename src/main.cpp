@@ -14,6 +14,7 @@
 #include <mth/mat.h>
 
 #include <mth/polynomial.h>
+#include <mth/series.h>
 #include <mth/powerseries.h>
 #include <mth/numeric.h>
 
@@ -239,6 +240,24 @@ TEST(MatTest, Invert9x9) {
     }
 
     mth_ASSERT_LESS(sum, 0.000000001);
+}
+
+TEST(SeriesTest, GetCloseLimit) {
+
+    mth::Series piSeries([] (size_t index) {
+
+        using std::pow;
+        using std::sqrt;
+
+        mth::comp powThree = (mth::comp) pow(-3, index);
+        mth::comp odd = (mth::comp) (2 * index + 1);
+
+        return sqrt(12) * (odd * powThree).inverse();
+    });
+
+    double diff = (piSeries.getLimit() - mth::PI<mth::comp>).abs();
+
+    mth_ASSERT_LESS(diff, 0.000001);
 }
 
 // TODO: Test mat
