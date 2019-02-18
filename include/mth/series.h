@@ -33,6 +33,8 @@ namespace mth {
         // Returns the numeric limit of the partial sums at z
         comp getLimit() const;
 
+        static Series finite(std::vector<comp> terms);
+
         template <typename ...Q>
         static Series finite(Q... terms) {
 

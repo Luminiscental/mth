@@ -1,4 +1,6 @@
 
+#include <numeric>
+
 #include <mth/mth.h>
 
 #include <mth/series.h>
@@ -58,6 +60,28 @@ mth::comp mth::Series::getLimit() const {
     };
 
     return seriesLimit(partialSequence, terms);
+}
+
+mth::Series mth::Series::finite(std::vector<mth::comp> terms) {
+
+    auto termClosure = [&] (size_t index) {
+
+        if (index < terms.size()) {
+
+            return terms[index];
+
+        } else {
+
+            return (mth::comp) 0;
+        }
+    };
+
+    Series result(termClosure);
+
+    result.isTrivial = true;
+    result.trivialSum = std::accumulate(terms.begin(), terms.end(), (mth::comp) 0);
+
+    return result;
 }
 
 mth::Series mth::Series::recursive(std::function<mth::comp(mth::comp)> recursion, const mth::comp &init) {

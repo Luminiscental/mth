@@ -170,7 +170,7 @@ TEST(VecTest, DotProdCorrectly) {
     mth_ASSERT_EQ(dotXY, 12);
 }
 
-TEST(VecTest, CrossProdCorrectly) {
+TEST(VecTest, CrossProdIsPerpendicular) {
 
     mth::vec3 p = mth::vec3(1.0, 2.0, -1.0);
     mth::vec3 q = mth::vec3(2.0, 1.0, -2.0);
@@ -253,6 +253,7 @@ TEST(SeriesTest, GetCloseLimitForPi) {
         mth::comp odd = (mth::comp) (2 * index + 1);
 
         return sqrt(12) * (odd * powThree).inverse();
+
     });
 
     double diff = (piSeries.getLimit() - mth::pi<mth::comp>).abs();
@@ -265,6 +266,7 @@ TEST(SeriesTest, GetCloseLimitForE) {
     mth::Series eSeries([] (size_t index) {
 
         return mth::comp(mth::factorial(index)).inverse();
+
     });
 
     double diff = (eSeries.getLimit() - mth::e<mth::comp>).abs();
@@ -277,6 +279,32 @@ TEST(SeriesTest, TrivialLimitIsAccurate) {
     mth::Series trivialSeries = mth::Series::finite(1.0, 2.0, 3.0, 4.0);
 
     mth_ASSERT_EQ(trivialSeries.getLimit(), (mth::comp)(1.0 + 2.0 + 3.0 + 4.0));
+}
+
+TEST(PowerSeriesTest, ExponentialIsAccurate) {
+
+    mth::PowerSeries expSeries([] (size_t index) {
+
+        return mth::comp(mth::factorial(index)).inverse();
+
+    });
+
+    using std::pow;
+    using mth::pow;
+
+    double diff = (expSeries.series((mth::comp) 3).getLimit() - pow(mth::e<mth::comp>, 3)).abs();
+
+    mth_ASSERT_LESS(diff, 0.000001);
+}
+
+TEST(PowerSeriesTest, TrivialLimitIsAccurate) {
+
+    mth::Polynomial pol = mth::Polynomial::fromCoeffs({1.0, 2.0, 3.0});
+    mth::PowerSeries trivialSeries = mth::PowerSeries::finite(pol);
+
+    mth::comp z = 4.2;
+
+    mth_ASSERT_EQ(pol.value(z), trivialSeries.series(z).getLimit());
 }
 
 // TODO: Test mat

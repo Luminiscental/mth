@@ -23,6 +23,9 @@ namespace mth {
 
             std::function<comp(size_t)> generatingFunction;
 
+            bool isTrivial = false;
+            Polynomial trivialSeries;
+
     public:
 
         // Default initializes to zero

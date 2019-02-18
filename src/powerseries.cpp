@@ -31,7 +31,12 @@ mth::PowerSeries mth::PowerSeries::finite(const mth::Polynomial &equivalent) {
         return equivalent.getCoeff(n);
     };
 
-    return PowerSeries(gen);
+    PowerSeries result(gen);
+
+    result.isTrivial = true;
+    result.trivialSeries = equivalent;
+
+    return result;
 }
 
 mth::PowerSeries mth::PowerSeries::recursive(std::function<comp(comp)> recursion, const comp &constant) {
@@ -59,12 +64,34 @@ mth::comp mth::PowerSeries::getCoeff(size_t index) const {
 
 mth::Series mth::PowerSeries::series(const mth::comp &z) const {
 
-    return Series([&] (size_t index) {
+    if (isTrivial) {
 
-        using std::pow;
-        return generatingFunction(index) * pow(z, index);
+        std::vector<comp> result;
 
-    });
+        PolynomialDegree deg = trivialSeries.getDegree();
+        if (deg.isInfinite()) return mth::Series::finite(0);
+
+        comp acc = 1;
+
+        for (size_t i = 0; i < deg.getValue(); i++) {
+
+            comp coeff = trivialSeries.getCoeff(i);
+            result.push_back(coeff * acc);
+
+            acc *= z;
+        }
+
+        return mth::Series::finite(result);
+
+    } else {
+
+        return Series([&] (size_t index) {
+
+            using std::pow;
+            return generatingFunction(index) * pow(z, index);
+
+        });
+    }
 }
 
 mth::PowerSeries mth::differentiate(const mth::PowerSeries &series) {
