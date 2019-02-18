@@ -16,6 +16,9 @@ namespace mth {
         mutable size_t lastPartialIndex;
         mutable comp lastPartial;
 
+        bool isTrivial = false;
+        comp trivialSum;
+
     public:
 
         // Default initializes to zero
@@ -35,7 +38,7 @@ namespace mth {
 
             std::vector<comp> nonTrivialTerms {static_cast<comp>(terms) ...};
 
-            return Series([nonTrivialTerms] (size_t index) {
+            Series result([nonTrivialTerms] (size_t index) {
 
                 if (index < nonTrivialTerms.size()) {
 
@@ -46,6 +49,11 @@ namespace mth {
                     return (comp) 0;
                 }
             });
+
+            result.isTrivial = true;
+            result.trivialSum = result.getPartial(nonTrivialTerms.size());
+            
+            return result;
         }
 
         static Series recursive(std::function<comp(comp)> recursion, const comp &init);

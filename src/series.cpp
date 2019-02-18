@@ -50,6 +50,8 @@ mth::comp mth::Series::getPartial(size_t index) const {
 
 mth::comp mth::Series::getLimit() const {
 
+    if (isTrivial) return trivialSum;
+
     auto partialSequence = [&] (size_t index) {
 
         return getPartial(index);
