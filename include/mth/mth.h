@@ -1,8 +1,6 @@
 #ifndef mth_mth_h__
 #define mth_mth_h__
 
-// TODO: A name with more characters would be less of a pain
-
 /* <mth/mth.h> - main header
  *      This includes general constant definitions and utility functions. It is a dependency
  *      to be included before including any of the other headers in m.
@@ -36,14 +34,13 @@
 #include <limits>
 
 // TODO: Sequence wrapper class (e.g. for recursive sequences)
-// TODO: Non-power series
 // TODO: Rational functions
 // TODO: Laurent series
 // TODO: Better exception / debug info
 
 namespace mth {
 
-    // Smallest value above zero; used for equality iss on non-exact types
+    // Smallest value above zero; used for equality conditions on non-exact types
 
     template <typename T>
     constexpr T epsilon = std::numeric_limits<T>::epsilon();
