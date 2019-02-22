@@ -1,8 +1,6 @@
 
 # mth - A Maths library
 
-No one wanted it; no one needed it, but it's here now.
-
 mth is a maths library built around template classes to work with objects such as vectors, matrices and quaternions, with helper classes to deal with solving equations. No guarantees of stability or quality atm so be warned.
 
 To build run `build.sh`.
