@@ -313,9 +313,9 @@ namespace mth {
     template <typename T>
     constexpr mth::tcomp<T> pow(const mth::tcomp<T> &z, size_t exponent) noexcept {
 
-        auto result = z;
+        auto result = (mth::tcomp<T>) 1;
 
-        for (size_t i = 1; i < exponent; i++) {
+        for (size_t i = 1; i <= exponent; i++) {
 
             result *= z;
         }

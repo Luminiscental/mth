@@ -53,7 +53,14 @@ std::function<mth::comp(size_t)> shankTransform(const std::function<mth::comp(si
         auto currentValue = sequence(n);
         auto nextSum = nextValue + currentValue + partialSum(n - 1);
 
-        return nextSum - nextValue * nextValue / (nextValue - currentValue);
+        auto denom = nextValue - currentValue;
+
+        if (mth::util::isZero(denom)) {
+
+            return nextSum;
+        }
+
+        return nextSum - nextValue * nextValue / denom;
     };
 }
 
@@ -69,7 +76,14 @@ std::function<mth::comp(size_t)> aitkenTransform(const std::function<mth::comp(s
 
         auto step = next - curr;
 
-        return next - step * step / (step - curr + prev);
+        auto denom = step - curr + prev;
+
+        if (mth::util::isZero(denom)) {
+
+            return next;
+        }
+
+        return next - step * step / denom;
     };
 }
 

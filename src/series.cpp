@@ -13,6 +13,9 @@ mth::Series::Series() {
 
         return (comp) 0;
     };
+
+    trivialSum = (comp) 0;
+    isTrivial = true;
 }
 
 mth::Series::Series(std::function<comp(size_t)> terms)

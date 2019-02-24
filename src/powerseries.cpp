@@ -73,7 +73,7 @@ mth::Series mth::PowerSeries::series(const mth::comp &z) const {
 
         comp acc = 1;
 
-        for (size_t i = 0; i < deg.getValue(); i++) {
+        for (size_t i = 0; i <= deg.getValue(); i++) {
 
             comp coeff = trivialSeries.getCoeff(i);
             result.push_back(coeff * acc);
