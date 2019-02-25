@@ -105,7 +105,10 @@ namespace mth {
         // Returns z / |z|
         constexpr tcomp<T> unit() const noexcept {
 
-            return *this / abs();
+            // Magnitude is cast to T
+            auto l = static_cast<T>(abs());
+
+            return *this / l;
         }
 
         // Returns the complex conjugate
@@ -346,7 +349,7 @@ namespace mth {
     template <typename T>
     constexpr tcomp<T> operator+(const tcomp<T> &lhs, const tcomp<T> &rhs) noexcept {
 
-        auto result = tcomp<T>{lhs};
+        auto result = lhs;
 
         return result += rhs;
     }
@@ -354,7 +357,7 @@ namespace mth {
     template <typename T>
     constexpr tcomp<T> operator+(const tcomp<T> &lhs, const T &rhs) noexcept {
 
-        auto result = tcomp<T>{lhs};
+        auto result = lhs;
 
         return result += rhs;
     }
@@ -368,7 +371,7 @@ namespace mth {
     template <typename T>
     constexpr tcomp<T> operator-(const tcomp<T> &rhs) noexcept {
 
-        auto result = tcomp<T>{rhs};
+        auto result = rhs;
 
         result.real() = -result.real();
         result.imag() = -result.imag();
@@ -379,7 +382,7 @@ namespace mth {
     template <typename T>
     constexpr tcomp<T> operator-(const tcomp<T> &lhs, const tcomp<T> &rhs) noexcept {
 
-        auto result = tcomp<T>{lhs};
+        auto result = lhs;
 
         return result -= rhs;
     }
@@ -387,7 +390,7 @@ namespace mth {
     template <typename T>
     constexpr tcomp<T> operator-(const tcomp<T> &lhs, const T &rhs) noexcept {
 
-        auto result = tcomp<T>{lhs};
+        auto result = lhs;
 
         return result -= rhs;
     }
@@ -395,7 +398,7 @@ namespace mth {
     template <typename T>
     constexpr tcomp<T> operator-(const T &lhs, const tcomp<T> &rhs) noexcept {
 
-        auto result = tcomp<T>{lhs};
+        auto result = lhs;
 
         return result -= rhs;
     }
@@ -411,7 +414,7 @@ namespace mth {
     template <typename T>
     constexpr tcomp<T> operator*(const tcomp<T> &lhs, const T &rhs) noexcept {
 
-        auto result = tcomp<T>{lhs};
+        auto result = lhs;
 
         return result *= rhs;
     }
@@ -431,7 +434,7 @@ namespace mth {
     template <typename T>
     constexpr tcomp<T> operator/(const tcomp<T> &lhs, const T &rhs) noexcept {
 
-        auto result = tcomp<T>{lhs};
+        auto result = lhs;
 
         return result /= rhs;
     }

@@ -2,9 +2,10 @@
 #define mth_quat_h__
 
 /* <mth/quat.h> - quaternion header
- *      Includes the template class tquat representing a quaternion with coefficients of type T. Basic
- *      arithmetic operators are defined as well as member functions to get values such as modulus and
- *      reciprocal. Utility functions for creating and using rotation representations are also defined.
+ *      Includes the template class tquat representing a quaternion with
+ *      coefficients of type T. Basic arithmetic operators are defined as well
+ *      as member functions to get values such as modulus and reciprocal and 
+ *      utility functions for creating and using rotation representations.
  */
 
 #include <ostream>
@@ -20,8 +21,8 @@ namespace mth {
 
     private:
 
-        T w;
-        tvec<T, 3> ijk;
+        T w = 0;
+        tvec<T, 3> ijk = tvec<T, 3>{0, 0, 0};
 
     public:
 
@@ -37,8 +38,7 @@ namespace mth {
 #undef BINDING
 
         // Default initializes to zero
-        constexpr tquat() noexcept 
-            :w(0), ijk(0, 0, 0) {}
+        constexpr tquat() noexcept = default;
 
         // Order of coefficients is defined as real, i, j, k
         constexpr tquat(T a, T b, T c, T d) noexcept
@@ -46,15 +46,17 @@ namespace mth {
 
         // Initialize to a real number
         constexpr tquat(T r) noexcept
-            :w(r), ijk(0, 0, 0) {}
+            :w(r) {}
 
         // Quaternion representation of a vector using ijk
         constexpr tquat(const tvec<T, 3> &vector) noexcept
-            :w(0), ijk(vector) {}
+            :ijk(vector) {}
 
+        // Initialize from real scalar and imaginary vector
         constexpr tquat(T r, const tvec<T, 3> &vector) noexcept
             :w(r), ijk(vector) {}
 
+        // Casts distribute to real part and imaginary part
         template <typename U>
         constexpr operator tquat<U>() const noexcept {
 
@@ -66,6 +68,7 @@ namespace mth {
             return result;
         }
 
+        // Return the square magnitude to avoid unnecessary sqrt calls
         constexpr T magnSqr() const noexcept {
 
             return w * w + ijk.magnSqr();
@@ -77,9 +80,10 @@ namespace mth {
             return std::sqrt(static_cast<double>(magnSqr()));
         }
 
+        // Returns the quaternion conjugate
         constexpr tquat<T> conjugate() const noexcept {
 
-            return tquat<T>(w, -ijk);
+            return tquat<T>{w, -ijk};
         }
 
         // Returns the reciprocal
@@ -90,8 +94,10 @@ namespace mth {
             return conjugate() / ls;
         }
 
+        // Returns this scaled to have unit length
         constexpr tquat<T> unit() const noexcept {
 
+            // Magnitude is cast to T
             auto l = static_cast<T>(magn());
 
             return *this / l;
@@ -106,7 +112,7 @@ namespace mth {
         // Returns 1
         constexpr static tquat<T> identity() noexcept {
             
-            return tquat(); 
+            return tquat{1}; 
         }
 
         // Converts euler angle and axis to quaternion representation
@@ -119,6 +125,8 @@ namespace mth {
 
             return c + s * tquat<T>(axis);
         }
+
+        // Compound assignment operators
 
         constexpr tquat<T> &operator+=(const tquat<T> &rhs) noexcept {
 
@@ -181,10 +189,12 @@ namespace mth {
         }
     };
 
+    // Arithmetic operators
+
     template <typename T>
     constexpr tquat<T> operator+(const tquat<T> &lhs, const tquat<T> &rhs) noexcept {
 
-        tquat<T> result = lhs;
+        auto result = lhs;
 
         return result += rhs;
     }
@@ -192,7 +202,7 @@ namespace mth {
     template <typename T>
     constexpr tquat<T> operator+(const tquat<T> &lhs, T rhs) noexcept {
 
-        tquat<T> result = lhs;
+        auto result = lhs;
 
         return result += rhs;
     }
@@ -206,13 +216,13 @@ namespace mth {
     template <typename T>
     constexpr tquat<T> operator-(const tquat<T> &rhs) noexcept {
 
-        return tquat<T>(-rhs.w, -rhs.ijk);
+        return tquat<T>{-rhs.w, -rhs.ijk};
     }
 
     template <typename T>
     constexpr tquat<T> operator-(const tquat<T> &lhs, const tquat<T> &rhs) noexcept {
 
-        tquat<T> result = lhs;
+        auto result = lhs;
 
         return result -= rhs;
     }
@@ -220,7 +230,7 @@ namespace mth {
     template <typename T>
     constexpr tquat<T> operator-(const tquat<T> &lhs, T rhs) noexcept {
 
-        tquat<T> result = lhs;
+        auto result = lhs;
 
         return result -= rhs;
     }
@@ -228,7 +238,7 @@ namespace mth {
     template <typename T>
     constexpr tquat<T> operator-(T lhs, const tquat<T> &rhs) noexcept {
 
-        tquat<T> result = lhs;
+        auto result = lhs;
 
         return result -= rhs;
     }
@@ -236,16 +246,16 @@ namespace mth {
     template <typename T>
     constexpr tquat<T> operator*(const tquat<T> &lhs, const tquat<T> &rhs) noexcept {
 
-        return tquat<T>(lhs.real() * rhs.real() - lhs.i() * rhs.i() - lhs.j() * rhs.j() - lhs.k() * rhs.k(),  // real
+        return tquat<T>{lhs.real() * rhs.real() - lhs.i() * rhs.i() - lhs.j() * rhs.j() - lhs.k() * rhs.k(),  // real
                         lhs.real() * rhs.i() + lhs.i() * rhs.real() + lhs.j() * rhs.k() - lhs.k() * rhs.j(),  // i
                         lhs.real() * rhs.j() - lhs.i() * rhs.k() + lhs.j() * rhs.real() + lhs.k() * rhs.i(),  // j
-                        lhs.real() * rhs.k() + lhs.i() * rhs.j() - lhs.j() * rhs.i() + lhs.k() * rhs.real()); // k
+                        lhs.real() * rhs.k() + lhs.i() * rhs.j() - lhs.j() * rhs.i() + lhs.k() * rhs.real()}; // k
     }
 
     template <typename T>
     constexpr tquat<T> operator*(T lhs, const tquat<T> &rhs) noexcept {
 
-        tquat<T> result = rhs;
+        auto result = rhs;
 
         return result *= lhs;
     }
@@ -265,13 +275,13 @@ namespace mth {
     template <typename T>
     constexpr tquat<T> operator/(T lhs, const tquat<T> &rhs) noexcept {
 
-        return tquat<T>(lhs) / rhs;
+        return tquat<T>{lhs} / rhs;
     }
 
     template <typename T>
     constexpr tquat<T> operator/(const tquat<T> &lhs, T rhs) noexcept {
 
-        tquat<T> result = lhs;
+        auto result = lhs;
 
         return result /= rhs;
     }
@@ -312,22 +322,29 @@ namespace mth {
         return !(lhs == rhs);
     }
 
+    // Pretty print
     template <typename T>
     std::ostream &operator<<(std::ostream &lhs, const tquat<T> &rhs) {
 
-        bool realZero = util::isZero(rhs.real());
-        bool iZero = util::isZero(rhs.i());
-        bool jZero = util::isZero(rhs.j());
-        bool kZero = util::isZero(rhs.k());
+        auto realZero = util::isZero(rhs.real());
+        auto iZero = util::isZero(rhs.i());
+        auto jZero = util::isZero(rhs.j());
+        auto kZero = util::isZero(rhs.k());
 
-        bool zero = realZero && iZero && jZero && kZero;
+        auto zero = realZero && iZero && jZero && kZero;
 
-        int termCount = !realZero + !iZero + !jZero + !kZero;
-        bool multipleTerms = termCount > 1;
+        auto termCount = static_cast<int>(!realZero)
+                       + static_cast<int>(!iZero)
+                       + static_cast<int>(!jZero)
+                       + static_cast<int>(!kZero);
 
-        bool termStreamed = false;
+        auto multipleTerms = termCount > 1;
+
+        auto termStreamed = false;
 
         if (zero) return lhs << "0";
+
+        // Use brackets if there are multiple terms
         if (multipleTerms) lhs << "(";
 
         if (!realZero) {
@@ -390,12 +407,10 @@ namespace mth {
     }
 
     // Alias types for coefficients of type int, long, float, double
-
     using iquat = tquat<int>;
     using lquat = tquat<long>;
     using fquat = tquat<float>;
     using dquat = tquat<double>;
-
     using quat = dquat;
 }
 

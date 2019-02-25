@@ -44,10 +44,10 @@ namespace mth {
 
     private:
 
-        mth::tvec<A, N> aux;
-
         // TODO: Augment non-square matrices?
         tmat<T, N, N> matrix;
+
+        mth::tvec<A, N> aux;
 
         // Use row operations to set the coefficient at x,y to zero using rows below y without affecting coefficients to the left of it
         void eliminateFromBelow(size_t x, size_t y) {

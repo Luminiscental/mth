@@ -93,7 +93,7 @@ mth::Series mth::Series::recursive(std::function<mth::comp(mth::comp)> recursion
 
         comp result;
 
-        for (int i = 0; i < index; i++) {
+        for (size_t i = 0; i < index; i++) {
 
             result = recursion(result);
         }
