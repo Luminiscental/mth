@@ -2,13 +2,15 @@
 #define mth_mat_h__
 
 /* <mth/mat.h> - matrix header
- *      This includes the tmat template class representing an N by M matrix of coefficients of type T. Addition
- *      and subtraction operations are defined along with multiplication and also division for square matrices.
- *      Member functions to find the determinant and various related constructs such as the inverse and adjoint
- *      are included when N = M.
+ *      This includes the tmat template class representing an N by M matrix of
+ *      coefficients of type T. Addition, subtraction, multiplication and
+ *      division are defined where possible along with member functions for
+ *      the determinant and various related constructs such as the inverse,
+ *      adjoint, cofactors, e.t.c.
  * 
- *      This header also includes the tmat_aug template clas which describes a system of linear equations with
- *      N variables and N auxilary values with a separate type. It has defined row operations and methods to solve
+ *      This header also includes the tmat_aug template class which describes
+ *      a system of linear equations with N variables and N auxilary values of
+ *      a separate type. It has defined row operations and methods to solve
  *      the system / reduce to echelon form.
  */
 
@@ -28,6 +30,7 @@
 
 namespace mth {
 
+    // Forward declaration for use in tmat_aug
     template <typename T, size_t N, size_t M>
     class tmat;
 
@@ -62,7 +65,7 @@ namespace mth {
 
                 auto val = matrix.get(x, iy);
 
-                // If it is zero it can't become targetValue
+                // If it is zero it can't be scaled to targetValue
                 if (!util::isZero(val)) {
 
                     addRow(y, iy, targetValue / val); 
@@ -86,7 +89,7 @@ namespace mth {
 
                 auto value = matrix.get(x, iy);
 
-                // If the value is zero it can't be made into targetValue
+                // If the value is zero it can't be scaled to targetValue
                 // Can't affect values to the left of x
                 if (!util::isZero(value) && leadingIndex(iy) >= x) {
 
@@ -98,27 +101,33 @@ namespace mth {
 
     public:
 
+        // Default initialize to x = 0
         tmat_aug() noexcept = default;
+
+        // Initialize with coefficients and auxilary values
         tmat_aug(const tmat<T, N, N> &matrix, const std::array<A, N> &aux) noexcept
             :matrix(matrix), aux(aux) {}
 
-        tmat<T, N, N> coefficients() const {
+        // Get the coefficients
+        const tmat<T, N, N> &coefficients() const {
 
             return matrix;
         }
 
-        mth::tvec<A, N> auxilary() const {
+        // Get the auxilary values
+        const mth::tvec<A, N> &auxilary() const {
 
             return aux;
         }
 
-        // TODO: degenerate solution cases
+        // Return a vector containing values that solve the equation
         mth::tvec<A, N> solve() const {
 
+            // TODO: degenerate solution cases
             return reducedRowEchelon().auxilary();
         }
 
-        // Index of first non-zero coefficient, returns N on empty rows
+        // Index of first non-zero coefficient in a row, returns N on empty rows
         size_t leadingIndex(size_t row) const {
 
             for (size_t i = 0; i < N; i++) {
@@ -129,7 +138,7 @@ namespace mth {
             return N;
         }
 
-        // Value of first non-zero coefficient, returns zero on empty rows
+        // Value of first non-zero coefficient in a row, returns zero on empty rows
         T leadingValue(size_t row) const {
 
             auto index = leadingIndex(row);
@@ -139,6 +148,7 @@ namespace mth {
             return matrix.get(index, row);
         }
 
+        // Check whether a column is empty
         bool columnIsZero(size_t x) const {
 
             for (size_t y = 0; y < N; y++) {
@@ -149,6 +159,7 @@ namespace mth {
             return true;
         }
 
+        // Check whether a row is empty
         bool rowIsZero(size_t y) const {
 
             for (size_t x = 0; x < N; x++) {
@@ -159,6 +170,7 @@ namespace mth {
             return true;
         }
 
+        // Check whether the coefficients contain an empty row
         bool hasZeroRow() const {
 
             for (size_t y = 0; y < N; y++) {
@@ -169,6 +181,7 @@ namespace mth {
             return false;
         }
 
+        // Check whether the coefficient matrix is singular
         bool singular() const {
 
             return rowEchelon().hasZeroRow();
@@ -176,6 +189,7 @@ namespace mth {
 
         // Row operations
 
+        // Swap the rows at indices a and b
         void swapRows(size_t a, size_t b) {
 
             auto rowA = matrix.getRow(a);
@@ -191,13 +205,14 @@ namespace mth {
             aux[b] = auxA;
         } 
 
+        // Scale the row at index by scalar
         void scaleRow(size_t index, T scalar) {
 
             matrix.setRow(index, scalar * matrix.getRow(index));
             aux[index] = scalar * aux[index];
         }
 
-        // Adds sourceRow * scalar to targetRow
+        // Add sourceRow * scalar to targetRow
         void addRow(size_t targetRow, size_t sourceRow, T scalar = 1) {
 
             auto addValue = scalar * matrix.getRow(sourceRow);
@@ -208,6 +223,7 @@ namespace mth {
             aux[targetRow] += scalar * aux[sourceRow];
         } 
 
+        // Overwrites the row at index
         void setRow(size_t index, const tvec<T, N> &val, A auxVal) {
 
             matrix.setRow(index, val);
@@ -227,10 +243,10 @@ namespace mth {
             std::iota(begin(rowIndices), end(rowIndices), 0);
 
             // Permute the rowIndices to sort by leadingIndex
-            auto compareLeadingIndex = [=] (auto a, auto b) -> bool { return leadingIndex(a) < leadingIndex(b); };
+            auto compareLeadingIndex = [=] (auto a, auto b) { return leadingIndex(a) < leadingIndex(b); };
             std::sort(begin(rowIndices), end(rowIndices), compareLeadingIndex);
 
-            tmat_aug<T, N, A> result{matrix, aux};
+            auto result = tmat_aug<T, N, A>{matrix, aux};
 
             // Apply the permutation
             for (size_t i = 0; i < N; i++) {
@@ -244,6 +260,7 @@ namespace mth {
         // Convert to row echelon form (zero below diagonal)
         tmat_aug<T, N, A> rowEchelon() const {
 
+            // Start with the rows ordered
             auto result = ordered();
 
             // Iterate over columns and eliminate below the diagonal
@@ -271,6 +288,7 @@ namespace mth {
                 }
             }
 
+            // Re-order
             return result.ordered(); 
         }
 
@@ -300,6 +318,7 @@ namespace mth {
         // TODO: Arithmetic on augmented matrices?
     };   
 
+    // (Not very) pretty print, with a | to separate auxilary values from coefficients
     template <typename T, size_t N, typename A>
     std::ostream &operator<<(std::ostream &lhs, const tmat_aug<T, N, A> &rhs) {
 
@@ -360,6 +379,8 @@ namespace mth {
     // Define tmat<T, N, M> where N > 1 and M > 1
 
 #include <mth/mat_content.h>
+
+    // Arithmetic operators
 
     template <typename T, size_t N, size_t M>
     constexpr tmat<T, N, M> operator+(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) noexcept {
@@ -437,6 +458,8 @@ namespace mth {
         return result;
     }
 
+    // Equality operators defer to util::isEqual
+    
     template <typename T, size_t N, size_t M>
     constexpr bool operator==(const tmat<T, N, M> &lhs, const tmat<T, N, M> &rhs) noexcept {
 
@@ -457,6 +480,7 @@ namespace mth {
         return !(lhs == rhs);
     }
 
+    // (Not very) pretty print
     template <typename T, size_t N, size_t M>
     std::ostream &operator<<(std::ostream &lhs, const tmat<T, N, M> &rhs) {
 
@@ -478,6 +502,7 @@ namespace mth {
     }
 
     // Specialized "static" functions 
+    
     namespace mat {
 
         // Transformations assumed to act on (xyz, 1) form 4-vectors
@@ -486,40 +511,41 @@ namespace mth {
         template <typename T>
         constexpr tmat<T, 4, 4> scale(const tvec<T, 3> &factors) noexcept {
 
-            return tmat<T, 4, 4>(factors.get(0), 0,              0,              0,
+            return tmat<T, 4, 4>{factors.get(0), 0,              0,              0,
                                  0,              factors.get(1), 0,              0,
                                  0,              0,              factors.get(2), 0,
-                                 0,              0,              0,              1);
+                                 0,              0,              0,              1};
         }
 
         // Transformation scaling each axis by factor
         template <typename T>
         constexpr tmat<T, 4, 4> scale(T factor) noexcept {
 
-            return scale(tvec<T, 3>(factor, factor, factor));
+            return scale(tvec<T, 3>{factor, factor, factor});
         }
 
+        // Translation by a 3D offset vector
         template <typename T>
         constexpr tmat<T, 4, 4> translation(const tvec<T, 3> &offset) noexcept {
 
-            return tmat<T, 4, 4>(1, 0, 0, offset.x(),
+            return tmat<T, 4, 4>{1, 0, 0, offset.x(),
                                  0, 1, 0, offset.y(),
                                  0, 0, 1, offset.z(),
-                                 0, 0, 0, 1);
+                                 0, 0, 0, 1};
         }
 
         // Convert a quaternion rotation representation into its matrix representative
         template <typename T>
         constexpr tmat<T, 4, 4> rotation(const tquat<T> &rep) noexcept {
 
-            tvec<T, 3> rotatedX = rep.rotate(mth::X_AXIS<T>);
-            tvec<T, 3> rotatedY = rep.rotate(mth::Y_AXIS<T>);
-            tvec<T, 3> rotatedZ = rep.rotate(mth::Z_AXIS<T>);
+            auto rotatedX = rep.rotate(mth::X_AXIS<T>);
+            auto rotatedY = rep.rotate(mth::Y_AXIS<T>);
+            auto rotatedZ = rep.rotate(mth::Z_AXIS<T>);
 
-            return tmat<T, 4, 4>(rotatedX.x(), rotatedY.x(), rotatedZ.x(), 0,
+            return tmat<T, 4, 4>{rotatedX.x(), rotatedY.x(), rotatedZ.x(), 0,
                                  rotatedX.y(), rotatedY.y(), rotatedZ.y(), 0,
                                  rotatedX.z(), rotatedY.z(), rotatedZ.z(), 0,
-                                 0,            0,            0,            1);
+                                 0,            0,            0,            1};
         }
 
         // Convert euler angle and axis to its matrix representative
@@ -529,6 +555,7 @@ namespace mth {
             return rotation(tquat<T>::rotation(angle, axis));
         }
 
+        // Orthographic projection matrix (with near-far limits)
         template <typename T>
         constexpr tmat<T, 4, 4> orthographic(T left, T right, T bottom, T top, T near, T far) noexcept {
 
@@ -540,12 +567,13 @@ namespace mth {
             auto tpb = top + bottom;
             auto fpn = far + near;
 
-            return tmat<T, 4, 4>(2 / rml, 0,       0,        -rpl / rml,
+            return tmat<T, 4, 4>{2 / rml, 0,       0,        -rpl / rml,
                                  0,       2 / tmb, 0,        -tpb / tmb,
                                  0,       0,       -2 / fmn, -fpn / fmn,
-                                 0,       0,       0,        1);
+                                 0,       0,       0,        1};
         }
 
+        // Perspective projection matrix (with near-far limits)
         template <typename T>
         constexpr tmat<T, 4, 4> perspective(T left, T right, T bottom, T top, T near, T far) noexcept {
 
@@ -557,10 +585,10 @@ namespace mth {
             auto tpb = top + bottom;
             auto fpn = far + near;
 
-            return tmat<T, 4, 4>(2 * near / rml, 0,              rpl / rml,  0,
+            return tmat<T, 4, 4>{2 * near / rml, 0,              rpl / rml,  0,
                                  0,              2 * near / tmb, tpb / tmb,  0,
                                  0,              0,              -fpn / fmn, -2 * far * near / fmn,
-                                 0,              0,              -1,         0);
+                                 0,              0,              -1,         0};
         }
     }
 
@@ -608,6 +636,7 @@ namespace mth {
 
 namespace std {
 
+    // Hash function for use in certain STL containers
     template <typename T, size_t N, size_t M>
     struct hash<mth::tmat<T, N, M>> {
 
