@@ -1,6 +1,8 @@
 
 #ifdef mth_mat_content_toggle__
 
+// Include only non-defined parameters in the template
+
 #if defined(N) && defined(M)
 
 template <typename T>
@@ -27,7 +29,9 @@ private:
 
     std::array<T, N * M> values;
 
+    // Return the index in the array for a given pair of coordinate indices
     // 0,0 is top left
+    // Private to hide implementation
     constexpr static size_t getIndex(size_t x, size_t y) noexcept {
 
 #ifdef mth_ROW_MAJOR
@@ -48,7 +52,7 @@ public:
     template <typename _T, size_t _N, size_t _M>
     friend class tmat;
 
-    // Default initializes to zero
+    // Default initialize to zero
     constexpr tmat() noexcept {
 
         values.fill(0);
@@ -57,12 +61,14 @@ public:
     // These are ambiguous / redundant for 1x1 matrices
 #if !defined(N) || !defined(M)
 
+    // Initialize with all elements as a set value
     constexpr tmat(T value) noexcept {
 
         values.fill(value);
     }
 
     // Constructors take a list of rows, never a list of columns for consistency with value lists
+    // To hide whether the implementation is row major or column major
     constexpr tmat(const std::array<tvec<T, N>, M> &rows) noexcept {
 
         for (size_t i = 0; i < M; i++) {
@@ -103,6 +109,7 @@ public:
 
     }
 
+    // Casts distribute element-wise
     template <typename U>
     constexpr operator tmat<U, N, M>() const noexcept {
 
@@ -119,6 +126,7 @@ public:
         return result;
     }
 
+    // Return the number of elements
     constexpr size_t size() const noexcept {
 
         return N * M;
@@ -140,6 +148,9 @@ public:
 
 #endif
 
+    // Const and non-const getters
+    // Non-const returns a reference for modification
+    
     constexpr const T &get(size_t x, size_t y) const noexcept {
 
         return values[getIndex(x, y)];
@@ -151,6 +162,8 @@ public:
     }
 
     // TODO: Look into getting references here
+    
+    // Returns the row at index y as a vector
     constexpr tvec<T, N> getRow(size_t y) const noexcept {
 
         tvec<T, N> result;
@@ -163,6 +176,7 @@ public:
         return result;
     }
 
+    // Returns the column at index x as a vector
     constexpr tvec<T, M> getColumn(size_t x) const noexcept {
 
         tvec<T, M> result;
@@ -175,6 +189,7 @@ public:
         return result;
     }
 
+    // Overwrite the row at index y with a vector
     constexpr void setRow(size_t y, const tvec<T, N> &value) noexcept {
 
         for (size_t x = 0; x < N; x++) {
@@ -183,6 +198,7 @@ public:
         }
     }
 
+    // Overwrite the column at index x with a vector
     constexpr void setColumn(size_t x, const tvec<T, M> &value) noexcept {
 
         for (size_t y = 0; y < M; y++) {
@@ -191,6 +207,7 @@ public:
         }
     }
 
+    // Get an array of vectors containing all the rows of the matrix
     constexpr std::array<tvec<T, N>, M> rows() const noexcept {
 
         std::array<tvec<T, N>, M> result;
@@ -203,6 +220,7 @@ public:
         return result;
     }
 
+    // Get an array of vectors containing all the columns of the matrix
     constexpr std::array<tvec<T, M>, N> columns() const noexcept {
 
         std::array<tvec<T, M>, N> result;
@@ -223,13 +241,13 @@ public:
 
         tmat<T, N - 1, M - 1> result;
 
-        size_t ry = 0;
+        auto ry = size_t{0};
 
         for (size_t iy = 0; iy < M; iy++) {
 
             if (iy == y) continue;
 
-            size_t rx = 0;
+            auto rx = size_t{0};
 
             for (size_t ix = 0; ix < N; ix++) {
 
@@ -248,6 +266,7 @@ public:
 
 #endif
 
+    // Return the determinant of this matrix (enabled for square matrices)
     // TODO: Update tmat_aug to store determinant multipliers so that echelon form can be used for this
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
     constexpr T det() const noexcept {
@@ -258,11 +277,11 @@ public:
 
 #else
 
-        T result = 0;
-        T s = 1;
+        auto result = T{0};
+        auto s = T{1};
 
         // Can be any row
-        size_t row = 0;
+        auto row = size_t{0};
 
         for (size_t x = 0; x < N; x++) {
 
@@ -277,15 +296,18 @@ public:
 
     }
 
+    // Check whether this matrix is singular (enabled for square matrices)
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
     constexpr bool singular() const noexcept {
 
         return util::isZero(det());
     }
 
+    // Return the matrix of cofacators (enabled for square matrices)
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
     constexpr tmat<T, N, M> cofactors() const noexcept {
 
+        // Return [1] for 1x1 matrices
 #if defined(N) || defined(M)
 
         return tmat<T, 1, 1>::identity();
@@ -293,7 +315,7 @@ public:
 #else
 
         tmat<T, N, N> result;
-        T s = 1;
+        auto s = T{1};
 
         for (size_t x = 0; x < N; x++) {
 
@@ -313,6 +335,7 @@ public:
 
     }
 
+    // Return the transpose of this matrix
     constexpr tmat<T, M, N> transpose() const noexcept {
 
         tmat<T, M, N> result;
@@ -328,42 +351,41 @@ public:
         return result;
     }
 
+    // Return the adjoint matrix (enabled for square matrices)
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
     constexpr tmat<T, N, M> adjoint() const noexcept {
 
         return cofactors().transpose();
     }
 
+    // Return the inverse matrix (enabled for square matrices)
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
     constexpr tmat<T, N, M> inverse() const noexcept {
 
 #ifdef mth_ELIMINATION
 
-        auto id = identity().rows();
+        auto idRows = idRowsentity().rows();
 
-        tmat_aug<T, N, tvec<T, N>> augmented(*this, id);
+        tmat_aug<T, N, tvec<T, N>> augmented(*this, idRows);
 
         return tmat<T, N, N>(augmented.solve());
 
 #else
 
-        auto determinant = det();
-
-        return adjoint() / determinant;
+        return adjoint() / det();
 
 #endif 
 
     }
 
-    // Returns *this / det()
+    // Returns a scale of this matrix to have unit determinant
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
     constexpr tmat<T, N, M> unit() const noexcept {
 
-        auto determinant = det();
-
-        return *this / determinant;
+        return *this / det();
     }
 
+    // Factory for the identity matrix (enabled for square matrix types)
     template <size_t n = N, size_t m = M, typename std::enable_if<(n == m) && (n == N) && (m == M), int>::type = 0>
     constexpr static tmat<T, N, M> identity() noexcept {
         
@@ -379,6 +401,8 @@ public:
 
         return result;
     }
+
+    // Compound assignment operators
 
     constexpr tmat<T, N, M> &operator+=(const tmat<T, N, M> &rhs) noexcept {
 
@@ -431,7 +455,6 @@ public:
 
         return *this;
     }
-
 };
 
 #endif

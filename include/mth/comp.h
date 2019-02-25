@@ -48,7 +48,8 @@ namespace mth {
         constexpr tcomp(const T &a) noexcept
             :a(a) {}
 
-        // Const and non-const getters/setters
+        // Const and non-const getters
+        // Non-const returns a reference for modification
 #define BINDING(name, value) constexpr const T &name() const noexcept { return value; }\
                              constexpr T &name() noexcept { return value; }
 
