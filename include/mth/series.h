@@ -1,6 +1,8 @@
 #ifndef mth_series_h__
 #define mth_series_h__
 
+// TODO: Comment
+
 #include <functional>
 
 #include <mth/comp.h>

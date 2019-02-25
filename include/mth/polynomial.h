@@ -2,7 +2,7 @@
 #define mth_polynomial_h__
 
 /* <mth/polynomial.h> - polynomial header
- *      This include the class Polynomial which stores a polynomial with
+ *      This includes the class Polynomial which stores a polynomial with
  *      complex coefficients. Ring arithmetic operators are defined as well
  *      as member functions to find values such as the degree and roots of the
  *      stored polynomial. The polynomial can be evaluated at a point with
