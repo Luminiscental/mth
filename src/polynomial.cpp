@@ -3,11 +3,8 @@
 
 #include <mth/polynomial.h>
 
-mth::ComplexSolutions::ComplexSolutions() noexcept
-    :variableName('z'), inf(false) {}
-
 mth::ComplexSolutions::ComplexSolutions(std::unordered_set<mth::comp> finiteSet) noexcept
-    :variableName('z'), solutionSet(finiteSet), inf(false) {}
+    :solutionSet(finiteSet) {}
 
 char mth::ComplexSolutions::getVariableName() const {
 
@@ -77,8 +74,8 @@ std::ostream &mth::operator<<(std::ostream &stream, const mth::ComplexSolutions 
 
     } else {
 
-        size_t n = solutions.solutionSet.size();
-        size_t i = 0;
+        auto n = solutions.solutionSet.size();
+        auto i = size_t{0};
 
         for (auto root : solutions.solutionSet) {
 
@@ -116,7 +113,7 @@ std::ostream &mth::operator<<(std::ostream &lhs, const mth::PolynomialDegree &rh
 }
 
 mth::PolynomialDegree::PolynomialDegree(size_t value)
-    :value(value), inf(false) {}
+    :value(value) {}
 
 bool mth::PolynomialDegree::isInfinite() const {
 
@@ -135,14 +132,13 @@ mth::PolynomialDegree mth::PolynomialDegree::infinite() {
     return result;
 }
 
-mth::Polynomial::Polynomial() noexcept
-    :variableName('z'), rootsValid(true), roots(ComplexSolutions::infinite()), degreeValid(true), degree(PolynomialDegree::infinite()) {}
-
 mth::Polynomial mth::Polynomial::fromCoeffs(std::vector<mth::comp> coeffs) noexcept {
 
     mth::Polynomial result;
 
     result.coeffs = coeffs;
+
+    // Lazily evaluate these; i.e. don't now
     result.rootsValid = false;
     result.roots = ComplexSolutions::empty();
     result.degreeValid = false;
@@ -189,14 +185,14 @@ void mth::Polynomial::updateDegree() noexcept {
     degree = PolynomialDegree(l - 1);
 }
 
-std::vector<mth::comp> mth::Polynomial::getCoeffs() {
+const std::vector<mth::comp> &mth::Polynomial::getCoeffs() {
 
     updateValues();
 
     return coeffs;
 }
 
-std::vector<mth::comp> mth::Polynomial::getCoeffs() const {
+const std::vector<mth::comp> &mth::Polynomial::getCoeffs() const {
 
     return coeffs;
 }
@@ -229,20 +225,20 @@ mth::PolynomialDegree mth::Polynomial::getDegree() {
 
 mth::PolynomialDegree mth::Polynomial::getDegree() const {
 
-    Polynomial c = *this;
+    auto c = *this;
 
     return c.getDegree();
 }
 
-mth::comp mth::Polynomial::value(mth::comp x) const {
+mth::comp mth::Polynomial::value(mth::comp z) const {
 
-    mth::comp result = 0;
-    mth::comp v = 1;
+    auto result = mth::comp{0};
+    auto v = mth::comp{1};
 
     for (auto coeff : coeffs) {
 
         result += v * coeff;
-        v *= x;
+        v *= z;
     }
 
     return result;
@@ -465,11 +461,11 @@ mth::Polynomial mth::operator*(const mth::Polynomial &lhs, const mth::Polynomial
 
     for (size_t i = 0; i <= N + M; i++) {
 
-        comp c = 0;
+        auto c = comp{0};
 
         for (size_t j = 0; j <= i; j++) {
 
-            size_t k = i - j;
+            auto k = size_t{i - j};
 
             auto a = j > N ? 0 : lhs.getCoeff(j);
             auto b = k > M ? 0 : rhs.getCoeff(k);
@@ -526,7 +522,7 @@ std::ostream &mth::operator<<(std::ostream &lhs, const mth::Polynomial &rhs) {
 
     auto N = rhs.getDegree().getValue();
 
-    bool nonZero = false;
+    auto nonZero = false;
 
     auto cTerm = rhs.coeffs[0];
    
@@ -596,3 +592,4 @@ mth::Polynomial mth::integrate(const mth::Polynomial &polynomial) {
 
     return result;
 }
+
