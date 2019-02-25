@@ -21,7 +21,10 @@ namespace mth {
 
     private:
 
-            std::function<comp(size_t)> generatingFunction;
+            std::function<comp(size_t)> generatingFunction = [] (size_t n) {
+
+                return comp(0);
+            };
 
             bool isTrivial = false;
             Polynomial trivialSeries;
@@ -29,9 +32,12 @@ namespace mth {
     public:
 
         // Default initializes to zero
-        PowerSeries();
+        PowerSeries() = default;
+
+        // Initialize from a generating function
         PowerSeries(std::function<comp(size_t)> generatingFunction);
 
+        // Get the coefficient at an index
         comp getCoeff(size_t index) const;
 
         // TODO: Transforms (i.e. x -> (x - a))
@@ -40,12 +46,17 @@ namespace mth {
         // Returns the series evaluated at z
         Series series(const comp &z) const;
 
+        // Create a finite power series from a polynomial
+        // TODO: Have this as a cast constructor too maybe
         static PowerSeries finite(const Polynomial &equivalent);
 
+        // Create a power series from a recursive relation of the coefficients
         // TODO: Include n as a parameter
         static PowerSeries recursive(std::function<comp(comp)> recursion, const comp &constant);
     };
 
+    // Differentiation and integration of power series
+    
     PowerSeries differentiate(const PowerSeries &series);
     PowerSeries integrate(const PowerSeries &series);
 }

@@ -30,7 +30,7 @@ mth::Polynomial lerpTowards(std::function<mth::comp(mth::comp)> xTransform, std:
     }
 
     // number of vertices to interpolate
-    auto n = 6;
+    auto n = size_t{6};
 
     auto lastIndex = result.size() - 1;
 

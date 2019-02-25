@@ -3,7 +3,7 @@ project (mth)
 
 # YCM config
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fbuiltin -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O0 -fbuiltin -g")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json")

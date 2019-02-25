@@ -5,14 +5,6 @@
 
 #include <mth/numeric.h>
 
-mth::PowerSeries::PowerSeries() {
-
-    generatingFunction = [] (size_t n) {
-
-        return comp(0);
-    };
-}
-
 mth::PowerSeries::PowerSeries(std::function<comp(size_t)> generatingFunction)
     :generatingFunction(generatingFunction) {}
 
@@ -31,7 +23,7 @@ mth::PowerSeries mth::PowerSeries::finite(const mth::Polynomial &equivalent) {
         return equivalent.getCoeff(n);
     };
 
-    PowerSeries result(gen);
+    PowerSeries result{gen};
 
     result.isTrivial = true;
     result.trivialSeries = equivalent;
@@ -43,7 +35,7 @@ mth::PowerSeries mth::PowerSeries::recursive(std::function<comp(comp)> recursion
 
     auto generatingFunction = [&] (size_t index) {
 
-        comp accumulate = constant;
+        auto accumulate = constant;
 
         while (index > 0) {
 
@@ -68,14 +60,14 @@ mth::Series mth::PowerSeries::series(const mth::comp &z) const {
 
         std::vector<comp> result;
 
-        PolynomialDegree deg = trivialSeries.getDegree();
+        auto deg = trivialSeries.getDegree();
         if (deg.isInfinite()) return mth::Series::finite(0);
 
-        comp acc = 1;
+        auto acc = comp{1};
 
         for (size_t i = 0; i <= deg.getValue(); i++) {
 
-            comp coeff = trivialSeries.getCoeff(i);
+            auto coeff = trivialSeries.getCoeff(i);
             result.push_back(coeff * acc);
 
             acc *= z;
@@ -100,7 +92,7 @@ mth::PowerSeries mth::differentiate(const mth::PowerSeries &series) {
 
         auto c = series.getCoeff(index + 1);
 
-        return c * comp(index + 1);
+        return c * comp{static_cast<double>(index + 1)};
     };
 
     return PowerSeries(generatingFunction);
@@ -110,11 +102,11 @@ mth::PowerSeries mth::integrate(const mth::PowerSeries &series) {
 
     auto generatingFunction = [&] (size_t index) {
 
-        if (index == 0) return comp(0);
+        if (index == 0) return comp{0};
 
         auto c = series.getCoeff(index);
 
-        return c / comp(index);
+        return c / comp{static_cast<double>(index)};
     };
 
     return PowerSeries(generatingFunction);
