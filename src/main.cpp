@@ -307,10 +307,8 @@ TEST(PowerSeriesTest, TrivialLimitIsAccurate) {
     mth_ASSERT_EQ(pol.value(z), trivialSeries.series(z).getLimit());
 }
 
-// TODO: Test mat
 // TODO: Test quat
 // TODO: Test polynomial
-// TODO: Test powerseries
 // TODO: Test numeric functions
 
 int main(int argc, char **argv) {
