@@ -4,18 +4,19 @@
 #include <mth/numeric.h>
 #include <mth/polynomial.h>
 
+// Return a polynomial interpolated through points (xTransform(t), yFunc(t)) with t approaching zero from above on the real axis
 mth::Polynomial lerpTowards(std::function<mth::comp(mth::comp)> xTransform, std::function<mth::comp(size_t,mth::comp)> yFunc) {
 
     using std::pow;
     using std::abs;
 
     std::vector<mth::cvec2> result;
-    mth::comp lastX, lastY;
 
     for (size_t i = 2; i < 100; i++) {
 
         // TODO: Parametrize this sequence or choose it contextually
         auto approachingZero = pow(mth::comp(2), -mth::comp(i));
+
         auto x = xTransform(approachingZero);
         auto y = yFunc(i, x);
 
@@ -26,23 +27,20 @@ mth::Polynomial lerpTowards(std::function<mth::comp(mth::comp)> xTransform, std:
         }
 
         result.push_back(mth::cvec2(x, y));
-
-        auto deltaX = abs(x - lastX);
-        auto deltaY = abs(y - lastY);
-
-        lastX = x;
-        lastY = y;
     }
 
     // number of vertices to interpolate
     auto n = 6;
 
     auto lastIndex = result.size() - 1;
+
+    // If there are less than n points use all of them
     auto startIndex = lastIndex > (n - 1) ? lastIndex - n : 0;
 
     return mth::Polynomial::interpolate(result, startIndex, lastIndex);
 }
 
+// Returns the shank transform of a sequence of partial sums to accelerate convergence
 std::function<mth::comp(size_t)> shankTransform(const std::function<mth::comp(size_t)> &partialSum, const std::function<mth::comp(size_t)> &sequence) {
 
     return [partialSum, sequence] (size_t n) {
@@ -55,6 +53,7 @@ std::function<mth::comp(size_t)> shankTransform(const std::function<mth::comp(si
 
         auto denom = nextValue - currentValue;
 
+        // Avoid division by zero
         if (mth::util::isZero(denom)) {
 
             return nextSum;
@@ -64,6 +63,7 @@ std::function<mth::comp(size_t)> shankTransform(const std::function<mth::comp(si
     };
 }
 
+// Returns the aitken delta-squared transform of a sequence to accelerate convergence
 std::function<mth::comp(size_t)> aitkenTransform(const std::function<mth::comp(size_t)> &sequence) {
 
     return [sequence] (size_t n) {
@@ -78,6 +78,7 @@ std::function<mth::comp(size_t)> aitkenTransform(const std::function<mth::comp(s
 
         auto denom = step - curr + prev;
 
+        // Avoid division by zero
         if (mth::util::isZero(denom)) {
 
             return next;
@@ -111,7 +112,7 @@ mth::comp mth::seriesLimit(const std::function<mth::comp(size_t)> &partialSum, c
     return pol.getCoeff(0);
 }
 
-mth::comp mth::lowerLimit(const std::function<mth::comp(mth::comp)> &function, mth::comp input) {
+mth::comp mth::lowerLimit(const std::function<mth::comp(mth::comp)> &function, const mth::comp &input) {
 
     auto x = [&] (comp small) { return input - small; };
     auto y = [&] (size_t index, comp x) { return function(x); };
@@ -121,7 +122,7 @@ mth::comp mth::lowerLimit(const std::function<mth::comp(mth::comp)> &function, m
     return pol.getCoeff(0);
 }
 
-mth::comp mth::upperLimit(const std::function<mth::comp(mth::comp)> &function, mth::comp input) {
+mth::comp mth::upperLimit(const std::function<mth::comp(mth::comp)> &function, const mth::comp &input) {
 
     auto x = [&] (comp small) { return input + small; };
     auto y = [&] (size_t index, comp x) { return function(x); };
@@ -131,7 +132,7 @@ mth::comp mth::upperLimit(const std::function<mth::comp(mth::comp)> &function, m
     return pol.getCoeff(0);
 }
 
-mth::comp mth::limit(const std::function<mth::comp(mth::comp)> &function, mth::comp input) {
+mth::comp mth::limit(const std::function<mth::comp(mth::comp)> &function, const mth::comp &input) {
 
     return lowerLimit(function, input);
 }

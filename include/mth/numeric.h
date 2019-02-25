@@ -13,6 +13,7 @@
 #include <mth/comp.h>
 
 // TODO: Limit of recursive sequence
+// TODO: Less naive methods
 
 namespace mth {
 
@@ -22,14 +23,14 @@ namespace mth {
     // Returns an approximation of the limit at infinity of a series
     comp seriesLimit(const std::function<comp(size_t)> &partialSum, const std::function<comp(size_t)> &sequence);
 
-    // Returns the limit of the sequence function(input - 1/n)
-    comp lowerLimit(const std::function<comp(comp)> &function, comp input);
+    // Returns the limit of the sequence approaching from below (parallel with real axis)
+    comp lowerLimit(const std::function<comp(comp)> &function, const comp &input);
 
-    // Returns the limit of the sequence function(input + 1/n)
-    comp upperLimit(const std::function<comp(comp)> &function, comp input);
+    // Returns the limit of the sequence approaching from above (parallel with real axis)
+    comp upperLimit(const std::function<comp(comp)> &function, const comp &input);
 
     // Defaults to lower limit
-    comp limit(const std::function<comp(comp)> &function, comp input);
+    comp limit(const std::function<comp(comp)> &function, const comp &input);
 
     // Returns the limit of the sequence function(n)
     comp limitInfPos(const std::function<comp(comp)> &function);
