@@ -364,9 +364,9 @@ public:
 
 #ifdef mth_ELIMINATION
 
-        auto idRows = idRowsentity().rows();
+        auto id = identity().rows();
 
-        tmat_aug<T, N, tvec<T, N>> augmented(*this, idRows);
+        tmat_aug<T, N, tvec<T, N>> augmented(*this, id);
 
         return tmat<T, N, N>(augmented.solve());
 
