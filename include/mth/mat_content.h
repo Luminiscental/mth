@@ -52,11 +52,8 @@ public:
     template <typename _T, size_t _N, size_t _M>
     friend class tmat;
 
-    // Default initialize to zero
-    constexpr tmat() noexcept {
-
-        values.fill(0);
-    }
+    // Default initialize
+    constexpr tmat() noexcept {}
 
     // These are ambiguous / redundant for 1x1 matrices
 #if !defined(N) || !defined(M)
