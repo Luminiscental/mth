@@ -52,15 +52,15 @@ if(CMAKE_VERSION VERSION_LESS 2.8.11)
 
 endif()
 
-file(GLOB sources "${CMAKE_CURRENT_BINARY_DIR}/src/*.cpp")
-list(REMOVE_ITEM sources "${CMAKE_CURRENT_BINARY_DIR}/src/main.cpp")
+file(GLOB sources "${PROJECT_SOURCE_DIR}/src/*.cpp")
+list(REMOVE_ITEM sources "${PROJECT_SOURCE_DIR}/src/main.cpp")
 
 add_library(mth STATIC ${sources})
-add_executable(mth_test "${CMAKE_CURRENT_BINARY_DIR}/src/main.cpp")
+add_executable(mth_test "${PROJECT_SOURCE_DIR}/src/main.cpp")
 add_test(NAME tests COMMAND mth_test)
 
-include_directories(mth "${CMAKE_CURRENT_BINARY_DIR}/include")
-include_directories(mth_test "${CMAKE_CURRENT_BINARY_DIR}/include")
+include_directories(mth "${PROJECT_SOURCE_DIR}/include")
+include_directories(mth_test "${PROJECT_SOURCE_DIR}/include")
 
 target_link_libraries(mth_test mth gtest_main)
 
