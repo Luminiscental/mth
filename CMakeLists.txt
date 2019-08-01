@@ -52,10 +52,10 @@ if(CMAKE_VERSION VERSION_LESS 2.8.11)
 
 endif()
 
-file(GLOB sources "${PROJECT_SOURCE_DIR}/src/*.cpp")
-list(REMOVE_ITEM sources "${PROJECT_SOURCE_DIR}/src/main.cpp")
+file(GLOB MTH_SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
+list(REMOVE_ITEM MTH_SOURCES "${PROJECT_SOURCE_DIR}/src/main.cpp")
 
-add_library(mth STATIC ${sources})
+add_library(mth STATIC ${MTH_SOURCES})
 add_executable(mth_test "${PROJECT_SOURCE_DIR}/src/main.cpp")
 add_test(NAME tests COMMAND mth_test)
 
