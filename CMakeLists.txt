@@ -56,11 +56,9 @@ file(GLOB MTH_SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 list(REMOVE_ITEM MTH_SOURCES "${PROJECT_SOURCE_DIR}/src/main.cpp")
 
 add_library(mth STATIC ${MTH_SOURCES})
+target_include_directories(mth PUBLIC "${PROJECT_SOURCE_DIR}/include")
+
 add_executable(mth_test "${PROJECT_SOURCE_DIR}/src/main.cpp")
-add_test(NAME tests COMMAND mth_test)
-
-include_directories(mth "${PROJECT_SOURCE_DIR}/include")
-include_directories(mth_test "${PROJECT_SOURCE_DIR}/include")
-
 target_link_libraries(mth_test mth gtest_main)
 
+add_test(NAME tests COMMAND mth_test)
