@@ -429,7 +429,7 @@ namespace mth {
 
             for (size_t y = 0; y < M; y++) {
 
-                result.get(x, y) = tvec<T, N>::dot(lhs.getRow(y), rhs.getColumn(x));
+                result.get(x, y) = vec::dot(lhs.getRow(y), rhs.getColumn(x));
             }
         }
 
@@ -451,7 +451,7 @@ namespace mth {
 
             for (size_t y = 0; y < M; y++) {
 
-                result.get(y) = tvec<T, N>::dot(lhs.getRow(y), rhs);
+                result.get(y) = vec::dot(lhs.getRow(y), rhs);
             }
         }
 

@@ -12,6 +12,7 @@
 #include <array>
 #include <type_traits>
 #include <cmath>
+#include <functional>
 
 #include <mth/mth.h>
 #include <mth/comp.h>
@@ -210,6 +211,19 @@ namespace mth {
             return result;
         }
 
+        template <typename R>
+        constexpr tvec<R, N> map(const std::function<R(T)> &functor) const noexcept {
+
+            tvec<R, N> result;
+
+            for (size_t i = 0; i < N; i++) {
+
+                result.get(i) = functor(get(i));
+            }
+
+            return result;
+        }
+
         // Type is cast to double for more accurate square rooting
         constexpr double magn() const noexcept {
 
@@ -228,19 +242,6 @@ namespace mth {
             }
 
             return result;
-        }
-
-        constexpr static tmat<T, N, N> outerProduct(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept {
-
-            auto lMat = mth::tmat<T, 1, N>(lhs);
-            auto rMatT = mth::tmat<T, N, 1>(rhs);
-
-            return lMat * rMatT;
-        }
-
-        constexpr static T dot(const mth::tvec<T, N> &lhs, const mth::tvec<T, N> &rhs) {
-
-            return lhs.dot(rhs);
         }
 
         // Returns a unit vector in the same direction as *this
@@ -412,6 +413,37 @@ namespace mth {
     CREATE_ALIASES(9)
 
 #undef CREATE_ALIASES
+
+    namespace vec {
+
+        template <typename T, size_t N>
+        constexpr tvec<T, N> hadamard(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept {
+
+            tvec<T, N> result;
+
+            for (size_t i = 0; i < N; i++) {
+
+                result.get(i) = lhs.get(i) * rhs.get(i);
+            }
+
+            return result;
+        }
+
+        template <typename T, size_t N>
+        constexpr tmat<T, N, N> outerProduct(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept {
+
+            auto lMat = mth::tmat<T, 1, N>(lhs);
+            auto rMatT = mth::tmat<T, N, 1>(rhs);
+
+            return lMat * rMatT;
+        }
+
+        template <typename T, size_t N>
+        constexpr T dot(const mth::tvec<T, N> &lhs, const mth::tvec<T, N> &rhs) {
+
+            return lhs.dot(rhs);
+        }
+    }
 
     // Constants for the axes in 3-dimensions
 
