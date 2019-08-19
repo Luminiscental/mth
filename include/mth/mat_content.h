@@ -53,7 +53,7 @@ public:
     friend class tmat;
 
     // Default initialize
-    constexpr tmat() noexcept {}
+    constexpr tmat() noexcept :values{} {}
 
     // These are ambiguous / redundant for 1x1 matrices
 #if !defined(N) || !defined(M)

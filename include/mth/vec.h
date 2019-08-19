@@ -36,13 +36,7 @@ namespace mth {
     public:
 
         constexpr tvec() noexcept 
-            :values{} {
-
-            for (size_t i = 0; i < N; i++) {
-
-                values[i] = static_cast<T>(0);
-            }
-        }
+            :values{} {}
 
         constexpr tvec(const std::array<T, N> &values) noexcept
             :values(values) {}
