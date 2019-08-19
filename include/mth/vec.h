@@ -422,8 +422,13 @@ namespace mth {
          * Apply a functor element-wise over multiple vectors, the multiple parameter version of
          * tvec::map.
          *
-         * `map(functor, vec0, vec1, ...)` is loosely equivalent to:
-         * `tvec{functor(x0.get(0), x1.get(0), ...), functor(x0.get(1), x1.get(1), ...), ...}`
+         * `map(functor, vec0, vec1, ...)`
+         *
+         * is loosely equivalent to:
+         *
+         * `tvec{functor(vec0.get(0), vec1.get(0), ...),
+         *       functor(vec0.get(1), vec1.get(1), ...),
+         *       ...}`
          *
          */
         template <typename F, typename... Args, size_t N>
