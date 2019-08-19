@@ -211,10 +211,11 @@ namespace mth {
             return result;
         }
 
-        template <typename R>
-        constexpr tvec<R, N> map(const std::function<R(T)> &functor) const noexcept {
+        template <typename F>
+        constexpr auto map(const F &functor) const noexcept {
 
-            tvec<R, N> result;
+            using ReturnType = decltype(functor(get(0)));
+            tvec<ReturnType, N> result;
 
             for (size_t i = 0; i < N; i++) {
 
@@ -415,6 +416,29 @@ namespace mth {
 #undef CREATE_ALIASES
 
     namespace vec {
+
+        /**
+         *
+         * Apply a functor element-wise over multiple vectors, the multiple parameter version of
+         * tvec::map.
+         *
+         * `map(functor, vec0, vec1, ...)` is loosely equivalent to:
+         * `tvec{functor(x0.get(0), x1.get(0), ...), functor(x0.get(1), x1.get(1), ...), ...}`
+         *
+         */
+        template <typename F, typename... Args, size_t N>
+        constexpr auto map(F functor, tvec<Args, N>... args) {
+
+            using ReturnType = decltype(functor(args.get(0)...));
+            tvec<ReturnType, N> result;
+
+            for (size_t i = 0; i < N; i++) {
+
+                result.get(i) = functor(args.get(i)...);
+            }
+
+            return result;
+        }
 
         template <typename T, size_t N>
         constexpr tvec<T, N> hadamard(const tvec<T, N> &lhs, const tvec<T, N> &rhs) noexcept {

@@ -160,6 +160,25 @@ TEST(VecTest, IteratesFully) {
     mth_ASSERT_EQ(result, 1.2 + 1.3 + 1.4 + 1.5 + 1.6);
 }
 
+TEST(VecTest, MapsCorrectly) {
+
+    mth::ivec3 test_vec{1, 4, -3};
+    auto mapped = test_vec.map([](auto c) { return c * c + 2; });
+
+    mth_ASSERT_EQ(mapped, (mth::ivec3{3, 18, 11}));
+}
+
+TEST(VecTest, MultiParamMapCorrectly) {
+
+    mth::ivec5 vec1{1, 5, -4, -13, 4};
+    mth::ivec5 vec2{4, -6, 3, -12, 0};
+
+    auto sum_map = mth::vec::map([](auto a, auto b) { return a + b; }, vec1, vec2);
+    auto sum_direct = vec1 + vec2;
+
+    mth_ASSERT_EQ(sum_map, sum_direct);
+}
+
 TEST(VecTest, DotProdCorrectly) {
 
     auto x = mth::ivec3(1, 3, 2);
