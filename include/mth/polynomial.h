@@ -73,7 +73,7 @@ namespace mth {
         bool inf = false;
 
         // Initializers private to hide implementation
-        ComplexSolutions() noexcept = default;
+        ComplexSolutions() = default;
         ComplexSolutions(std::unordered_set<comp> finiteSet) noexcept;
 
     public:
