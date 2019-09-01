@@ -76,16 +76,24 @@ namespace mth {
         template <>
         constexpr bool isZero(const float &x) noexcept {
 
+            // for now cmath functions aren't constexpr
+            /*
             using std::abs;
             auto magnitude = abs(x);
+            */
+            auto magnitude = x < 0 ? -x : x;
             return magnitude <= mth::epsilon<decltype(magnitude)>;
         }
 
         template <>
         constexpr bool isZero(const double &x) noexcept {
 
+            // for now cmath functions aren't constexpr
+            /*
             using std::abs;
             auto magnitude = abs(x);
+            */
+            auto magnitude = x < 0 ? -x : x;
             return magnitude <= mth::epsilon<decltype(magnitude)>;
         }
 

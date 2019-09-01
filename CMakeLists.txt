@@ -4,6 +4,7 @@ project (mth)
 option(TESTS "Whether to compile test program" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json")
