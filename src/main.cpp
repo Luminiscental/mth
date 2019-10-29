@@ -9,6 +9,16 @@
 
 #include <mth/mth.hpp>
 
+TEST(GenericUtilities, CanGetIntZero)
+{
+    auto zero = mth::util::zero<int>();
+
+    static_assert(
+        std::is_same_v<decltype(zero), int>,
+        "expected mth::util::zero<int>() to be a int");
+    ASSERT_EQ(zero, 0) << "mth::util::zero<int>() is not 0";
+}
+
 TEST(GenericUtilities, CanGetDoubleZero)
 {
     auto zero = mth::util::zero<double>();
@@ -17,6 +27,38 @@ TEST(GenericUtilities, CanGetDoubleZero)
         std::is_same_v<decltype(zero), double>,
         "expected mth::util::zero<double>() to be a double");
     ASSERT_EQ(zero, 0.0) << "mth::util::zero<double>() is not 0.0";
+}
+
+TEST(GenericUtilities, IntZeroIsZero)
+{
+    auto zero = mth::util::zero<int>();
+    ASSERT_TRUE(mth::util::isZero(zero))
+        << "mth::util::zero<int>() doesn't satisfy mth::util::isZero()";
+}
+
+TEST(GenericUtilities, DoubleZeroIsZero)
+{
+    auto zero = mth::util::zero<double>();
+    ASSERT_TRUE(mth::util::isZero(zero))
+        << "mth::util::zero<double>() doesn't satisfy mth::util::isZero()";
+}
+
+TEST(GenericUtilities, IntOneIsInZeroToTwoOpen)
+{
+    ASSERT_TRUE(mth::util::inRangeOpen<int>(1, 0, 2))
+        << "mth::util::inRangeOpen<int> thinks 1 isn't in (0,2)";
+}
+
+TEST(GenericUtilities, IntOneIsInOneToThreeClosed)
+{
+    ASSERT_TRUE(mth::util::inRangeClosed<int>(1, 1, 3))
+        << "mth::util::inRangeClosed<int> thinks 1 isn't in [1,3]";
+}
+
+TEST(GenericUtilities, DoubleTenthInZeroToOneOpen)
+{
+    ASSERT_TRUE(mth::util::inRangeOpen<double>(0.1, 0, 1))
+        << "mth::util::inRangeOpen<double> thinks 0.1 isn't in (0,1)";
 }
 
 int main(int argc, char** argv)
