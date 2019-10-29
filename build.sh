@@ -2,6 +2,8 @@
 
 mkdir -p build
 
+clang-format -i -style=file ./src/* ./include/**/*
+
 pushd build
 
 rm -f CMakeCache.txt
