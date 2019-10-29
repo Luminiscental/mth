@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include <mth/mth.hpp>
+#include <mth/vec.hpp>
 
 TEST(GenericUtilities, CanGetIntZero)
 {
@@ -59,6 +60,25 @@ TEST(GenericUtilities, DoubleTenthInZeroToOneOpen)
 {
     ASSERT_TRUE(mth::util::inRangeOpen<double>(0.1, 0, 1))
         << "mth::util::inRangeOpen<double> thinks 0.1 isn't in (0,1)";
+}
+
+TEST(Vectors, CanGetComponent)
+{
+    mth::tvec<char, 3> acz = {'a', 'c', 'z'};
+
+    ASSERT_EQ(acz.get(1), 'c') << "vector { 'a', 'c', 'z' }.get(1) was not 'c'";
+}
+
+TEST(Vectors, IntVecDefaultInitIsZero)
+{
+    mth::tvec<int, 7> vector;
+
+    for (size_t i = 0; i < 7; i++)
+    {
+        ASSERT_EQ(vector.get(i), 0)
+            << "component " << i
+            << " of default initialized mth::tvec<int, 7> was not 0";
+    }
 }
 
 int main(int argc, char** argv)
