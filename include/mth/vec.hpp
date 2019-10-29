@@ -38,4 +38,31 @@ namespace mth
     {
         return tvecSumHelper(std::make_index_sequence<N>{}, lhs, rhs);
     }
+
+    // Aliases for N=2..4 with prefixes: - f for float
+    //                                   - d for double
+    //                                   - i for int
+    //                                   - u for unsigned int
+
+    using fvec2 = tvec<float, 2>;
+    using fvec3 = tvec<float, 3>;
+    using fvec4 = tvec<float, 4>;
+
+    using dvec2 = tvec<double, 2>;
+    using dvec3 = tvec<double, 3>;
+    using dvec4 = tvec<double, 4>;
+
+    using ivec2 = tvec<int, 2>;
+    using ivec3 = tvec<int, 3>;
+    using ivec4 = tvec<int, 4>;
+
+    using uvec2 = tvec<unsigned int, 2>;
+    using uvec3 = tvec<unsigned int, 3>;
+    using uvec4 = tvec<unsigned int, 4>;
+
+    // Aliases for default type is float
+
+    using vec2 = fvec2;
+    using vec3 = fvec3;
+    using vec4 = fvec4;
 }

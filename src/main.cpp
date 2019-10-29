@@ -101,6 +101,29 @@ TEST(Vectors, AdditionIsComponentWise)
     }
 }
 
+TEST(Vectors, TypeAliasesExist)
+{
+    static_assert(
+        std::is_same_v<mth::dvec2, mth::tvec<double, 2>>,
+        "expected alias mth::dvec2 to be mth::tvec<double, 2>");
+    static_assert(
+        std::is_same_v<mth::ivec4, mth::tvec<int, 4>>,
+        "expected alias mth::ivec4 to be mth::tvec<int, 4>");
+    static_assert(
+        std::is_same_v<mth::fvec3, mth::tvec<float, 3>>,
+        "expected alias mth::fvec3 to be mth::tvec<float, 3>");
+    static_assert(
+        std::is_same_v<mth::uvec2, mth::tvec<unsigned int, 2>>,
+        "expected alias mth::uvec2 to be mth::tvec<unsigned int, 2>");
+
+    static_assert(
+        std::is_same_v<mth::vec3, mth::fvec3>,
+        "expected alias mth::vec3 to be mth::fvec3");
+    static_assert(
+        std::is_same_v<mth::vec4, mth::fvec4>,
+        "expected alias mth::vec4 to be mth::fvec4");
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
