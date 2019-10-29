@@ -81,6 +81,26 @@ TEST(Vectors, IntVecDefaultInitIsZero)
     }
 }
 
+TEST(Vectors, AdditionIsComponentWise)
+{
+    mth::tvec<float, 3> vectorLHS = {0.1f, 0.5f, -1.f};
+    mth::tvec<float, 3> vectorRHS = {0.2f, -2.3f, 5.9f};
+
+    auto sum = vectorLHS + vectorRHS;
+
+    static_assert(
+        std::is_same_v<decltype(sum), mth::tvec<float, 3>>,
+        "expected sum of two vectors to be of the same type as the operands");
+
+    for (size_t i = 0; i < 3; i++)
+    {
+        ASSERT_EQ(sum.get(i), vectorLHS.get(i) + vectorRHS.get(i))
+            << "float component " << i
+            << " of a vector sum was not equal to the sum of the respective "
+               "components of the operands";
+    }
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
