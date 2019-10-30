@@ -203,6 +203,20 @@ TEST(Vectors, VectorArithmeticCanBeConstexpr)
         "expected arithmetic to produce consistent vector type");
 }
 
+TEST(Vectors, IteratorsCoverComponents)
+{
+    mth::uvec4 vector = {0U, 5U, 2U, 7U};
+
+    size_t i = 0;
+    for (auto elem : vector)
+    {
+        ASSERT_EQ(elem, vector.get(i))
+            << "iteration " << i
+            << " over vector was not equal to the component at the same index";
+        i++;
+    }
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

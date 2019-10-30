@@ -24,6 +24,66 @@ namespace mth
         {
             return _array.at(index);
         }
+
+        constexpr auto begin() const noexcept
+        {
+            return _array.cbegin();
+        }
+
+        constexpr auto begin() noexcept
+        {
+            return _array.begin();
+        }
+
+        constexpr auto cbegin() const noexcept
+        {
+            return _array.cbegin();
+        }
+
+        constexpr auto end() noexcept
+        {
+            return _array.end();
+        }
+
+        constexpr auto end() const noexcept
+        {
+            return _array.cend();
+        }
+
+        constexpr auto cend() const noexcept
+        {
+            return _array.cend();
+        }
+
+        constexpr auto rbegin() noexcept
+        {
+            return _array.rbegin();
+        }
+
+        constexpr auto rbegin() const noexcept
+        {
+            return _array.rbegin();
+        }
+
+        constexpr auto crbegin() const noexcept
+        {
+            return _array.crbegin();
+        }
+
+        constexpr auto rend() noexcept
+        {
+            return _array.rend();
+        }
+
+        constexpr auto rend() const noexcept
+        {
+            return _array.rend();
+        }
+
+        constexpr auto crend() const noexcept
+        {
+            return _array.crend();
+        }
     };
 
     template <typename T, size_t N, size_t... Ns>
