@@ -190,6 +190,19 @@ TEST(Vectors, ScalarDivisionDistributesComponentWise)
     }
 }
 
+TEST(Vectors, VectorArithmeticCanBeConstexpr)
+{
+    constexpr auto vec = 2.0f
+                             * (mth::vec3{1.0f, 0.5f, 0.2f}
+                                - mth::vec3{1.0f, 1.0f, -1.0f} * 0.1f)
+                             / 3.0f
+                         + mth::vec3{0.1f, 0.2f, 0.3f};
+
+    static_assert(
+        std::is_same_v<decltype(vec), const mth::vec3>,
+        "expected arithmetic to produce consistent vector type");
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
