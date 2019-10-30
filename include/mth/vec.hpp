@@ -47,6 +47,13 @@ namespace mth
         return {(scalar * vector.get(Ns))...};
     }
 
+    template <typename T, size_t N, size_t... Ns>
+    constexpr tvec<T, N>
+    tvecReduceHelper(std::index_sequence<Ns...>, T scalar, tvec<T, N> vector)
+    {
+        return {(vector.get(Ns) / scalar)...};
+    }
+
     template <typename T, size_t N>
     constexpr tvec<T, N> operator+(tvec<T, N> lhs, tvec<T, N> rhs)
     {
@@ -69,6 +76,12 @@ namespace mth
     constexpr tvec<T, N> operator*(tvec<T, N> lhs, T rhs)
     {
         return tvecScaleHelper(std::make_index_sequence<N>{}, rhs, lhs);
+    }
+
+    template <typename T, size_t N>
+    constexpr tvec<T, N> operator/(tvec<T, N> lhs, T rhs)
+    {
+        return tvecReduceHelper(std::make_index_sequence<N>{}, rhs, lhs);
     }
 
     // Aliases for N=2..4 with prefixes: - f for float

@@ -170,6 +170,26 @@ TEST(Vectors, ScalarMultiplicationDistributesComponentWise)
     }
 }
 
+TEST(Vectors, ScalarDivisionDistributesComponentWise)
+{
+    mth::tvec<float, 4> vector = {0.1f, 0.5f, -0.7f, 1.95f};
+    float scalar               = 5.0f;
+
+    auto reduction = vector / scalar;
+
+    static_assert(
+        std::is_same_v<decltype(reduction), decltype(vector)>,
+        "expected scalar division to result in the vector type");
+
+    for (size_t i = 0; i < 4; i++)
+    {
+        ASSERT_EQ(reduction.get(i), vector.get(i) / scalar)
+            << "component " << i
+            << " of vector reduced by scalar was not the same as the original "
+               "component divided by the scalar";
+    }
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
