@@ -146,6 +146,30 @@ TEST(Vectors, SubtractionIsComponentWise)
     }
 }
 
+TEST(Vectors, ScalarMultiplicationDistributesComponentWise)
+{
+    mth::tvec<int, 7> vector = {1, 5, -2, 0, 0, 3, -4};
+    int scalar               = 5;
+
+    auto product = scalar * vector;
+
+    static_assert(
+        std::is_same_v<decltype(scalar * vector), decltype(vector * scalar)>,
+        "expected scalar product to allow commutative syntax");
+
+    static_assert(
+        std::is_same_v<decltype(product), decltype(vector)>,
+        "expected scalar product to result in the vector type");
+
+    for (size_t i = 0; i < 7; i++)
+    {
+        ASSERT_EQ(product.get(i), scalar * vector.get(i))
+            << "component " << i
+            << " of product of scalar with vector was not the same as the "
+               "scalar multiplied by the component";
+    }
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
