@@ -81,26 +81,6 @@ TEST(Vectors, IntVecDefaultInitIsZero)
     }
 }
 
-TEST(Vectors, AdditionIsComponentWise)
-{
-    mth::tvec<float, 3> vectorLHS = {0.1f, 0.5f, -1.f};
-    mth::tvec<float, 3> vectorRHS = {0.2f, -2.3f, 5.9f};
-
-    auto sum = vectorLHS + vectorRHS;
-
-    static_assert(
-        std::is_same_v<decltype(sum), mth::tvec<float, 3>>,
-        "expected sum of two vectors to be of the same type as the operands");
-
-    for (size_t i = 0; i < 3; i++)
-    {
-        ASSERT_EQ(sum.get(i), vectorLHS.get(i) + vectorRHS.get(i))
-            << "float component " << i
-            << " of a vector sum was not equal to the sum of the respective "
-               "components of the operands";
-    }
-}
-
 TEST(Vectors, TypeAliasesExist)
 {
     static_assert(
@@ -122,6 +102,48 @@ TEST(Vectors, TypeAliasesExist)
     static_assert(
         std::is_same_v<mth::vec4, mth::fvec4>,
         "expected alias mth::vec4 to be mth::fvec4");
+}
+
+TEST(Vectors, AdditionIsComponentWise)
+{
+    mth::tvec<float, 3> vectorLHS = {0.1f, 0.5f, -1.f};
+    mth::tvec<float, 3> vectorRHS = {0.2f, -2.3f, 5.9f};
+
+    auto sum = vectorLHS + vectorRHS;
+
+    static_assert(
+        std::is_same_v<decltype(sum), mth::tvec<float, 3>>,
+        "expected sum of two vectors to be of the same type as the operands");
+
+    for (size_t i = 0; i < 3; i++)
+    {
+        ASSERT_EQ(sum.get(i), vectorLHS.get(i) + vectorRHS.get(i))
+            << "float component " << i
+            << " of a vector sum was not equal to the sum of the respective "
+               "components of the operands";
+    }
+}
+
+TEST(Vectors, SubtractionIsComponentWise)
+{
+    mth::tvec<double, 3> vectorLHS = {-0.9, 0.2, 1.3};
+    mth::tvec<double, 3> vectorRHS = {0.65, 0.3, -1.9};
+
+    auto difference = vectorLHS - vectorRHS;
+
+    static_assert(
+        std::is_same_v<decltype(difference), mth::tvec<double, 3>>,
+        "expected difference of two vectors to be of the same type as the "
+        "operands");
+
+    for (size_t i = 0; i < 3; i++)
+    {
+        ASSERT_EQ(difference.get(i), vectorLHS.get(i) - vectorRHS.get(i))
+            << "float component " << i
+            << " of a vector difference was not equal to the difference of the "
+               "respective "
+               "components of the operands";
+    }
 }
 
 int main(int argc, char** argv)

@@ -13,30 +13,43 @@ namespace mth
         std::array<T, N> _array;
 
     public:
-        tvec() : _array{} {}
+        constexpr tvec() : _array{} {}
 
         template <typename... Ts>
-        tvec(Ts... elems) : _array{elems...}
+        constexpr tvec(Ts... elems) : _array{elems...}
         {
         }
 
-        T get(size_t index)
+        constexpr T get(size_t index)
         {
             return _array.at(index);
         }
     };
 
     template <typename T, size_t N, size_t... Ns>
-    tvec<T, N>
+    constexpr tvec<T, N>
     tvecSumHelper(std::index_sequence<Ns...>, tvec<T, N> lhs, tvec<T, N> rhs)
     {
-        return tvec<T, N>{(lhs.get(Ns) + rhs.get(Ns))...};
+        return {(lhs.get(Ns) + rhs.get(Ns))...};
+    }
+
+    template <typename T, size_t N, size_t... Ns>
+    constexpr tvec<T, N>
+    tvecDiffHelper(std::index_sequence<Ns...>, tvec<T, N> lhs, tvec<T, N> rhs)
+    {
+        return {(lhs.get(Ns) - rhs.get(Ns))...};
     }
 
     template <typename T, size_t N>
     constexpr tvec<T, N> operator+(tvec<T, N> lhs, tvec<T, N> rhs)
     {
         return tvecSumHelper(std::make_index_sequence<N>{}, lhs, rhs);
+    }
+
+    template <typename T, size_t N>
+    constexpr tvec<T, N> operator-(tvec<T, N> lhs, tvec<T, N> rhs)
+    {
+        return tvecDiffHelper(std::make_index_sequence<N>{}, lhs, rhs);
     }
 
     // Aliases for N=2..4 with prefixes: - f for float
