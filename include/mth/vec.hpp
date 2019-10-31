@@ -25,6 +25,11 @@ namespace mth
             return _array.at(index);
         }
 
+        constexpr T operator[](size_t index)
+        {
+            return get(index);
+        }
+
         constexpr auto begin() const noexcept
         {
             return _array.cbegin();

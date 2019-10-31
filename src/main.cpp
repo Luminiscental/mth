@@ -62,11 +62,15 @@ TEST(GenericUtilities, DoubleTenthInZeroToOneOpen)
         << "mth::util::inRangeOpen<double> thinks 0.1 isn't in (0,1)";
 }
 
+// TODO: Think about out-of-range access behaviour
+
 TEST(Vectors, CanGetComponent)
 {
     mth::tvec<char, 3> acz = {'a', 'c', 'z'};
 
     ASSERT_EQ(acz.get(1), 'c') << "vector { 'a', 'c', 'z' }.get(1) was not 'c'";
+    ASSERT_EQ(acz[0], 'a') << "vector { 'a', 'c', 'z' }[0] was not 'a'";
+    ASSERT_EQ(acz.get(2), 'z') << "vector { 'a', 'c', 'z' }.get(2) was not 'z'";
 }
 
 TEST(Vectors, IntVecDefaultInitIsZero)
@@ -75,7 +79,7 @@ TEST(Vectors, IntVecDefaultInitIsZero)
 
     for (size_t i = 0; i < 7; i++)
     {
-        ASSERT_EQ(vector.get(i), 0)
+        ASSERT_EQ(vector[i], 0)
             << "component " << i
             << " of default initialized mth::tvec<int, 7> was not 0";
     }
@@ -117,7 +121,7 @@ TEST(Vectors, AdditionIsComponentWise)
 
     for (size_t i = 0; i < 3; i++)
     {
-        ASSERT_EQ(sum.get(i), vectorLHS.get(i) + vectorRHS.get(i))
+        ASSERT_EQ(sum[i], vectorLHS[i] + vectorRHS[i])
             << "float component " << i
             << " of a vector sum was not equal to the sum of the respective "
                "components of the operands";
@@ -138,7 +142,7 @@ TEST(Vectors, SubtractionIsComponentWise)
 
     for (size_t i = 0; i < 3; i++)
     {
-        ASSERT_EQ(difference.get(i), vectorLHS.get(i) - vectorRHS.get(i))
+        ASSERT_EQ(difference[i], vectorLHS[i] - vectorRHS[i])
             << "float component " << i
             << " of a vector difference was not equal to the difference of the "
                "respective "
@@ -163,7 +167,7 @@ TEST(Vectors, ScalarMultiplicationDistributesComponentWise)
 
     for (size_t i = 0; i < 7; i++)
     {
-        ASSERT_EQ(product.get(i), scalar * vector.get(i))
+        ASSERT_EQ(product[i], scalar * vector[i])
             << "component " << i
             << " of product of scalar with vector was not the same as the "
                "scalar multiplied by the component";
@@ -183,7 +187,7 @@ TEST(Vectors, ScalarDivisionDistributesComponentWise)
 
     for (size_t i = 0; i < 4; i++)
     {
-        ASSERT_EQ(reduction.get(i), vector.get(i) / scalar)
+        ASSERT_EQ(reduction[i], vector[i] / scalar)
             << "component " << i
             << " of vector reduced by scalar was not the same as the original "
                "component divided by the scalar";
@@ -210,7 +214,7 @@ TEST(Vectors, IteratorsCoverComponents)
     size_t i = 0;
     for (auto elem : vector)
     {
-        ASSERT_EQ(elem, vector.get(i))
+        ASSERT_EQ(elem, vector[i])
             << "iteration " << i
             << " over vector was not equal to the component at the same index";
         i++;
