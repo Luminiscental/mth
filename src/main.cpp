@@ -221,6 +221,29 @@ TEST(Vectors, IteratorsCoverComponents)
     }
 }
 
+TEST(Vectors, HaveComponentAliases)
+{
+    mth::vec3 v = {0.1f, 4.7f, -1.1f};
+
+    ASSERT_EQ(v.x(), v.get(0))
+        << "x value of mth::vec3 was different from component 0";
+    ASSERT_EQ(v.y(), v.get(1))
+        << "y value of mth::vec3 was different from component 1";
+    ASSERT_EQ(v.z(), v.get(2))
+        << "z value of mth::vec3 was different from component 2";
+
+    mth::uvec4 rgba = {255U, 128U, 50U, 255U};
+
+    ASSERT_EQ(rgba.r(), 255)
+        << "r value of rgba vetor was different from first component";
+    ASSERT_EQ(rgba.g(), 128)
+        << "g value of rgba vetor was different from second component";
+    ASSERT_EQ(rgba.b(), 50)
+        << "b value of rgba vetor was different from third component";
+    ASSERT_EQ(rgba.a(), 255)
+        << "a value of rgba vetor was different from last component";
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

@@ -10,9 +10,13 @@ namespace mth
     class tvec
     {
     private:
+        // Components:
+
         std::array<T, N> _array;
 
     public:
+        // Constructors:
+
         constexpr tvec() : _array{} {}
 
         template <typename... Ts>
@@ -20,15 +24,69 @@ namespace mth
         {
         }
 
-        constexpr T get(size_t index)
+        // Component accessors:
+
+        constexpr T get(size_t index) const
         {
             return _array.at(index);
         }
 
-        constexpr T operator[](size_t index)
+        constexpr T operator[](size_t index) const
         {
             return get(index);
         }
+
+        // Component aliases:
+
+        constexpr T x() const
+        {
+            static_assert(N > 0, "vector does not have an x component");
+            return get(0);
+        }
+
+        constexpr T y() const
+        {
+            static_assert(N > 1, "vector does not have a y component");
+            return get(1);
+        }
+
+        constexpr T z() const
+        {
+            static_assert(N > 2, "vector does not have a z component");
+            return get(2);
+        }
+
+        constexpr T w() const
+        {
+            static_assert(N > 3, "vector does not have a w component");
+            return get(3);
+        }
+
+        constexpr T r() const
+        {
+            static_assert(N >= 3 && N <= 4, "vector is not a color size");
+            return get(0);
+        }
+
+        constexpr T g() const
+        {
+            static_assert(N >= 3 && N <= 4, "vector is not a color size");
+            return get(1);
+        }
+
+        constexpr T b() const
+        {
+            static_assert(N >= 3 && N <= 4, "vector is not a color size");
+            return get(2);
+        }
+
+        constexpr T a() const
+        {
+            static_assert(N == 4, "vector is not a color with alpha size");
+            return get(3);
+        }
+
+        // Iterators:
 
         constexpr auto begin() const noexcept
         {
@@ -91,6 +149,8 @@ namespace mth
         }
     };
 
+    // Arithmetic helper functions:
+
     template <typename T, size_t N, size_t... Ns>
     constexpr tvec<T, N>
     tvecSumHelper(std::index_sequence<Ns...>, tvec<T, N> lhs, tvec<T, N> rhs)
@@ -118,6 +178,8 @@ namespace mth
     {
         return {(vector.get(Ns) / scalar)...};
     }
+
+    // Operator overloads:
 
     template <typename T, size_t N>
     constexpr tvec<T, N> operator+(tvec<T, N> lhs, tvec<T, N> rhs)
@@ -170,7 +232,7 @@ namespace mth
     using uvec3 = tvec<unsigned int, 3>;
     using uvec4 = tvec<unsigned int, 4>;
 
-    // Aliases for default type is float
+    // Aliases for default type float:
 
     using vec2 = fvec2;
     using vec3 = fvec3;
