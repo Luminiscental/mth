@@ -244,6 +244,19 @@ TEST(Vectors, HaveComponentAliases)
         << "a value of rgba vetor was different from last component";
 }
 
+TEST(Vectors, HaveEquality)
+{
+    mth::tvec<unsigned int, 5> a = {1U, 13U, 298U, 4U, 37U};
+    auto b                       = a;
+    mth::tvec<unsigned int, 5> c = {3U, 13U, 5U, 49929U, 12U};
+
+    ASSERT_EQ(c, c) << "equality of vectors failed to be reflexive";
+    ASSERT_EQ(a, b)
+        << "equality of vectors did not respect copy initialization";
+    ASSERT_EQ(b, a) << "equality of vectors failed to be symmetric";
+    ASSERT_NE(a, c) << "unequal vectors falsely flagged equal";
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

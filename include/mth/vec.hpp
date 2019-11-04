@@ -179,6 +179,13 @@ namespace mth
         return {(vector.get(Ns) / scalar)...};
     }
 
+    template <typename T, size_t N, size_t... Ns>
+    constexpr bool
+    tvecEqualsHelper(std::index_sequence<Ns...>, tvec<T, N> lhs, tvec<T, N> rhs)
+    {
+        return ((lhs.get(Ns) == rhs.get(Ns)) && ...);
+    }
+
     // Operator overloads:
 
     template <typename T, size_t N>
@@ -209,6 +216,18 @@ namespace mth
     constexpr tvec<T, N> operator/(tvec<T, N> lhs, T rhs)
     {
         return tvecReduceHelper(std::make_index_sequence<N>{}, rhs, lhs);
+    }
+
+    template <typename T, size_t N>
+    constexpr bool operator==(tvec<T, N> lhs, tvec<T, N> rhs)
+    {
+        return tvecEqualsHelper(std::make_index_sequence<N>{}, lhs, rhs);
+    }
+
+    template <typename T, size_t N>
+    constexpr bool operator!=(tvec<T, N> lhs, tvec<T, N> rhs)
+    {
+        return !(lhs == rhs);
     }
 
     // Aliases for N=2..4 with prefixes: - f for float
