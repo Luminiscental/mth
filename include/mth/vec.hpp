@@ -14,6 +14,15 @@ namespace mth
 
         std::array<T, N> _array;
 
+        // Helper functions:
+
+        template <typename Func, size_t... Ns>
+        constexpr auto mapHelper(std::index_sequence<Ns...>, Func f) const
+        {
+            using O = decltype(f(get(0)));
+            return tvec<O, N>{(f(get(Ns)))...};
+        }
+
     public:
         // Constructors:
 
@@ -146,6 +155,14 @@ namespace mth
         constexpr auto crend() const noexcept
         {
             return _array.crend();
+        }
+
+        // Transformations / calculations:
+
+        template <typename Func>
+        constexpr auto map(Func f) const
+        {
+            return mapHelper(std::make_index_sequence<N>{}, f);
         }
     };
 

@@ -257,6 +257,18 @@ TEST(Vectors, HaveEquality)
     ASSERT_NE(a, c) << "unequal vectors falsely flagged equal";
 }
 
+TEST(Vectors, AreMappable)
+{
+    mth::uvec4 color255 = {183U, 253U, 86U, 255U};
+    auto color01        = color255.map([](auto v) {
+        return v / 255.0f;
+    });
+
+    ASSERT_EQ(color01.get(2), color255.get(2) / 255.0f)
+        << "component 2 of the mapped color was not the same as applying the "
+           "mapping to component 2 of the pre image";
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
