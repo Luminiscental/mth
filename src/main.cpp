@@ -110,8 +110,8 @@ TEST(Vectors, TypeAliasesExist)
 
 TEST(Vectors, AdditionIsComponentWise)
 {
-    mth::tvec<float, 3> vectorLHS = {0.1f, 0.5f, -1.f};
-    mth::tvec<float, 3> vectorRHS = {0.2f, -2.3f, 5.9f};
+    mth::vec3 vectorLHS = {0.1f, 0.5f, -1.f};
+    mth::vec3 vectorRHS = {0.2f, -2.3f, 5.9f};
 
     auto sum = vectorLHS + vectorRHS;
 
@@ -126,8 +126,8 @@ TEST(Vectors, AdditionIsComponentWise)
 
 TEST(Vectors, SubtractionIsComponentWise)
 {
-    mth::tvec<double, 3> vectorLHS = {-0.9, 0.2, 1.3};
-    mth::tvec<double, 3> vectorRHS = {0.65, 0.3, -1.9};
+    mth::dvec3 vectorLHS = {-0.9, 0.2, 1.3};
+    mth::dvec3 vectorRHS = {0.65, 0.3, -1.9};
 
     auto difference = vectorLHS - vectorRHS;
 
