@@ -115,10 +115,6 @@ TEST(Vectors, AdditionIsComponentWise)
 
     auto sum = vectorLHS + vectorRHS;
 
-    static_assert(
-        std::is_same_v<decltype(sum), mth::tvec<float, 3>>,
-        "expected sum of two vectors to be of the same type as the operands");
-
     for (size_t i = 0; i < 3; i++)
     {
         ASSERT_EQ(sum[i], vectorLHS[i] + vectorRHS[i])
@@ -134,11 +130,6 @@ TEST(Vectors, SubtractionIsComponentWise)
     mth::tvec<double, 3> vectorRHS = {0.65, 0.3, -1.9};
 
     auto difference = vectorLHS - vectorRHS;
-
-    static_assert(
-        std::is_same_v<decltype(difference), mth::tvec<double, 3>>,
-        "expected difference of two vectors to be of the same type as the "
-        "operands");
 
     for (size_t i = 0; i < 3; i++)
     {
@@ -161,10 +152,6 @@ TEST(Vectors, ScalarMultiplicationDistributesComponentWise)
         std::is_same_v<decltype(scalar * vector), decltype(vector * scalar)>,
         "expected scalar product to allow commutative syntax");
 
-    static_assert(
-        std::is_same_v<decltype(product), decltype(vector)>,
-        "expected scalar product to result in the vector type");
-
     for (size_t i = 0; i < 7; i++)
     {
         ASSERT_EQ(product[i], scalar * vector[i])
@@ -181,10 +168,6 @@ TEST(Vectors, ScalarDivisionDistributesComponentWise)
 
     auto reduction = vector / scalar;
 
-    static_assert(
-        std::is_same_v<decltype(reduction), decltype(vector)>,
-        "expected scalar division to result in the vector type");
-
     for (size_t i = 0; i < 4; i++)
     {
         ASSERT_EQ(reduction[i], vector[i] / scalar)
@@ -192,19 +175,6 @@ TEST(Vectors, ScalarDivisionDistributesComponentWise)
             << " of vector reduced by scalar was not the same as the original "
                "component divided by the scalar";
     }
-}
-
-TEST(Vectors, VectorArithmeticCanBeConstexpr)
-{
-    constexpr auto vec = 2.0f
-                             * (mth::vec3{1.0f, 0.5f, 0.2f}
-                                - mth::vec3{1.0f, 1.0f, -1.0f} * 0.1f)
-                             / 3.0f
-                         + mth::vec3{0.1f, 0.2f, 0.3f};
-
-    static_assert(
-        std::is_same_v<decltype(vec), const mth::vec3>,
-        "expected arithmetic to produce consistent vector type");
 }
 
 TEST(Vectors, IteratorsCoverComponents)

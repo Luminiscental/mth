@@ -2,255 +2,446 @@
 
 #include <array>
 #include <cstdint>
+#include <iostream>
 
 namespace mth
 {
-    // Vector with N elements of type T.
+    template <typename Derived>
+    class tvec_expr;
+
+    // tvec_info declarations
+
+    template <typename Vec>
+    class tvec_info;
+
+    template <typename Vec>
+    using elem_t = typename tvec_info<Vec>::Elem;
+
+    template <typename Vec>
+    constexpr auto size_v = tvec_info<Vec>::SIZE;
+
+    template <typename T>
+    using enable_if_vec_t =
+        std::enable_if_t<std::is_base_of_v<tvec_expr<T>, T>>;
+
+    // tvec definition
+
     template <typename T, size_t N>
-    class tvec
+    class tvec : public tvec_expr<tvec<T, N>>
     {
     private:
-        // Components:
+        std::array<T, N> _components;
 
-        std::array<T, N> _array;
-
-        // Helper functions:
-
-        template <typename Func, size_t... Ns>
-        constexpr auto mapHelper(std::index_sequence<Ns...>, Func f) const
+        template <typename Vec, size_t... Ns>
+        tvec(std::index_sequence<Ns...>, Vec expr)
+            : _components{expr.get(Ns)...}
         {
-            using O = decltype(f(get(0)));
-            return tvec<O, N>{(f(get(Ns)))...};
         }
 
     public:
-        // Constructors:
+        constexpr tvec() : _components{} {}
 
-        constexpr tvec() : _array{} {}
-
-        template <typename... Ts>
-        constexpr tvec(Ts... elems) : _array{elems...}
+        template <typename Vec, typename = enable_if_vec_t<Vec>>
+        tvec(Vec expr)
+            : tvec{std::make_index_sequence<size_v<Vec>>{}, std::move(expr)}
         {
+            static_assert(
+                size_v<Vec> == N, "incompatible vector expression size");
         }
 
-        // Component accessors:
+        template <typename... Ts>
+        constexpr tvec(Ts... values) : _components{std::move(values)...}
+        {
+            static_assert(
+                sizeof...(Ts) == N,
+                "wrong number of components to initialize vector");
+        }
 
         constexpr T get(size_t index) const
         {
-            return _array.at(index);
+            return _components.at(index);
         }
 
-        constexpr T operator[](size_t index) const
+        // iterators (here rather than in tvec_expr since they require the
+        // vector to be concrete)
+
+        constexpr auto begin()
+        {
+            return _components.begin();
+        }
+
+        constexpr auto begin() const
+        {
+            return _components.begin();
+        }
+
+        constexpr auto cbegin() const
+        {
+            return _components.cbegin();
+        }
+
+        constexpr auto rbegin()
+        {
+            return _components.rbegin();
+        }
+
+        constexpr auto crbegin() const
+        {
+            return _components.crbegin();
+        }
+
+        constexpr auto end()
+        {
+            return _components.end();
+        }
+
+        constexpr auto end() const
+        {
+            return _components.end();
+        }
+
+        constexpr auto cend() const
+        {
+            return _components.cend();
+        }
+
+        constexpr auto rend()
+        {
+            return _components.rend();
+        }
+
+        constexpr auto crend() const
+        {
+            return _components.crend();
+        }
+    };
+
+    template <typename T, size_t N>
+    class tvec_info<tvec<T, N>>
+    {
+    public:
+        using Elem                 = T;
+        static constexpr auto SIZE = N;
+    };
+
+    // tvec_sum definition
+
+    template <typename Lhs, typename Rhs>
+    class tvec_sum : public tvec_expr<tvec_sum<Lhs, Rhs>>
+    {
+    private:
+        Lhs _lhs;
+        Rhs _rhs;
+
+    public:
+        explicit constexpr tvec_sum(Lhs lhs, Rhs rhs)
+            : _lhs{std::move(lhs)}, _rhs{std::move(rhs)}
+        {
+        }
+
+        constexpr elem_t<Lhs> get(size_t index) const
+        {
+            return _lhs.get(index) + _rhs.get(index);
+        }
+    };
+
+    template <typename Lhs, typename Rhs>
+    class tvec_info<tvec_sum<Lhs, Rhs>>
+    {
+    public:
+        using Elem                 = elem_t<Lhs>;
+        static constexpr auto SIZE = size_v<Lhs>;
+    };
+
+    // tvec_diff definition
+
+    template <typename Lhs, typename Rhs>
+    class tvec_diff : public tvec_expr<tvec_diff<Lhs, Rhs>>
+    {
+    private:
+        Lhs _lhs;
+        Rhs _rhs;
+
+    public:
+        explicit constexpr tvec_diff(Lhs lhs, Rhs rhs)
+            : _lhs{std::move(lhs)}, _rhs{std::move(rhs)}
+        {
+        }
+
+        constexpr elem_t<Lhs> get(size_t index) const
+        {
+            return _lhs.get(index) - _rhs.get(index);
+        }
+    };
+
+    template <typename Lhs, typename Rhs>
+    class tvec_info<tvec_diff<Lhs, Rhs>>
+    {
+    public:
+        using Elem                 = elem_t<Lhs>;
+        static constexpr auto SIZE = size_v<Lhs>;
+    };
+
+    // tvec_scale definition
+
+    template <typename T, typename Vec>
+    class tvec_scale : public tvec_expr<tvec_scale<T, Vec>>
+    {
+    private:
+        Vec _vector;
+        T _scalar;
+
+    public:
+        explicit constexpr tvec_scale(T scalar, Vec vector)
+            : _vector{std::move(vector)}, _scalar{std::move(scalar)}
+        {
+        }
+
+        constexpr T get(size_t index) const
+        {
+            return _scalar * _vector.get(index);
+        }
+    };
+
+    template <typename T, typename Vec>
+    class tvec_info<tvec_scale<T, Vec>>
+    {
+    public:
+        using Elem                 = elem_t<Vec>;
+        static constexpr auto SIZE = size_v<Vec>;
+    };
+
+    // tvec_reduce definition
+
+    template <typename T, typename Vec>
+    class tvec_reduce : public tvec_expr<tvec_reduce<T, Vec>>
+    {
+    private:
+        Vec _vector;
+        T _scalar;
+
+    public:
+        explicit constexpr tvec_reduce(T scalar, Vec vector)
+            : _vector{std::move(vector)}, _scalar{std::move(scalar)}
+        {
+        }
+
+        constexpr T get(size_t index) const
+        {
+            return _vector.get(index) / _scalar;
+        }
+    };
+
+    template <typename T, typename Vec>
+    class tvec_info<tvec_reduce<T, Vec>>
+    {
+    public:
+        using Elem                 = elem_t<Vec>;
+        static constexpr auto SIZE = size_v<Vec>;
+    };
+
+    template <typename Func, typename Vec>
+    class tvec_map : public tvec_expr<tvec_map<Func, Vec>>
+    {
+    private:
+        Vec _vector;
+        Func _functor;
+
+    public:
+        explicit constexpr tvec_map(Func functor, Vec vector)
+            : _vector{std::move(vector)}, _functor{std::move(functor)}
+        {
+        }
+
+        constexpr auto get(size_t index) const
+        {
+            return _functor(_vector.get(index));
+        }
+    };
+
+    template <typename Func, typename Vec>
+    class tvec_info<tvec_map<Func, Vec>>
+    {
+    public:
+        using Elem                 = std::result_of_t<Func(elem_t<Vec>)>;
+        static constexpr auto SIZE = size_v<Vec>;
+    };
+
+    // tvec_expr definition
+
+    // TODO: memoize?
+
+    template <typename Derived>
+    class tvec_expr
+    {
+    protected:
+        // CRTP safeguard
+        tvec_expr()  = default;
+        ~tvec_expr() = default;
+
+    public:
+        using Elem                 = elem_t<Derived>;
+        static constexpr auto SIZE = size_v<Derived>;
+
+        // Component accessors:
+
+        constexpr Elem get(size_t index) const
+        {
+            return static_cast<Derived const*>(this)->get(index);
+        }
+
+        constexpr Elem operator[](size_t index) const
         {
             return get(index);
         }
 
-        // Component aliases:
+        // component aliases:
 
-        constexpr T x() const
+        constexpr Elem x() const
         {
-            static_assert(N > 0, "vector does not have an x component");
+            static_assert(SIZE > 0, "vector does not have an x component");
             return get(0);
         }
 
-        constexpr T y() const
+        constexpr Elem y() const
         {
-            static_assert(N > 1, "vector does not have a y component");
+            static_assert(SIZE > 1, "vector does not have a y component");
             return get(1);
         }
 
-        constexpr T z() const
+        constexpr Elem z() const
         {
-            static_assert(N > 2, "vector does not have a z component");
+            static_assert(SIZE > 2, "vector does not have a z component");
             return get(2);
         }
 
-        constexpr T w() const
+        constexpr Elem w() const
         {
-            static_assert(N > 3, "vector does not have a w component");
+            static_assert(SIZE > 3, "vector does not have a w component");
             return get(3);
         }
 
-        constexpr T r() const
+        constexpr Elem r() const
         {
-            static_assert(N >= 3 && N <= 4, "vector is not a color size");
+            static_assert(SIZE >= 3 && SIZE <= 4, "vector is not a color size");
             return get(0);
         }
 
-        constexpr T g() const
+        constexpr Elem g() const
         {
-            static_assert(N >= 3 && N <= 4, "vector is not a color size");
+            static_assert(SIZE >= 3 && SIZE <= 4, "vector is not a color size");
             return get(1);
         }
 
-        constexpr T b() const
+        constexpr Elem b() const
         {
-            static_assert(N >= 3 && N <= 4, "vector is not a color size");
+            static_assert(SIZE >= 3 && SIZE <= 4, "vector is not a color size");
             return get(2);
         }
 
-        constexpr T a() const
+        constexpr Elem a() const
         {
-            static_assert(N == 4, "vector is not a color with alpha size");
+            static_assert(SIZE == 4, "vector is not a color with alpha size");
             return get(3);
         }
 
-        // Iterators:
-
-        constexpr auto begin() const noexcept
-        {
-            return _array.cbegin();
-        }
-
-        constexpr auto begin() noexcept
-        {
-            return _array.begin();
-        }
-
-        constexpr auto cbegin() const noexcept
-        {
-            return _array.cbegin();
-        }
-
-        constexpr auto end() noexcept
-        {
-            return _array.end();
-        }
-
-        constexpr auto end() const noexcept
-        {
-            return _array.cend();
-        }
-
-        constexpr auto cend() const noexcept
-        {
-            return _array.cend();
-        }
-
-        constexpr auto rbegin() noexcept
-        {
-            return _array.rbegin();
-        }
-
-        constexpr auto rbegin() const noexcept
-        {
-            return _array.rbegin();
-        }
-
-        constexpr auto crbegin() const noexcept
-        {
-            return _array.crbegin();
-        }
-
-        constexpr auto rend() noexcept
-        {
-            return _array.rend();
-        }
-
-        constexpr auto rend() const noexcept
-        {
-            return _array.rend();
-        }
-
-        constexpr auto crend() const noexcept
-        {
-            return _array.crend();
-        }
-
-        // Transformations / calculations:
+        // transforms / calculations
 
         template <typename Func>
         constexpr auto map(Func f) const
         {
-            return mapHelper(std::make_index_sequence<N>{}, f);
+            return tvec_map{f, static_cast<Derived const&>(*this)};
         }
     };
 
-    // Arithmetic helper functions:
-
-    template <typename T, size_t N, size_t... Ns>
-    constexpr tvec<T, N>
-    tvecSumHelper(std::index_sequence<Ns...>, tvec<T, N> lhs, tvec<T, N> rhs)
+    template <typename Derived>
+    class tvec_info<tvec_expr<Derived>>
     {
-        return {(lhs.get(Ns) + rhs.get(Ns))...};
+    public:
+        using Elem                 = elem_t<Derived>;
+        static constexpr auto SIZE = size_v<Derived>;
+    };
+
+    // operator overloads
+
+    template <
+        typename Lhs,
+        typename Rhs,
+        typename = enable_if_vec_t<Lhs>,
+        typename = enable_if_vec_t<Rhs>>
+    constexpr auto operator+(Lhs lhs, Rhs rhs)
+    {
+        return tvec_sum{lhs, rhs};
+    }
+
+    template <
+        typename Lhs,
+        typename Rhs,
+        typename = enable_if_vec_t<Lhs>,
+        typename = enable_if_vec_t<Rhs>>
+    constexpr auto operator-(Lhs lhs, Rhs rhs)
+    {
+        return tvec_diff{lhs, rhs};
+    }
+
+    template <typename T, typename Vec, typename = enable_if_vec_t<Vec>>
+    constexpr auto operator*(T lhs, Vec rhs)
+    {
+        return tvec_scale{lhs, rhs};
+    }
+
+    template <typename T, typename Vec, typename = enable_if_vec_t<Vec>>
+    constexpr auto operator*(Vec lhs, T rhs)
+    {
+        return rhs * lhs;
+    }
+
+    template <typename T, typename Vec, typename = enable_if_vec_t<Vec>>
+    constexpr auto operator/(Vec lhs, T rhs)
+    {
+        return tvec_reduce{rhs, lhs};
     }
 
     template <typename T, size_t N, size_t... Ns>
-    constexpr tvec<T, N>
-    tvecDiffHelper(std::index_sequence<Ns...>, tvec<T, N> lhs, tvec<T, N> rhs)
-    {
-        return {(lhs.get(Ns) - rhs.get(Ns))...};
-    }
-
-    template <typename T, size_t N, size_t... Ns>
-    constexpr tvec<T, N>
-    tvecScaleHelper(std::index_sequence<Ns...>, T scalar, tvec<T, N> vector)
-    {
-        return {(scalar * vector.get(Ns))...};
-    }
-
-    template <typename T, size_t N, size_t... Ns>
-    constexpr tvec<T, N>
-    tvecReduceHelper(std::index_sequence<Ns...>, T scalar, tvec<T, N> vector)
-    {
-        return {(vector.get(Ns) / scalar)...};
-    }
-
-    template <typename T, size_t N, size_t... Ns>
-    constexpr bool
-    tvecEqualsHelper(std::index_sequence<Ns...>, tvec<T, N> lhs, tvec<T, N> rhs)
+    constexpr auto
+    equalityHelper(std::index_sequence<Ns...>, tvec<T, N> lhs, tvec<T, N> rhs)
     {
         return ((lhs.get(Ns) == rhs.get(Ns)) && ...);
     }
 
-    // Operator overloads:
-
     template <typename T, size_t N>
-    constexpr tvec<T, N> operator+(tvec<T, N> lhs, tvec<T, N> rhs)
+    constexpr auto operator==(tvec<T, N> lhs, tvec<T, N> rhs)
     {
-        return tvecSumHelper(std::make_index_sequence<N>{}, lhs, rhs);
+        return equalityHelper(std::make_index_sequence<N>{}, lhs, rhs);
     }
 
     template <typename T, size_t N>
-    constexpr tvec<T, N> operator-(tvec<T, N> lhs, tvec<T, N> rhs)
-    {
-        return tvecDiffHelper(std::make_index_sequence<N>{}, lhs, rhs);
-    }
-
-    template <typename T, size_t N>
-    constexpr tvec<T, N> operator*(T lhs, tvec<T, N> rhs)
-    {
-        return tvecScaleHelper(std::make_index_sequence<N>{}, lhs, rhs);
-    }
-
-    template <typename T, size_t N>
-    constexpr tvec<T, N> operator*(tvec<T, N> lhs, T rhs)
-    {
-        return tvecScaleHelper(std::make_index_sequence<N>{}, rhs, lhs);
-    }
-
-    template <typename T, size_t N>
-    constexpr tvec<T, N> operator/(tvec<T, N> lhs, T rhs)
-    {
-        return tvecReduceHelper(std::make_index_sequence<N>{}, rhs, lhs);
-    }
-
-    template <typename T, size_t N>
-    constexpr bool operator==(tvec<T, N> lhs, tvec<T, N> rhs)
-    {
-        return tvecEqualsHelper(std::make_index_sequence<N>{}, lhs, rhs);
-    }
-
-    template <typename T, size_t N>
-    constexpr bool operator!=(tvec<T, N> lhs, tvec<T, N> rhs)
+    constexpr auto operator!=(tvec<T, N> lhs, tvec<T, N> rhs)
     {
         return !(lhs == rhs);
     }
 
-    // Aliases for N=2..4 with prefixes: - f for float
-    //                                   - d for double
-    //                                   - i for int
-    //                                   - u for unsigned int
+    template <
+        typename Lhs,
+        typename Rhs,
+        typename = enable_if_vec_t<Lhs>,
+        typename = enable_if_vec_t<Rhs>>
+    constexpr auto operator==(Lhs lhs, Rhs rhs)
+    {
+        return tvec{lhs} == tvec{rhs};
+    }
+
+    template <
+        typename Lhs,
+        typename Rhs,
+        typename = enable_if_vec_t<Lhs>,
+        typename = enable_if_vec_t<Rhs>>
+    constexpr auto operator!=(Lhs lhs, Rhs rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    // aliases
 
     using fvec2 = tvec<float, 2>;
     using fvec3 = tvec<float, 3>;
@@ -267,8 +458,6 @@ namespace mth
     using uvec2 = tvec<unsigned int, 2>;
     using uvec3 = tvec<unsigned int, 3>;
     using uvec4 = tvec<unsigned int, 4>;
-
-    // Aliases for default type float:
 
     using vec2 = fvec2;
     using vec3 = fvec3;
