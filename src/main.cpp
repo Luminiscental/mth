@@ -239,6 +239,22 @@ TEST(Vectors, AreMappable)
            "mapping to component 2 of the pre image";
 }
 
+TEST(Vectors, AreMultiMappable)
+{
+    mth::vec3 coeffs                = {1.0f, 2.0f, -1.5f};
+    mth::tvec<mth::vec3, 3> vectors = {mth::vec3{0.1f, 0.2f, 0.3f},
+                                       mth::vec3{1.0f, -1.0f, 0.0f},
+                                       mth::vec3{0.1f, 0.5f, 0.3f}};
+    auto result                     = mth::vec::map(
+        [](auto coeff, auto vector) {
+            return coeff * vector;
+        },
+        coeffs,
+        vectors);
+    ASSERT_EQ(result[0], coeffs[0] * vectors[0])
+        << "first component of mth::vec::map result was miscalculated";
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

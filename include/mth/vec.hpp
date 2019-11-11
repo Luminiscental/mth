@@ -2,7 +2,6 @@
 
 #include <array>
 #include <cstdint>
-#include <iostream>
 
 namespace mth
 {
@@ -20,9 +19,12 @@ namespace mth
     template <typename Vec>
     constexpr auto size_v = tvec_info<Vec>::SIZE;
 
+    template <typename... Ts>
+    using enable_if_vecs_t =
+        std::enable_if_t<((std::is_base_of_v<tvec_expr<Ts>, Ts>) &&...)>;
+
     template <typename T>
-    using enable_if_vec_t =
-        std::enable_if_t<std::is_base_of_v<tvec_expr<T>, T>>;
+    using enable_if_vec_t = enable_if_vecs_t<T>;
 
     // tvec definition
 
@@ -115,6 +117,9 @@ namespace mth
             return _components.crend();
         }
     };
+
+    template <typename Vec, typename = enable_if_vec_t<Vec>>
+    tvec(Vec expr)->tvec<elem_t<Vec>, size_v<Vec>>;
 
     template <typename T, size_t N>
     class tvec_info<tvec<T, N>>
@@ -240,30 +245,42 @@ namespace mth
         static constexpr auto SIZE = size_v<Vec>;
     };
 
-    template <typename Func, typename Vec>
-    class tvec_map : public tvec_expr<tvec_map<Func, Vec>>
+    // note: Vecs must be non-empty as std::tuple requires so
+
+    template <typename Func, typename... Vecs>
+    class tvec_map : public tvec_expr<tvec_map<Func, Vecs...>>
     {
     private:
-        Vec _vector;
+        std::tuple<Vecs...> _vecs;
         Func _functor;
 
+        template <size_t... Ns>
+        constexpr auto getHelper(std::index_sequence<Ns...>, size_t index) const
+        {
+            return _functor((std::get<Ns>(_vecs).get(index))...);
+        }
+
     public:
-        explicit constexpr tvec_map(Func functor, Vec vector)
-            : _vector{std::move(vector)}, _functor{std::move(functor)}
+        explicit constexpr tvec_map(Func functor, Vecs... vecs)
+            : _vecs{vecs...}, _functor{std::move(functor)}
         {
         }
 
         constexpr auto get(size_t index) const
         {
-            return _functor(_vector.get(index));
+            return getHelper(
+                std::make_index_sequence<sizeof...(Vecs)>{}, index);
         }
     };
 
-    template <typename Func, typename Vec>
-    class tvec_info<tvec_map<Func, Vec>>
+    // note: only specialized case defined since empty parameter pack isn't
+    // valid as above
+
+    template <typename Func, typename Vec, typename... Vecs>
+    class tvec_info<tvec_map<Func, Vec, Vecs...>>
     {
     public:
-        using Elem                 = std::result_of_t<Func(elem_t<Vec>)>;
+        using Elem = std::result_of_t<Func(elem_t<Vec>, elem_t<Vecs>...)>;
         static constexpr auto SIZE = size_v<Vec>;
     };
 
@@ -353,6 +370,20 @@ namespace mth
             return tvec_map{f, static_cast<Derived const&>(*this)};
         }
     };
+
+    // static functions
+
+    namespace vec
+    {
+        template <
+            typename Func,
+            typename... Vecs,
+            typename = enable_if_vecs_t<Vecs...>>
+        constexpr auto map(Func f, Vecs... vecs)
+        {
+            return tvec_map{f, vecs...};
+        }
+    }
 
     template <typename Derived>
     class tvec_info<tvec_expr<Derived>>
