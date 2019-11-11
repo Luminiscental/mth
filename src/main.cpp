@@ -62,8 +62,6 @@ TEST(GenericUtilities, DoubleTenthInZeroToOneOpen)
         << "mth::util::inRangeOpen<double> thinks 0.1 isn't in (0,1)";
 }
 
-// TODO: Think about out-of-range access behaviour
-
 TEST(Vectors, CanGetComponent)
 {
     mth::tvec<char, 3> acz = {'a', 'c', 'z'};
@@ -71,6 +69,15 @@ TEST(Vectors, CanGetComponent)
     ASSERT_EQ(acz.get(1), 'c') << "vector { 'a', 'c', 'z' }.get(1) was not 'c'";
     ASSERT_EQ(acz[0], 'a') << "vector { 'a', 'c', 'z' }[0] was not 'a'";
     ASSERT_EQ(acz.get(2), 'z') << "vector { 'a', 'c', 'z' }.get(2) was not 'z'";
+    ASSERT_EQ(acz.component<0>(), acz.get(0))
+        << "mth::tvec::component inconsistent with mth::tvec::get";
+}
+
+TEST(Vectors, OutOfRangeThrows)
+{
+    mth::ivec2 xy;
+    ASSERT_THROW(xy.get(4), std::out_of_range);
+    ASSERT_THROW((2 * xy + xy).get(7), std::out_of_range);
 }
 
 TEST(Vectors, IntVecDefaultInitIsZero)

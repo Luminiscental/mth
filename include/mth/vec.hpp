@@ -62,9 +62,9 @@ namespace mth
                 "wrong number of components to initialize vector");
         }
 
-        constexpr T get(size_t index) const
+        constexpr T operator[](size_t index) const
         {
-            return _components.at(index);
+            return _components[index];
         }
 
         // iterators (here rather than in tvec_expr since they require the
@@ -147,9 +147,9 @@ namespace mth
         {
         }
 
-        constexpr elem_t<Lhs> get(size_t index) const
+        constexpr elem_t<Lhs> operator[](size_t index) const
         {
-            return _lhs.get(index) + _rhs.get(index);
+            return _lhs[index] + _rhs[index];
         }
     };
 
@@ -176,9 +176,9 @@ namespace mth
         {
         }
 
-        constexpr elem_t<Lhs> get(size_t index) const
+        constexpr elem_t<Lhs> operator[](size_t index) const
         {
-            return _lhs.get(index) - _rhs.get(index);
+            return _lhs[index] - _rhs[index];
         }
     };
 
@@ -205,9 +205,9 @@ namespace mth
         {
         }
 
-        constexpr T get(size_t index) const
+        constexpr T operator[](size_t index) const
         {
-            return _scalar * _vector.get(index);
+            return _scalar * _vector[index];
         }
     };
 
@@ -234,9 +234,9 @@ namespace mth
         {
         }
 
-        constexpr T get(size_t index) const
+        constexpr T operator[](size_t index) const
         {
-            return _vector.get(index) / _scalar;
+            return _vector[index] / _scalar;
         }
     };
 
@@ -258,9 +258,10 @@ namespace mth
         Func _functor;
 
         template <size_t... Ns>
-        constexpr auto getHelper(std::index_sequence<Ns...>, size_t index) const
+        constexpr auto
+        indexHelper(std::index_sequence<Ns...>, size_t index) const
         {
-            return _functor((std::get<Ns>(_vecs).get(index))...);
+            return _functor((std::get<Ns>(_vecs)[index])...);
         }
 
     public:
@@ -269,9 +270,9 @@ namespace mth
         {
         }
 
-        constexpr auto get(size_t index) const
+        constexpr auto operator[](size_t index) const
         {
-            return getHelper(
+            return indexHelper(
                 std::make_index_sequence<sizeof...(Vecs)>{}, index);
         }
     };
@@ -307,13 +308,14 @@ namespace mth
     public:
         // Component accessors:
 
-        constexpr Elem get(size_t index) const
+        // no bounds checking
+        constexpr Elem operator[](size_t index) const
         {
             if constexpr (memoize)
             {
                 if (_memos.count(index) == 0)
                 {
-                    auto value = static_cast<Derived const*>(this)->get(index);
+                    auto value = static_cast<Derived const&>(*this)[index];
                     _memos.insert_or_assign(index, value);
                     return value;
                 }
@@ -324,63 +326,72 @@ namespace mth
             }
             else
             {
-                return static_cast<Derived const*>(this)->get(index);
+                return static_cast<Derived const&>(*this)[index];
             }
         }
 
-        constexpr Elem operator[](size_t index) const
+        // bounds checking wrapped around operator[]
+        Elem get(size_t index) const
         {
-            return get(index);
+            if (index >= SIZE)
+            {
+                throw std::out_of_range{
+                    "index " + std::to_string(index)
+                    + " out of range for vector of dimension "
+                    + std::to_string(SIZE)};
+            }
+
+            return (*this)[index];
+        }
+
+        // static bounds checking
+        template <size_t N>
+        constexpr Elem component() const
+        {
+            static_assert(N < SIZE, "component accessed out of range");
+            return (*this)[N];
         }
 
         // component aliases:
 
         constexpr Elem x() const
         {
-            static_assert(SIZE > 0, "vector does not have an x component");
-            return get(0);
+            return component<0>();
         }
 
         constexpr Elem y() const
         {
-            static_assert(SIZE > 1, "vector does not have a y component");
-            return get(1);
+            return component<1>();
         }
 
         constexpr Elem z() const
         {
-            static_assert(SIZE > 2, "vector does not have a z component");
-            return get(2);
+            return component<2>();
         }
 
         constexpr Elem w() const
         {
-            static_assert(SIZE > 3, "vector does not have a w component");
-            return get(3);
+            return component<3>();
         }
 
         constexpr Elem r() const
         {
-            static_assert(SIZE >= 3 && SIZE <= 4, "vector is not a color size");
-            return get(0);
+            return component<0>();
         }
 
         constexpr Elem g() const
         {
-            static_assert(SIZE >= 3 && SIZE <= 4, "vector is not a color size");
-            return get(1);
+            return component<1>();
         }
 
         constexpr Elem b() const
         {
-            static_assert(SIZE >= 3 && SIZE <= 4, "vector is not a color size");
-            return get(2);
+            return component<2>();
         }
 
         constexpr Elem a() const
         {
-            static_assert(SIZE == 4, "vector is not a color with alpha size");
-            return get(3);
+            return component<3>();
         }
 
         // transforms / calculations
@@ -388,7 +399,8 @@ namespace mth
         template <typename Func>
         constexpr auto map(Func f) const
         {
-            return tvec_map{f, static_cast<Derived const&>(*this)};
+            Derived copy = static_cast<Derived const&>(*this);
+            return tvec_map{f, copy};
         }
     };
 
