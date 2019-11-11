@@ -255,6 +255,8 @@ TEST(Vectors, AreMultiMappable)
         << "first component of mth::vec::map result was miscalculated";
 }
 
+// TODO: dot product, magnitude, complex numbers
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

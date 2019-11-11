@@ -2,10 +2,11 @@
 
 #include <array>
 #include <cstdint>
+#include <unordered_map>
 
 namespace mth
 {
-    template <typename Derived>
+    template <typename Derived, bool memoize = true>
     class tvec_expr;
 
     // tvec_info declarations
@@ -20,8 +21,10 @@ namespace mth
     constexpr auto size_v = tvec_info<Vec>::SIZE;
 
     template <typename... Ts>
-    using enable_if_vecs_t =
-        std::enable_if_t<((std::is_base_of_v<tvec_expr<Ts>, Ts>) &&...)>;
+    using enable_if_vecs_t = std::enable_if_t<(
+        (std::is_base_of_v<
+             tvec_expr<Ts, true>,
+             Ts> || std::is_base_of_v<tvec_expr<Ts, false>, Ts>) &&...)>;
 
     template <typename T>
     using enable_if_vec_t = enable_if_vecs_t<T>;
@@ -29,7 +32,7 @@ namespace mth
     // tvec definition
 
     template <typename T, size_t N>
-    class tvec : public tvec_expr<tvec<T, N>>
+    class tvec : public tvec_expr<tvec<T, N>, false>
     {
     private:
         std::array<T, N> _components;
@@ -286,25 +289,43 @@ namespace mth
 
     // tvec_expr definition
 
-    // TODO: memoize?
-
-    template <typename Derived>
+    template <typename Derived, bool memoize>
     class tvec_expr
     {
+    public:
+        using Elem                 = elem_t<Derived>;
+        static constexpr auto SIZE = size_v<Derived>;
+
     protected:
         // CRTP safeguard
         tvec_expr()  = default;
         ~tvec_expr() = default;
 
-    public:
-        using Elem                 = elem_t<Derived>;
-        static constexpr auto SIZE = size_v<Derived>;
+        // memoized elements
+        mutable std::unordered_map<size_t, Elem> _memos;
 
+    public:
         // Component accessors:
 
         constexpr Elem get(size_t index) const
         {
-            return static_cast<Derived const*>(this)->get(index);
+            if constexpr (memoize)
+            {
+                if (_memos.count(index) == 0)
+                {
+                    auto value = static_cast<Derived const*>(this)->get(index);
+                    _memos.insert_or_assign(index, value);
+                    return value;
+                }
+                else
+                {
+                    return _memos.find(index)->second;
+                }
+            }
+            else
+            {
+                return static_cast<Derived const*>(this)->get(index);
+            }
         }
 
         constexpr Elem operator[](size_t index) const
@@ -385,8 +406,8 @@ namespace mth
         }
     }
 
-    template <typename Derived>
-    class tvec_info<tvec_expr<Derived>>
+    template <typename Derived, bool memoize>
+    class tvec_info<tvec_expr<Derived, memoize>>
     {
     public:
         using Elem                 = elem_t<Derived>;
