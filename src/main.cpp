@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include <mth/comp.hpp>
 #include <mth/mth.hpp>
 #include <mth/vec.hpp>
 
@@ -260,6 +261,14 @@ TEST(Vectors, AreMultiMappable)
         vectors);
     ASSERT_EQ(result[0], coeffs[0] * vectors[0])
         << "first component of mth::vec::map result was miscalculated";
+}
+
+TEST(Complex, CanGetComponents)
+{
+    mth::comp z{2.0f, 3.0f};
+
+    ASSERT_EQ(z.real(), 2.0f);
+    ASSERT_EQ(z.imag(), 3.0f);
 }
 
 // TODO: dot product, magnitude, complex numbers

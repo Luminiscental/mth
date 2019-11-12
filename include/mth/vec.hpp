@@ -15,10 +15,10 @@ namespace mth
     class tvec_info;
 
     template <typename Vec>
-    using elem_t = typename tvec_info<Vec>::Elem;
+    using tvec_elem_t = typename tvec_info<Vec>::Elem;
 
     template <typename Vec>
-    constexpr auto size_v = tvec_info<Vec>::SIZE;
+    constexpr auto tvec_size_v = tvec_info<Vec>::SIZE;
 
     template <typename... Ts>
     using enable_if_vecs_t = std::enable_if_t<(
@@ -38,20 +38,25 @@ namespace mth
         std::array<T, N> _components;
 
         template <typename Vec, size_t... Ns>
-        tvec(std::index_sequence<Ns...>, Vec expr)
-            : _components{expr.get(Ns)...}
+        constexpr tvec(std::index_sequence<Ns...>, Vec expr)
+            : _components{expr[Ns]...}
         {
         }
 
     public:
-        constexpr tvec() : _components{} {}
+        template <
+            typename = std::enable_if_t<std::is_default_constructible_v<T>>>
+        constexpr tvec() : _components{}
+        {
+        }
 
         template <typename Vec, typename = enable_if_vec_t<Vec>>
-        tvec(Vec expr)
-            : tvec{std::make_index_sequence<size_v<Vec>>{}, std::move(expr)}
+        constexpr tvec(Vec expr)
+            : tvec{std::make_index_sequence<tvec_size_v<Vec>>{},
+                   std::move(expr)}
         {
             static_assert(
-                size_v<Vec> == N, "incompatible vector expression size");
+                tvec_size_v<Vec> == N, "incompatible vector expression size");
         }
 
         template <typename... Ts>
@@ -122,7 +127,7 @@ namespace mth
     };
 
     template <typename Vec, typename = enable_if_vec_t<Vec>>
-    tvec(Vec expr)->tvec<elem_t<Vec>, size_v<Vec>>;
+    tvec(Vec expr)->tvec<tvec_elem_t<Vec>, tvec_size_v<Vec>>;
 
     template <typename T, size_t N>
     class tvec_info<tvec<T, N>>
@@ -147,7 +152,7 @@ namespace mth
         {
         }
 
-        constexpr elem_t<Lhs> operator[](size_t index) const
+        constexpr tvec_elem_t<Lhs> operator[](size_t index) const
         {
             return _lhs[index] + _rhs[index];
         }
@@ -157,8 +162,8 @@ namespace mth
     class tvec_info<tvec_sum<Lhs, Rhs>>
     {
     public:
-        using Elem                 = elem_t<Lhs>;
-        static constexpr auto SIZE = size_v<Lhs>;
+        using Elem                 = tvec_elem_t<Lhs>;
+        static constexpr auto SIZE = tvec_size_v<Lhs>;
     };
 
     // tvec_diff definition
@@ -176,7 +181,7 @@ namespace mth
         {
         }
 
-        constexpr elem_t<Lhs> operator[](size_t index) const
+        constexpr tvec_elem_t<Lhs> operator[](size_t index) const
         {
             return _lhs[index] - _rhs[index];
         }
@@ -186,8 +191,8 @@ namespace mth
     class tvec_info<tvec_diff<Lhs, Rhs>>
     {
     public:
-        using Elem                 = elem_t<Lhs>;
-        static constexpr auto SIZE = size_v<Lhs>;
+        using Elem                 = tvec_elem_t<Lhs>;
+        static constexpr auto SIZE = tvec_size_v<Lhs>;
     };
 
     // tvec_scale definition
@@ -215,8 +220,8 @@ namespace mth
     class tvec_info<tvec_scale<T, Vec>>
     {
     public:
-        using Elem                 = elem_t<Vec>;
-        static constexpr auto SIZE = size_v<Vec>;
+        using Elem                 = tvec_elem_t<Vec>;
+        static constexpr auto SIZE = tvec_size_v<Vec>;
     };
 
     // tvec_reduce definition
@@ -244,8 +249,8 @@ namespace mth
     class tvec_info<tvec_reduce<T, Vec>>
     {
     public:
-        using Elem                 = elem_t<Vec>;
-        static constexpr auto SIZE = size_v<Vec>;
+        using Elem                 = tvec_elem_t<Vec>;
+        static constexpr auto SIZE = tvec_size_v<Vec>;
     };
 
     // note: Vecs must be non-empty as std::tuple requires so
@@ -284,8 +289,9 @@ namespace mth
     class tvec_info<tvec_map<Func, Vec, Vecs...>>
     {
     public:
-        using Elem = std::result_of_t<Func(elem_t<Vec>, elem_t<Vecs>...)>;
-        static constexpr auto SIZE = size_v<Vec>;
+        using Elem =
+            std::result_of_t<Func(tvec_elem_t<Vec>, tvec_elem_t<Vecs>...)>;
+        static constexpr auto SIZE = tvec_size_v<Vec>;
     };
 
     // tvec_expr definition
@@ -294,8 +300,8 @@ namespace mth
     class tvec_expr
     {
     public:
-        using Elem                 = elem_t<Derived>;
-        static constexpr auto SIZE = size_v<Derived>;
+        using Elem                 = tvec_elem_t<Derived>;
+        static constexpr auto SIZE = tvec_size_v<Derived>;
 
     protected:
         // CRTP safeguard
@@ -422,8 +428,8 @@ namespace mth
     class tvec_info<tvec_expr<Derived, memoize>>
     {
     public:
-        using Elem                 = elem_t<Derived>;
-        static constexpr auto SIZE = size_v<Derived>;
+        using Elem                 = tvec_elem_t<Derived>;
+        static constexpr auto SIZE = tvec_size_v<Derived>;
     };
 
     // operator overloads
