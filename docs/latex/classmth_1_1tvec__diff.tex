@@ -1,0 +1,100 @@
+\hypertarget{classmth_1_1tvec__diff}{}\doxysection{mth\+::tvec\+\_\+diff$<$ Lhs, Rhs $>$ Class Template Reference}
+\label{classmth_1_1tvec__diff}\index{mth::tvec\_diff$<$ Lhs, Rhs $>$@{mth::tvec\_diff$<$ Lhs, Rhs $>$}}
+
+
+Vector expression for the difference of two vectors.  
+
+
+
+
+{\ttfamily \#include $<$vec.\+hpp$>$}
+
+Inheritance diagram for mth\+::tvec\+\_\+diff$<$ Lhs, Rhs $>$\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classmth_1_1tvec__diff}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+constexpr \mbox{\hyperlink{classmth_1_1tvec__diff_a5ece6a75d892ddebd2cc4592385cd697}{tvec\+\_\+diff}} (Lhs lhs, Rhs rhs)
+\begin{DoxyCompactList}\small\item\em Construct the difference expression from its operands. \end{DoxyCompactList}\item 
+constexpr tvec\+\_\+elem\+\_\+t$<$ Lhs $>$ \mbox{\hyperlink{classmth_1_1tvec__diff_aceaf19d3d7e091899a8f87e2e091e3a5}{operator\mbox{[}$\,$\mbox{]}}} (size\+\_\+t index) const
+\begin{DoxyCompactList}\small\item\em The {\ttfamily operator\mbox{[}\mbox{]}} to define this as a vector expression. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Lhs, typename Rhs$>$\newline
+class mth\+::tvec\+\_\+diff$<$ Lhs, Rhs $>$}
+
+Vector expression for the difference of two vectors. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Lhs} & The vector expression type of the left side operand. \\
+\hline
+{\em Rhs} & The vector expression type of the right side operand. \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line 246 of file vec.\+hpp.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classmth_1_1tvec__diff_a5ece6a75d892ddebd2cc4592385cd697}\label{classmth_1_1tvec__diff_a5ece6a75d892ddebd2cc4592385cd697}} 
+\index{mth::tvec\_diff$<$ Lhs, Rhs $>$@{mth::tvec\_diff$<$ Lhs, Rhs $>$}!tvec\_diff@{tvec\_diff}}
+\index{tvec\_diff@{tvec\_diff}!mth::tvec\_diff$<$ Lhs, Rhs $>$@{mth::tvec\_diff$<$ Lhs, Rhs $>$}}
+\doxysubsubsection{\texorpdfstring{tvec\_diff()}{tvec\_diff()}}
+{\footnotesize\ttfamily template$<$typename Lhs , typename Rhs $>$ \\
+constexpr \mbox{\hyperlink{classmth_1_1tvec__diff}{mth\+::tvec\+\_\+diff}}$<$ Lhs, Rhs $>$\+::\mbox{\hyperlink{classmth_1_1tvec__diff}{tvec\+\_\+diff}} (\begin{DoxyParamCaption}\item[{Lhs}]{lhs,  }\item[{Rhs}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [constexpr]}}
+
+
+
+Construct the difference expression from its operands. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lhs} & The vector expression value of the left side operand. \\
+\hline
+{\em rhs} & The vector expression value of the right side operand. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 259 of file vec.\+hpp.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classmth_1_1tvec__diff_aceaf19d3d7e091899a8f87e2e091e3a5}\label{classmth_1_1tvec__diff_aceaf19d3d7e091899a8f87e2e091e3a5}} 
+\index{mth::tvec\_diff$<$ Lhs, Rhs $>$@{mth::tvec\_diff$<$ Lhs, Rhs $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!mth::tvec\_diff$<$ Lhs, Rhs $>$@{mth::tvec\_diff$<$ Lhs, Rhs $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily template$<$typename Lhs , typename Rhs $>$ \\
+constexpr tvec\+\_\+elem\+\_\+t$<$Lhs$>$ \mbox{\hyperlink{classmth_1_1tvec__diff}{mth\+::tvec\+\_\+diff}}$<$ Lhs, Rhs $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{index }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+The {\ttfamily operator\mbox{[}\mbox{]}} to define this as a vector expression. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index of the component to access. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The difference of the components of the left and right side operands at this index. 
+\end{DoxyReturn}
+
+
+Definition at line 271 of file vec.\+hpp.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/mth/vec.\+hpp\end{DoxyCompactItemize}

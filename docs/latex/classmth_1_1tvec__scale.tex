@@ -1,0 +1,100 @@
+\hypertarget{classmth_1_1tvec__scale}{}\doxysection{mth\+::tvec\+\_\+scale$<$ T, Vec $>$ Class Template Reference}
+\label{classmth_1_1tvec__scale}\index{mth::tvec\_scale$<$ T, Vec $>$@{mth::tvec\_scale$<$ T, Vec $>$}}
+
+
+Vector expression for scalar-\/vector multiplication.  
+
+
+
+
+{\ttfamily \#include $<$vec.\+hpp$>$}
+
+Inheritance diagram for mth\+::tvec\+\_\+scale$<$ T, Vec $>$\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classmth_1_1tvec__scale}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+constexpr \mbox{\hyperlink{classmth_1_1tvec__scale_a3fcd176adfc31d0a84cd37cae7e6ae85}{tvec\+\_\+scale}} (T scalar, Vec vector)
+\begin{DoxyCompactList}\small\item\em Construct the product expression from its operands. \end{DoxyCompactList}\item 
+constexpr T \mbox{\hyperlink{classmth_1_1tvec__scale_aca4c9151d87b06afeb653c8a4e47f6f0}{operator\mbox{[}$\,$\mbox{]}}} (size\+\_\+t index) const
+\begin{DoxyCompactList}\small\item\em The {\ttfamily operator\mbox{[}\mbox{]}} to define this as a vector expression. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename T, typename Vec$>$\newline
+class mth\+::tvec\+\_\+scale$<$ T, Vec $>$}
+
+Vector expression for scalar-\/vector multiplication. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The scalar type. \\
+\hline
+{\em Vec} & The vector expression type of the vector operand. \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line 331 of file vec.\+hpp.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classmth_1_1tvec__scale_a3fcd176adfc31d0a84cd37cae7e6ae85}\label{classmth_1_1tvec__scale_a3fcd176adfc31d0a84cd37cae7e6ae85}} 
+\index{mth::tvec\_scale$<$ T, Vec $>$@{mth::tvec\_scale$<$ T, Vec $>$}!tvec\_scale@{tvec\_scale}}
+\index{tvec\_scale@{tvec\_scale}!mth::tvec\_scale$<$ T, Vec $>$@{mth::tvec\_scale$<$ T, Vec $>$}}
+\doxysubsubsection{\texorpdfstring{tvec\_scale()}{tvec\_scale()}}
+{\footnotesize\ttfamily template$<$typename T , typename Vec $>$ \\
+constexpr \mbox{\hyperlink{classmth_1_1tvec__scale}{mth\+::tvec\+\_\+scale}}$<$ T, Vec $>$\+::\mbox{\hyperlink{classmth_1_1tvec__scale}{tvec\+\_\+scale}} (\begin{DoxyParamCaption}\item[{T}]{scalar,  }\item[{Vec}]{vector }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [constexpr]}}
+
+
+
+Construct the product expression from its operands. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em scalar} & The scalar value. \\
+\hline
+{\em vector} & The vector expression value. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 344 of file vec.\+hpp.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classmth_1_1tvec__scale_aca4c9151d87b06afeb653c8a4e47f6f0}\label{classmth_1_1tvec__scale_aca4c9151d87b06afeb653c8a4e47f6f0}} 
+\index{mth::tvec\_scale$<$ T, Vec $>$@{mth::tvec\_scale$<$ T, Vec $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!mth::tvec\_scale$<$ T, Vec $>$@{mth::tvec\_scale$<$ T, Vec $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily template$<$typename T , typename Vec $>$ \\
+constexpr T \mbox{\hyperlink{classmth_1_1tvec__scale}{mth\+::tvec\+\_\+scale}}$<$ T, Vec $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{index }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+The {\ttfamily operator\mbox{[}\mbox{]}} to define this as a vector expression. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index of the component to access. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The product of the scalar operand the component of the vector operand at this index. 
+\end{DoxyReturn}
+
+
+Definition at line 356 of file vec.\+hpp.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/mth/vec.\+hpp\end{DoxyCompactItemize}

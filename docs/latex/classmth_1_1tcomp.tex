@@ -1,0 +1,163 @@
+\hypertarget{classmth_1_1tcomp}{}\doxysection{mth\+::tcomp$<$ T $>$ Class Template Reference}
+\label{classmth_1_1tcomp}\index{mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}}
+
+
+Complex number expression for a concrete / evaluated complex value.  
+
+
+
+
+{\ttfamily \#include $<$comp.\+hpp$>$}
+
+Inheritance diagram for mth\+::tcomp$<$ T $>$\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classmth_1_1tcomp}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename  = std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+default\+\_\+constructible\+\_\+v$<$\+T$>$$>$$>$ }\\constexpr \mbox{\hyperlink{classmth_1_1tcomp_aaf1468aae96a9b501afa7a3f3aecdb86}{tcomp}} ()
+\begin{DoxyCompactList}\small\item\em Default constructor calls explicit default initialization for the real and imaginary parts. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Comp , typename  = enable\+\_\+if\+\_\+comp\+\_\+t$<$\+Comp$>$$>$ }\\constexpr \mbox{\hyperlink{classmth_1_1tcomp_a8c5395c4c16bb54af8c5efc2a34b230f}{tcomp}} (Comp expr)
+\begin{DoxyCompactList}\small\item\em Convert a complex number expression to a concrete complex value. \end{DoxyCompactList}\item 
+constexpr \mbox{\hyperlink{classmth_1_1tcomp_a6faf515a8e779ef21c4235ac72b63e29}{tcomp}} (T \mbox{\hyperlink{classmth_1_1tcomp_a253b954a4b9cb8bcfaa6f95fae18d6a1}{real}}, T \mbox{\hyperlink{classmth_1_1tcomp_a1a4ca360ae63ada1b2dcffa59e532d22}{imag}})
+\begin{DoxyCompactList}\small\item\em Construct a concrete complex number given its real and imaginary parts. \end{DoxyCompactList}\item 
+constexpr T \mbox{\hyperlink{classmth_1_1tcomp_a253b954a4b9cb8bcfaa6f95fae18d6a1}{real}} () const
+\begin{DoxyCompactList}\small\item\em The real part accessor needed to define this as a complex number expression. \end{DoxyCompactList}\item 
+constexpr T \mbox{\hyperlink{classmth_1_1tcomp_a1a4ca360ae63ada1b2dcffa59e532d22}{imag}} () const
+\begin{DoxyCompactList}\small\item\em The imaginary part accessor needed to define this as a complex number expression. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename T$>$\newline
+class mth\+::tcomp$<$ T $>$}
+
+Complex number expression for a concrete / evaluated complex value. 
+
+Various aliases for this type are provided with the typical type prefixes and default types\+: {\ttfamily icomp} for {\ttfamily tcomp$<$int$>$}, {\ttfamily dcomp} for {\ttfamily tcomp$<$double$>$}, {\ttfamily ucomp} for {\ttfamily tcomp$<$unsigned int$>$}, {\ttfamily fcomp} for {\ttfamily tcomp$<$float$>$}. Leaving out the type prefix defaults to float, so {\ttfamily comp} is {\ttfamily fcomp};
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The scalar type for the real and imaginary part of the value. \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line 44 of file comp.\+hpp.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classmth_1_1tcomp_aaf1468aae96a9b501afa7a3f3aecdb86}\label{classmth_1_1tcomp_aaf1468aae96a9b501afa7a3f3aecdb86}} 
+\index{mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}!tcomp@{tcomp}}
+\index{tcomp@{tcomp}!mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{tcomp()}{tcomp()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+template$<$typename  = std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+default\+\_\+constructible\+\_\+v$<$\+T$>$$>$$>$ \\
+constexpr \mbox{\hyperlink{classmth_1_1tcomp}{mth\+::tcomp}}$<$ T $>$\+::\mbox{\hyperlink{classmth_1_1tcomp}{tcomp}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Default constructor calls explicit default initialization for the real and imaginary parts. 
+
+Enabled when the element type {\ttfamily T} is default constructible. 
+
+Definition at line 59 of file comp.\+hpp.
+
+\mbox{\Hypertarget{classmth_1_1tcomp_a8c5395c4c16bb54af8c5efc2a34b230f}\label{classmth_1_1tcomp_a8c5395c4c16bb54af8c5efc2a34b230f}} 
+\index{mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}!tcomp@{tcomp}}
+\index{tcomp@{tcomp}!mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{tcomp()}{tcomp()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+template$<$typename Comp , typename  = enable\+\_\+if\+\_\+comp\+\_\+t$<$\+Comp$>$$>$ \\
+constexpr \mbox{\hyperlink{classmth_1_1tcomp}{mth\+::tcomp}}$<$ T $>$\+::\mbox{\hyperlink{classmth_1_1tcomp}{tcomp}} (\begin{DoxyParamCaption}\item[{Comp}]{expr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Convert a complex number expression to a concrete complex value. 
+
+Enabled when {\ttfamily Comp} is derived from {\ttfamily \mbox{\hyperlink{classmth_1_1tcomp__expr}{mth\+::tcomp\+\_\+expr}}} appropriately.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Comp} & The complex number expression type. \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em expr} & The complex number expression value. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 73 of file comp.\+hpp.
+
+\mbox{\Hypertarget{classmth_1_1tcomp_a6faf515a8e779ef21c4235ac72b63e29}\label{classmth_1_1tcomp_a6faf515a8e779ef21c4235ac72b63e29}} 
+\index{mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}!tcomp@{tcomp}}
+\index{tcomp@{tcomp}!mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{tcomp()}{tcomp()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+constexpr \mbox{\hyperlink{classmth_1_1tcomp}{mth\+::tcomp}}$<$ T $>$\+::\mbox{\hyperlink{classmth_1_1tcomp}{tcomp}} (\begin{DoxyParamCaption}\item[{T}]{real,  }\item[{T}]{imag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Construct a concrete complex number given its real and imaginary parts. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em real} & The real part. \\
+\hline
+{\em imag} & The imaginary part. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 84 of file comp.\+hpp.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classmth_1_1tcomp_a1a4ca360ae63ada1b2dcffa59e532d22}\label{classmth_1_1tcomp_a1a4ca360ae63ada1b2dcffa59e532d22}} 
+\index{mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}!imag@{imag}}
+\index{imag@{imag}!mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{imag()}{imag()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+constexpr T \mbox{\hyperlink{classmth_1_1tcomp}{mth\+::tcomp}}$<$ T $>$\+::imag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+The imaginary part accessor needed to define this as a complex number expression. 
+
+\begin{DoxyReturn}{Returns}
+The imaginary part of this complex value. 
+\end{DoxyReturn}
+
+
+Definition at line 106 of file comp.\+hpp.
+
+\mbox{\Hypertarget{classmth_1_1tcomp_a253b954a4b9cb8bcfaa6f95fae18d6a1}\label{classmth_1_1tcomp_a253b954a4b9cb8bcfaa6f95fae18d6a1}} 
+\index{mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}!real@{real}}
+\index{real@{real}!mth::tcomp$<$ T $>$@{mth::tcomp$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{real()}{real()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+constexpr T \mbox{\hyperlink{classmth_1_1tcomp}{mth\+::tcomp}}$<$ T $>$\+::real (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+The real part accessor needed to define this as a complex number expression. 
+
+\begin{DoxyReturn}{Returns}
+The real part of this complex value. 
+\end{DoxyReturn}
+
+
+Definition at line 95 of file comp.\+hpp.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/mth/comp.\+hpp\end{DoxyCompactItemize}

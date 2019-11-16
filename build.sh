@@ -4,6 +4,7 @@
 
 clang-format -i -style=file ./src/* ./include/**/* # auto-format
 export CXX=/usr/bin/clang++ # g++ has appalling errors
+doxygen Doxyfile # generate docs
 
 mkdir -p build
 pushd build

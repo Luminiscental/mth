@@ -1,0 +1,54 @@
+\hypertarget{namespacemth_1_1vec}{}\doxysection{mth\+::vec Namespace Reference}
+\label{namespacemth_1_1vec}\index{mth::vec@{mth::vec}}
+
+
+A namespace to hold \char`\"{}static\char`\"{} functions relating to {\ttfamily \mbox{\hyperlink{classmth_1_1tvec__expr}{mth\+::tvec\+\_\+expr}}}.  
+
+
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Func , typename... Vecs, typename  = enable\+\_\+if\+\_\+vecs\+\_\+t$<$\+Vecs...$>$$>$ }\\constexpr auto \mbox{\hyperlink{namespacemth_1_1vec_a071de3d05e24cacd48a7956c0790c608}{map}} (Func f, Vecs... vecs)
+\begin{DoxyCompactList}\small\item\em Map a function over a list of vector expressions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A namespace to hold \char`\"{}static\char`\"{} functions relating to {\ttfamily \mbox{\hyperlink{classmth_1_1tvec__expr}{mth\+::tvec\+\_\+expr}}}. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespacemth_1_1vec_a071de3d05e24cacd48a7956c0790c608}\label{namespacemth_1_1vec_a071de3d05e24cacd48a7956c0790c608}} 
+\index{mth::vec@{mth::vec}!map@{map}}
+\index{map@{map}!mth::vec@{mth::vec}}
+\doxysubsubsection{\texorpdfstring{map()}{map()}}
+{\footnotesize\ttfamily template$<$typename Func , typename... Vecs, typename  = enable\+\_\+if\+\_\+vecs\+\_\+t$<$\+Vecs...$>$$>$ \\
+constexpr auto mth\+::vec\+::map (\begin{DoxyParamCaption}\item[{Func}]{f,  }\item[{Vecs...}]{vecs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Map a function over a list of vector expressions. 
+
+This is the functional concept of mapping; a function f mapped over vectors {\ttfamily a = \{a0, a1, ...\}, b = \{b0, b1, ...\}, c = \{c0, c1, ...\}} is essentially the vector {\ttfamily \{f(a0, b0, c0), f(a1, b1, c1), ...\}}.
+
+The pack of vectors to map over must be non-\/empty.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Func} & The type of the function to map. \\
+\hline
+{\em Vecs} & Parameter pack of vector expression types to be mapped over. \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em f} & The function value to map. \\
+\hline
+{\em vecs} & The vectors to map over. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector expression for the result of mapping {\ttfamily f} over {\ttfamily vecs}. 
+\end{DoxyReturn}
+
+
+Definition at line 677 of file vec.\+hpp.
+
