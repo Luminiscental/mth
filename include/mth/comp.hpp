@@ -35,7 +35,7 @@ namespace mth
     public:
         template <
             typename = std::enable_if_t<std::is_default_constructible_v<T>>>
-        constexpr tcomp()
+        constexpr tcomp() : _real{}, _imag{}
         {
         }
 
@@ -44,7 +44,10 @@ namespace mth
         {
         }
 
-        constexpr tcomp(T real, T imag) : _real{real}, _imag{imag} {}
+        constexpr tcomp(T real, T imag)
+            : _real{std::move(real)}, _imag{std::move(imag)}
+        {
+        }
 
         constexpr T real() const
         {
@@ -62,6 +65,39 @@ namespace mth
     {
     public:
         using Elem = T;
+    };
+
+    // tcomp_sum definition
+
+    template <typename Lhs, typename Rhs>
+    class tcomp_sum : public tcomp_expr<tcomp_sum<Lhs, Rhs>>
+    {
+    private:
+        Lhs _lhs;
+        Rhs _rhs;
+
+    public:
+        explicit constexpr tcomp_sum(Lhs lhs, Rhs rhs)
+            : _lhs{std::move(lhs)}, _rhs{std::move(rhs)}
+        {
+        }
+
+        constexpr tcomp_elem_t<Lhs> real() const
+        {
+            return _lhs.real() + _rhs.real();
+        }
+
+        constexpr tcomp_elem_t<Lhs> imag() const
+        {
+            return _lhs.imag() + _rhs.imag();
+        }
+    };
+
+    template <typename Lhs, typename Rhs>
+    class tcomp_info<tcomp_sum<Lhs, Rhs>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Lhs>;
     };
 
     // tcomp_expr definition
@@ -90,6 +126,25 @@ namespace mth
             return static_cast<Derived const&>(*this).imag();
         }
     };
+
+    enum class tcomp_tag
+    {
+        Dummy
+    };
+
+    // operator overloads
+
+    template <
+        typename Lhs,
+        typename Rhs,
+        typename  = enable_if_comps_t<Lhs, Rhs>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator+(Lhs lhs, Rhs rhs)
+    {
+        return tcomp_sum{std::move(lhs), std::move(rhs)};
+    }
+
+    // aliases
 
     using fcomp = tcomp<float>;
     using dcomp = tcomp<double>;

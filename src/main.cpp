@@ -263,15 +263,61 @@ TEST(Vectors, AreMultiMappable)
         << "first component of mth::vec::map result was miscalculated";
 }
 
+// TODO: dot product, magnitude
+
 TEST(Complex, CanGetComponents)
 {
     mth::comp z{2.0f, 3.0f};
 
-    ASSERT_EQ(z.real(), 2.0f);
-    ASSERT_EQ(z.imag(), 3.0f);
+    ASSERT_EQ(z.real(), 2.0f)
+        << "extracted real part didn't match value passed to constructor";
+    ASSERT_EQ(z.imag(), 3.0f)
+        << "extracted real part didn't match value passed to constructor";
 }
 
-// TODO: dot product, magnitude, complex numbers
+TEST(Complex, DefaultInitToZero)
+{
+    mth::icomp z;
+
+    ASSERT_EQ(z.real(), 0)
+        << "default int complex number had non-zero real part";
+    ASSERT_EQ(z.imag(), 0)
+        << "default int complex number had non-zero imaginary part";
+}
+
+TEST(Complex, TypeAliasesExist)
+{
+    static_assert(
+        std::is_same_v<mth::dcomp, mth::tcomp<double>>,
+        "expected alias mth::dcomp to be mth::tcomp<double>");
+    static_assert(
+        std::is_same_v<mth::fcomp, mth::tcomp<float>>,
+        "expected alias mth::fcomp to be mth::tcomp<float>");
+    static_assert(
+        std::is_same_v<mth::icomp, mth::tcomp<int>>,
+        "expected alias mth::icomp to be mth::tcomp<int>");
+    static_assert(
+        std::is_same_v<mth::ucomp, mth::tcomp<unsigned int>>,
+        "expected alias mth::ucomp to be mth::tcomp<unsigned int>");
+    static_assert(
+        std::is_same_v<mth::comp, mth::fcomp>,
+        "expected alias mth::comp to be mth::fcomp");
+}
+
+TEST(Complex, AdditionIsCorrect)
+{
+    mth::icomp LHS = {1, 3};
+    mth::icomp RHS = {-2, 5};
+
+    auto sum = LHS + RHS;
+
+    ASSERT_EQ(sum.real(), LHS.real() + RHS.real())
+        << "real part of complex sum was not the sum of the individual real "
+           "parts";
+    ASSERT_EQ(sum.imag(), LHS.imag() + RHS.imag())
+        << "imaginary part of complex sum was not the sum of the individual "
+           "imaginary parts";
+}
 
 int main(int argc, char** argv)
 {

@@ -271,7 +271,7 @@ namespace mth
 
     public:
         explicit constexpr tvec_map(Func functor, Vecs... vecs)
-            : _vecs{vecs...}, _functor{std::move(functor)}
+            : _vecs{std::move(vecs)...}, _functor{std::move(functor)}
         {
         }
 
@@ -406,7 +406,7 @@ namespace mth
         constexpr auto map(Func f) const
         {
             Derived copy = static_cast<Derived const&>(*this);
-            return tvec_map{f, copy};
+            return tvec_map{std::move(f), std::move(copy)};
         }
     };
 
@@ -420,7 +420,7 @@ namespace mth
             typename = enable_if_vecs_t<Vecs...>>
         constexpr auto map(Func f, Vecs... vecs)
         {
-            return tvec_map{f, vecs...};
+            return tvec_map{std::move(f), std::move(vecs)...};
         }
     }
 
@@ -432,44 +432,61 @@ namespace mth
         static constexpr auto SIZE = tvec_size_v<Derived>;
     };
 
+    enum class tvec_tag
+    {
+        Dummy
+    };
+
     // operator overloads
 
     template <
         typename Lhs,
         typename Rhs,
-        typename = enable_if_vec_t<Lhs>,
-        typename = enable_if_vec_t<Rhs>>
+        typename = enable_if_vecs_t<Lhs, Rhs>,
+        tvec_tag = tvec_tag::Dummy>
     constexpr auto operator+(Lhs lhs, Rhs rhs)
     {
-        return tvec_sum{lhs, rhs};
+        return tvec_sum{std::move(lhs), std::move(rhs)};
     }
 
     template <
         typename Lhs,
         typename Rhs,
-        typename = enable_if_vec_t<Lhs>,
-        typename = enable_if_vec_t<Rhs>>
+        typename = enable_if_vecs_t<Lhs, Rhs>,
+        tvec_tag = tvec_tag::Dummy>
     constexpr auto operator-(Lhs lhs, Rhs rhs)
     {
-        return tvec_diff{lhs, rhs};
+        return tvec_diff{std::move(lhs), std::move(rhs)};
     }
 
-    template <typename T, typename Vec, typename = enable_if_vec_t<Vec>>
+    template <
+        typename T,
+        typename Vec,
+        typename = enable_if_vec_t<Vec>,
+        tvec_tag = tvec_tag::Dummy>
     constexpr auto operator*(T lhs, Vec rhs)
     {
-        return tvec_scale{lhs, rhs};
+        return tvec_scale{std::move(lhs), std::move(rhs)};
     }
 
-    template <typename T, typename Vec, typename = enable_if_vec_t<Vec>>
+    template <
+        typename T,
+        typename Vec,
+        typename = enable_if_vec_t<Vec>,
+        tvec_tag = tvec_tag::Dummy>
     constexpr auto operator*(Vec lhs, T rhs)
     {
         return rhs * lhs;
     }
 
-    template <typename T, typename Vec, typename = enable_if_vec_t<Vec>>
+    template <
+        typename T,
+        typename Vec,
+        typename = enable_if_vec_t<Vec>,
+        tvec_tag = tvec_tag::Dummy>
     constexpr auto operator/(Vec lhs, T rhs)
     {
-        return tvec_reduce{rhs, lhs};
+        return tvec_reduce{std::move(rhs), std::move(lhs)};
     }
 
     template <typename T, size_t N, size_t... Ns>
@@ -482,7 +499,8 @@ namespace mth
     template <typename T, size_t N>
     constexpr auto operator==(tvec<T, N> lhs, tvec<T, N> rhs)
     {
-        return equalityHelper(std::make_index_sequence<N>{}, lhs, rhs);
+        return equalityHelper(
+            std::make_index_sequence<N>{}, std::move(lhs), std::move(rhs));
     }
 
     template <typename T, size_t N>
@@ -494,18 +512,18 @@ namespace mth
     template <
         typename Lhs,
         typename Rhs,
-        typename = enable_if_vec_t<Lhs>,
-        typename = enable_if_vec_t<Rhs>>
+        typename = enable_if_vecs_t<Lhs, Rhs>,
+        tvec_tag = tvec_tag::Dummy>
     constexpr auto operator==(Lhs lhs, Rhs rhs)
     {
-        return tvec{lhs} == tvec{rhs};
+        return tvec{std::move(lhs)} == tvec{std::move(rhs)};
     }
 
     template <
         typename Lhs,
         typename Rhs,
-        typename = enable_if_vec_t<Lhs>,
-        typename = enable_if_vec_t<Rhs>>
+        typename = enable_if_vecs_t<Lhs, Rhs>,
+        tvec_tag = tvec_tag::Dummy>
     constexpr auto operator!=(Lhs lhs, Rhs rhs)
     {
         return !(lhs == rhs);
