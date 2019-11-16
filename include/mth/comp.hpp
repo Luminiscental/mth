@@ -100,6 +100,64 @@ namespace mth
         using Elem = tcomp_elem_t<Lhs>;
     };
 
+    // tcomp_neg definition
+
+    template <typename Comp>
+    class tcomp_neg : public tcomp_expr<tcomp_neg<Comp>>
+    {
+    private:
+        Comp _target;
+
+    public:
+        explicit constexpr tcomp_neg(Comp comp) : _target{std::move(comp)} {}
+
+        constexpr tcomp_elem_t<Comp> real() const
+        {
+            return -_target.real();
+        }
+
+        constexpr tcomp_elem_t<Comp> imag() const
+        {
+            return -_target.imag();
+        }
+    };
+
+    template <typename Comp>
+    class tcomp_info<tcomp_neg<Comp>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Comp>;
+    };
+
+    // tcomp_conj definition
+
+    template <typename Comp>
+    class tcomp_conj : public tcomp_expr<tcomp_conj<Comp>>
+    {
+    private:
+        Comp _target;
+
+    public:
+        explicit constexpr tcomp_conj(Comp comp) : _target{std::move(comp)} {}
+
+        constexpr tcomp_elem_t<Comp> real() const
+        {
+            return _target.real();
+        }
+
+        constexpr tcomp_elem_t<Comp> imag() const
+        {
+            return -_target.imag();
+        }
+    };
+
+    template <typename Comp>
+    class tcomp_info<tcomp_conj<Comp>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Comp>;
+    };
+
     // tcomp_expr definition
 
     template <typename Derived>
@@ -125,6 +183,12 @@ namespace mth
         {
             return static_cast<Derived const&>(*this).imag();
         }
+
+        constexpr auto conj() const
+        {
+            Derived copy = static_cast<Derived const&>(*this);
+            return tcomp_conj{std::move(copy)};
+        }
     };
 
     enum class tcomp_tag
@@ -142,6 +206,15 @@ namespace mth
     constexpr auto operator+(Lhs lhs, Rhs rhs)
     {
         return tcomp_sum{std::move(lhs), std::move(rhs)};
+    }
+
+    template <
+        typename Comp,
+        typename  = enable_if_comp_t<Comp>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator-(Comp comp)
+    {
+        return tcomp_neg{std::move(comp)};
     }
 
     // aliases

@@ -333,6 +333,29 @@ TEST(Complex, AdditionIsCorrect)
            "imaginary parts";
 }
 
+TEST(Complex, NegationIsCorrect)
+{
+    mth::ucomp z  = {5, 0};
+    auto negation = -z;
+
+    ASSERT_EQ(negation.real(), -z.real())
+        << "real part of complex negation was not the negation of the real "
+           "part";
+    ASSERT_EQ(negation.imag(), -z.imag())
+        << "imaginary part of complex negation was not the negation of the "
+           "imaginary part";
+}
+
+TEST(Complex, ConjugationIsCorrect)
+{
+    mth::dcomp z = {1.24, 2.7899};
+    auto conj    = z.conj();
+
+    ASSERT_EQ(conj.real(), z.real()) << "conjugation modified the real part";
+    ASSERT_EQ(conj.imag(), -z.imag())
+        << "conjugation did not negate the imaginary part";
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
