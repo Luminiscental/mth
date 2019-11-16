@@ -132,6 +132,20 @@ TEST(Vectors, AdditionIsComponentWise)
     }
 }
 
+TEST(Vectors, NegationIsComponentWise)
+{
+    mth::ivec3 vector = {-2, 3, 1};
+    auto negation     = -vector;
+
+    for (size_t i = 0; i < 3; i++)
+    {
+        ASSERT_EQ(negation[i], -vector[i])
+            << "component " << i
+            << " of negation of a vector was not the negation of it's "
+               "corresponding component";
+    }
+}
+
 TEST(Vectors, SubtractionIsComponentWise)
 {
     mth::dvec3 vectorLHS = {-0.9, 0.2, 1.3};

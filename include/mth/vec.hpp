@@ -195,6 +195,31 @@ namespace mth
         static constexpr auto SIZE = tvec_size_v<Lhs>;
     };
 
+    // tvec_neg definition
+
+    template <typename Vec>
+    class tvec_neg : public tvec_expr<tvec_neg<Vec>>
+    {
+    private:
+        Vec _target;
+
+    public:
+        explicit constexpr tvec_neg(Vec vec) : _target{std::move(vec)} {}
+
+        constexpr tvec_elem_t<Vec> operator[](size_t index) const
+        {
+            return -_target[index];
+        }
+    };
+
+    template <typename Vec>
+    class tvec_info<tvec_neg<Vec>>
+    {
+    public:
+        using Elem                 = tvec_elem_t<Vec>;
+        static constexpr auto SIZE = tvec_size_v<Vec>;
+    };
+
     // tvec_scale definition
 
     template <typename T, typename Vec>
@@ -447,6 +472,15 @@ namespace mth
     constexpr auto operator+(Lhs lhs, Rhs rhs)
     {
         return tvec_sum{std::move(lhs), std::move(rhs)};
+    }
+
+    template <
+        typename Vec,
+        typename = enable_if_vec_t<Vec>,
+        tvec_tag = tvec_tag::Dummy>
+    constexpr auto operator-(Vec vec)
+    {
+        return tvec_neg{std::move(vec)};
     }
 
     template <
