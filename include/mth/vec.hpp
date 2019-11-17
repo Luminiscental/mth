@@ -2,13 +2,20 @@
 
 /// @file Header containing definitions for vector expressions.
 
+#ifndef DEFAULT_MEMOIZE
+#define DEFAULT_MEMOIZE false
+#else
+#undef DEFAULT_MEMOIZE
+#define DEFAULT_MEMOIZE true
+#endif
+
 #include <array>
 #include <cstdint>
 #include <unordered_map>
 
 namespace mth
 {
-    template <typename Derived, bool memoize = true>
+    template <typename Derived, bool memoize = DEFAULT_MEMOIZE>
     class tvec_expr;
 
     template <typename Vec>
