@@ -11,6 +11,8 @@ namespace mth
          * @brief Given an arithmetic type `T`, tries to give the representation
          * of zero in that type.
          *
+         * @tparam T The type to get 0 for.
+         *
          * @return The literal 0 statically casted to `T`.
          */
         template <typename T>
@@ -23,6 +25,7 @@ namespace mth
          * @brief Given a value of an arithemtic type `T`, checks for equality
          * with `mth::util::zero<T>()`.
          *
+         * @tparam T The value type to check for zero.
          * @param value The value to check for equality with zero.
          * @return The result of comparing for equality against
          * `mth::zero<T>()`.
@@ -40,6 +43,7 @@ namespace mth
          * This function works on types `T` with equality comparison operators
          * defined.
          *
+         * @tparam T The arithmetic type to work with.
          * @param value The value to check for containment in the range.
          * @param min The included start of the range.
          * @param max The included end of the range.
@@ -58,6 +62,7 @@ namespace mth
          * This function works on types `T` with strict comparison operators
          * defined.
          *
+         * @tparam T The arithmetic type to work with.
          * @param value The value to check for containment in the range.
          * @param min the excluded start of the range.
          * @param max the excluded end of the range.
