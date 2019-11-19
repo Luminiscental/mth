@@ -272,6 +272,63 @@ namespace mth
     };
 
     /**
+     * @brief Complex number expression for a difference of two complex numbers.
+     *
+     * @tparam Lhs The complex number expression type of the left side operand.
+     * @tparam Rhs The complex number expression type of the right side operand.
+     */
+    template <typename Lhs, typename Rhs>
+    class tcomp_diff : public tcomp_expr<tcomp_diff<Lhs, Rhs>>
+    {
+    private:
+        Lhs _lhs;
+        Rhs _rhs;
+
+    public:
+        /**
+         * @brief Construct the sum expression from its operands.
+         *
+         * @param lhs The complex number expression of the left side operand.
+         * @param rhs The complex number expression of the right side operand.
+         */
+        explicit constexpr tcomp_diff(Lhs lhs, Rhs rhs)
+            : _lhs{std::move(lhs)}, _rhs{std::move(rhs)}
+        {
+        }
+
+        /**
+         * @brief The real part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The difference of the real parts of the left and right side
+         * operands.
+         */
+        constexpr tcomp_elem_t<Lhs> real() const
+        {
+            return _lhs.real() - _rhs.real();
+        }
+
+        /**
+         * @brief The imaginary part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The difference of the imaginary parts of the left and right
+         * side operands.
+         */
+        constexpr tcomp_elem_t<Lhs> imag() const
+        {
+            return _lhs.imag() - _rhs.imag();
+        }
+    };
+
+    template <typename Lhs, typename Rhs>
+    class tcomp_info<tcomp_diff<Lhs, Rhs>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Lhs>;
+    };
+
+    /**
      * @brief The base complex number expression class, used for the CRTP
      * pattern.
      *
@@ -346,6 +403,16 @@ namespace mth
     constexpr auto operator+(Lhs lhs, Rhs rhs)
     {
         return tcomp_sum{std::move(lhs), std::move(rhs)};
+    }
+
+    template <
+        typename Lhs,
+        typename Rhs,
+        typename  = enable_if_comps_t<Lhs, Rhs>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator-(Lhs lhs, Rhs rhs)
+    {
+        return tcomp_diff{std::move(lhs), std::move(rhs)};
     }
 
     template <

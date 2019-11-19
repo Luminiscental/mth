@@ -356,6 +356,21 @@ TEST(Complex, ConjugationIsCorrect)
         << "conjugation did not negate the imaginary part";
 }
 
+TEST(Complex, SubtractionIsCorrect)
+{
+    mth::icomp a = {4, -7};
+    mth::icomp b = {-1, 0};
+
+    auto diff = a - b;
+
+    ASSERT_EQ(diff.real(), a.real() - b.real())
+        << "real part of complex difference was not the difference of the "
+           "individual real parts";
+    ASSERT_EQ(diff.imag(), a.imag() - b.imag())
+        << "imaginary part of complex difference was not the difference of the "
+           "individual imaginary parts";
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
