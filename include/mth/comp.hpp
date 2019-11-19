@@ -286,7 +286,7 @@ namespace mth
 
     public:
         /**
-         * @brief Construct the sum expression from its operands.
+         * @brief Construct the difference expression from its operands.
          *
          * @param lhs The complex number expression of the left side operand.
          * @param rhs The complex number expression of the right side operand.
@@ -323,6 +323,61 @@ namespace mth
 
     template <typename Lhs, typename Rhs>
     class tcomp_info<tcomp_diff<Lhs, Rhs>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Lhs>;
+    };
+
+    /**
+     * @brief Complex number expression for a product of two complex numbers.
+     *
+     * @tparam Lhs The complex number expression type of the left side operand.
+     * @tparam Rhs The complex number expression type of the right side operand.
+     */
+    template <typename Lhs, typename Rhs>
+    class tcomp_prod : public tcomp_expr<tcomp_prod<Lhs, Rhs>>
+    {
+    private:
+        Lhs _lhs;
+        Rhs _rhs;
+
+    public:
+        /**
+         * @brief Construct the product expression from its operands.
+         *
+         * @param lhs The complex number expression of the left side operand.
+         * @param rhs The complex number expression of the right side operand.
+         */
+        explicit constexpr tcomp_prod(Lhs lhs, Rhs rhs)
+            : _lhs{std::move(lhs)}, _rhs{std::move(rhs)}
+        {
+        }
+
+        /**
+         * @brief The real part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The real part of the product of the operands.
+         */
+        constexpr tcomp_elem_t<Lhs> real() const
+        {
+            return _lhs.real() * _rhs.real() - _lhs.imag() * _rhs.imag();
+        }
+
+        /**
+         * @brief The imaginary part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The imaginary part of the product of the operands.
+         */
+        constexpr tcomp_elem_t<Lhs> imag() const
+        {
+            return _lhs.imag() * _rhs.real() + _lhs.real() * _rhs.imag();
+        }
+    };
+
+    template <typename Lhs, typename Rhs>
+    class tcomp_info<tcomp_prod<Lhs, Rhs>>
     {
     public:
         using Elem = tcomp_elem_t<Lhs>;
@@ -422,6 +477,16 @@ namespace mth
     constexpr auto operator-(Comp comp)
     {
         return tcomp_neg{std::move(comp)};
+    }
+
+    template <
+        typename Lhs,
+        typename Rhs,
+        typename  = enable_if_comps_t<Lhs, Rhs>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator*(Lhs lhs, Rhs rhs)
+    {
+        return tcomp_prod{std::move(lhs), std::move(rhs)};
     }
 
     // aliases:

@@ -371,6 +371,19 @@ TEST(Complex, SubtractionIsCorrect)
            "individual imaginary parts";
 }
 
+TEST(Complex, MultiplicationIsCorrect)
+{
+    mth::ucomp a = {3, 9};
+    mth::ucomp b = {2, 6};
+
+    auto prod = a * b;
+
+    ASSERT_EQ(prod.real(), a.real() * b.real() - a.imag() * b.imag())
+        << "real part of complex product was incorrect";
+    ASSERT_EQ(prod.imag(), a.real() * b.imag() + a.imag() * b.real())
+        << "imaginary part of complex product was incorrect";
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
