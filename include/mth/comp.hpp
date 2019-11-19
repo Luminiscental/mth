@@ -516,6 +516,38 @@ namespace mth
         return tcomp_prod{std::move(lhs), std::move(rhs)};
     }
 
+    template <typename Elem>
+    constexpr auto operator==(tcomp<Elem> lhs, tcomp<Elem> rhs)
+    {
+        return lhs.real() == rhs.real() && lhs.imag() == rhs.imag();
+    }
+
+    template <
+        typename Lhs,
+        typename Rhs,
+        typename  = enable_if_comps_t<Lhs, Rhs>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator==(Lhs lhs, Rhs rhs)
+    {
+        return tcomp{lhs} == tcomp{rhs};
+    }
+
+    template <typename Elem>
+    constexpr auto operator!=(tcomp<Elem> lhs, tcomp<Elem> rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <
+        typename Lhs,
+        typename Rhs,
+        typename  = enable_if_comps_t<Lhs, Rhs>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator!=(Lhs lhs, Rhs rhs)
+    {
+        return !(lhs == rhs);
+    }
+
     // aliases:
 
     using fcomp = tcomp<float>;

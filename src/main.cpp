@@ -395,6 +395,18 @@ TEST(Complex, CanFindModulus)
         << "modulus of a complex number was incorrect";
 }
 
+TEST(Complex, HaveEquality)
+{
+    mth::icomp a = {13, 27};
+    mth::icomp b = {-9, -1};
+    mth::icomp c = a;
+
+    ASSERT_EQ(b, b) << "equality of complex numbers failed to be reflexive";
+    ASSERT_EQ(a, c)
+        << "equality of complex numbers didn't respect copy initialization";
+    ASSERT_NE(a, b) << "unequal complex numbers falsely flagged equal";
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
