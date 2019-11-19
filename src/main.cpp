@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 
@@ -382,6 +383,16 @@ TEST(Complex, MultiplicationIsCorrect)
         << "real part of complex product was incorrect";
     ASSERT_EQ(prod.imag(), a.real() * b.imag() + a.imag() * b.real())
         << "imaginary part of complex product was incorrect";
+}
+
+TEST(Complex, CanFindModulus)
+{
+    mth::dcomp z = {1.2, 2.9};
+
+    ASSERT_EQ(z.magnSqr(), 1.2 * 1.2 + 2.9 * 2.9)
+        << "square modulus of a complex number was incorrect";
+    ASSERT_EQ(z.magn(), std::sqrt(z.magnSqr()))
+        << "modulus of a complex number was incorrect";
 }
 
 int main(int argc, char** argv)

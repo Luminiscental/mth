@@ -3,6 +3,7 @@
 /// @file Header containing definitions for complex number expressions.
 
 #include <array>
+#include <cmath>
 #include <cstdint>
 
 namespace mth
@@ -440,6 +441,32 @@ namespace mth
         {
             Derived copy = static_cast<Derived const&>(*this);
             return tcomp_conj{std::move(copy)};
+        }
+
+        /**
+         * @brief Calculate the square modulus of this expression. The result
+         * stays in the type of the elements.
+         *
+         * @return The square modulus of the result of this expression.
+         */
+        constexpr Elem magnSqr() const
+        {
+            auto r = real();
+            auto i = imag();
+
+            return r * r + i * i;
+        }
+
+        /**
+         * @brief Calculate the modulus of this expression. The calculation is
+         * done as a double for generality, directly equivalent to
+         *
+         * @return The modulus of the result of this expression.
+         * `std::sqrt(magnSqr())`.
+         */
+        constexpr double magn() const
+        {
+            return std::sqrt(magnSqr());
         }
     };
 
