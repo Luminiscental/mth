@@ -278,6 +278,15 @@ TEST(Vectors, AreMultiMappable)
         << "first component of mth::vec::map result was miscalculated";
 }
 
+TEST(Vectors, CanCast)
+{
+    mth::ivec3 p = {1, -5, 2};
+    mth::vec3 q  = p;
+
+    ASSERT_EQ(q[1], static_cast<float>(p[1]))
+        << "casted vector didn't cast correctly";
+}
+
 // TODO: dot product, magnitude
 
 TEST(Complex, CanGetComponents)
@@ -406,6 +415,9 @@ TEST(Complex, HaveEquality)
         << "equality of complex numbers didn't respect copy initialization";
     ASSERT_NE(a, b) << "unequal complex numbers falsely flagged equal";
 }
+
+// TODO: mth::tcomp_expr::inv()
+// TODO: DRYify expression template boilerplate
 
 int main(int argc, char** argv)
 {

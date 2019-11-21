@@ -1,6 +1,7 @@
 #pragma once
 
-/// @file Header containing definitions for the `mth::util` namespace.
+/// @file mth/mth.hpp Header containing definitions for the `mth::util`
+/// namespace.
 
 namespace mth
 {

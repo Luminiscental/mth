@@ -1,6 +1,7 @@
 #pragma once
 
-/// @file Header containing definitions for complex number expressions.
+/// @file mth/comp.hpp Header containing definitions for complex number
+/// expressions.
 
 #include <array>
 #include <cmath>

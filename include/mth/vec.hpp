@@ -1,6 +1,6 @@
 #pragma once
 
-/// @file Header containing definitions for vector expressions.
+/// @file mth/vec.hpp Header containing definitions for vector expressions.
 
 #ifndef DEFAULT_MEMOIZE
 #define DEFAULT_MEMOIZE false
@@ -92,34 +92,33 @@ namespace mth
          * @brief Convert a vector expression to a concrete vector value.
          *
          * Enabled when `Vec` is derived from `mth::tvec_expr` appropriately.
-         * Asserts that `Vec` has dimension `N`.
          *
          * @tparam Vec The vector expression type.
          * @param expr The vector expression value.
          */
-        template <typename Vec, typename = enable_if_vec_t<Vec>>
+        template <
+            typename Vec,
+            typename = enable_if_vec_t<Vec>,
+            typename = std::enable_if_t<
+                std::is_same_v<tvec_elem_t<Vec>, T> && tvec_size_v<Vec> == N>>
         constexpr tvec(Vec expr)
             : tvec{std::make_index_sequence<tvec_size_v<Vec>>{},
                    std::move(expr)}
         {
-            static_assert(
-                tvec_size_v<Vec> == N, "incompatible vector expression size");
         }
 
         /**
-         * @brief Construct a concrete vector value from a variadic list of
-         * elements.
-         *
-         * Asserts that there are `N` component values in the parameter pack.
+         * @brief Construct a concrete vector value from a variadic list of N
+         * elements of type T.
          *
          * @param values The components of the vector to construct.
          */
-        template <typename... Ts>
+        template <
+            typename... Ts,
+            typename = std::enable_if_t<
+                sizeof...(Ts) == N && (std::is_same_v<Ts, T> && ...)>>
         constexpr tvec(Ts... values) : _components{std::move(values)...}
         {
-            static_assert(
-                sizeof...(Ts) == N,
-                "wrong number of components to initialize vector");
         }
 
         /**
@@ -485,6 +484,48 @@ namespace mth
     };
 
     /**
+     * @brief Vector expression for casting to a new element type.
+     *
+     * @tparam T The element type to cast to.
+     * @tparam Vec The vector expression type of the vector being cast.
+     */
+    template <typename T, typename Vec>
+    class tvec_cast : public tvec_expr<tvec_cast<T, Vec>>
+    {
+    private:
+        Vec _target;
+
+    public:
+        /**
+         * @brief Construct the vector expression from the cast target
+         * expression.
+         *
+         * @param target The expression to be cast.
+         */
+        explicit constexpr tvec_cast(Vec target) : _target{std::move(target)} {}
+
+        /**
+         * @brief The `operator[]` to define this as a vector expression.
+         *
+         * @param index The index of the component to access.
+         * @return The component of the target expression at this index
+         * statically cast to type `T`.
+         */
+        constexpr auto operator[](size_t index) const
+        {
+            return static_cast<T>(_target[index]);
+        }
+    };
+
+    template <typename T, typename Vec>
+    class tvec_info<tvec_cast<T, Vec>>
+    {
+    public:
+        using Elem                 = T;
+        static constexpr auto SIZE = tvec_size_v<Vec>;
+    };
+
+    /**
      * @brief The base vector expression class, used for the CRTP pattern.
      *
      * This base class contains almost all of the operations on vectors, such as
@@ -512,6 +553,33 @@ namespace mth
         mutable std::unordered_map<size_t, Elem> _memos;
 
     public:
+        // Casts:
+
+        /**
+         * @brief Operator overload wrapping the `tvec_cast` expression.
+         *
+         * @return A `tvec_cast` expression targeting this.
+         */
+        template <typename T>
+        constexpr operator tvec_cast<T, Derived>() const
+        {
+            Derived copy = static_cast<Derived const&>(*this);
+            return tvec_cast<T, Derived>{std::move(copy)};
+        }
+
+        /**
+         * @brief Operator overload for casting to a concrete vector of
+         * different element type.
+         *
+         * @return A concrete evaluation of the respective `tvec_cast`
+         * expression.
+         */
+        template <typename T>
+        constexpr operator tvec<T, SIZE>() const
+        {
+            return tvec{static_cast<tvec_cast<T, Derived>>(*this)};
+        }
+
         // Component accessors:
 
         /**
