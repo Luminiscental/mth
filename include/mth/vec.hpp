@@ -571,6 +571,7 @@ namespace mth
          * @brief Operator overload for casting to a concrete vector of
          * different element type.
          *
+         * @tparam T The element type to cast to.
          * @return A concrete evaluation of the respective `tvec_cast`
          * expression.
          */

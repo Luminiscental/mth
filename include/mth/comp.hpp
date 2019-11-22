@@ -71,7 +71,10 @@ namespace mth
          * @tparam Comp The complex number expression type.
          * @param expr The complex number expression value.
          */
-        template <typename Comp, typename = enable_if_comp_t<Comp>>
+        template <
+            typename Comp,
+            typename = enable_if_comp_t<Comp>,
+            typename = std::enable_if_t<std::is_same_v<T, tcomp_elem_t<Comp>>>>
         constexpr tcomp(Comp expr) : _real{expr.real()}, _imag{expr.imag()}
         {
         }
@@ -110,6 +113,9 @@ namespace mth
             return _imag;
         }
     };
+
+    template <typename Comp, typename = enable_if_comp_t<Comp>>
+    tcomp(Comp expr)->tcomp<tcomp_elem_t<Comp>>;
 
     template <typename T>
     class tcomp_info<tcomp<T>>
@@ -386,6 +392,60 @@ namespace mth
     };
 
     /**
+     * @brief Complex number expression for casting to a new element type.
+     *
+     * @tparam T The element type to cast to.
+     * @tparam Comp The complex number expression type of the expression being
+     * cast.
+     */
+    template <typename T, typename Comp>
+    class tcomp_cast : public tcomp_expr<tcomp_cast<T, Comp>>
+    {
+    private:
+        Comp _target;
+
+    public:
+        /**
+         * @brief Construct the complex number expression from the cast target
+         * expression.
+         *
+         * @param target The expression to be cast.
+         */
+        explicit constexpr tcomp_cast(Comp target) : _target{std::move(target)}
+        {
+        }
+
+        /**
+         * @brief The real part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The real part of the target expression cast to type `T`.
+         */
+        constexpr T real() const
+        {
+            return static_cast<T>(_target.real());
+        }
+
+        /**
+         * @brief The imaginary part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The imaginary part of the target expression cast to type `T`.
+         */
+        constexpr T imag() const
+        {
+            return static_cast<T>(_target.imag());
+        }
+    };
+
+    template <typename T, typename Comp>
+    class tcomp_info<tcomp_cast<T, Comp>>
+    {
+    public:
+        using Elem = T;
+    };
+
+    /**
      * @brief The base complex number expression class, used for the CRTP
      * pattern.
      *
@@ -406,6 +466,34 @@ namespace mth
         ~tcomp_expr() = default;
 
     public:
+        // Casts:
+
+        /**
+         * @brief Operator overload wrapping the `tcomp_cast` expression.
+         *
+         * @return A `tvec_cast` expression targeting this.
+         */
+        template <typename T>
+        constexpr operator tcomp_cast<T, Derived>() const
+        {
+            Derived copy = static_cast<Derived const&>(*this);
+            return tcomp_cast<T, Derived>{std::move(copy)};
+        }
+
+        /**
+         * @brief Operator overload for casting to a concrete complex number of
+         * different element type.
+         *
+         * @tparam T The element type to cast to.
+         * @return A concrete evaluation of the respective `tcomp_cast`
+         * expression.
+         */
+        template <typename T>
+        constexpr operator tcomp<T>() const
+        {
+            return tcomp{static_cast<tcomp_cast<T, Derived>>(*this)};
+        }
+
         // Component accessors:
 
         /**

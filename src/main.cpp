@@ -416,6 +416,15 @@ TEST(Complex, HaveEquality)
     ASSERT_NE(a, b) << "unequal complex numbers falsely flagged equal";
 }
 
+TEST(Complex, CanCast)
+{
+    mth::icomp z = {1, 2};
+    mth::comp w  = z;
+
+    ASSERT_EQ(w.imag(), static_cast<float>(z.imag()))
+        << "casted complex number didn't cast correctly";
+}
+
 // TODO: mth::tcomp_expr::inv()
 // TODO: DRYify expression template boilerplate
 
