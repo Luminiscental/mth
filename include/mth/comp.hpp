@@ -712,13 +712,21 @@ namespace mth
         /**
          * @brief Calculate the modulus of this expression. The calculation is
          * done as a double for generality, directly equivalent to
+         * `std::sqrt(magnSqr())`.
          *
          * @return The modulus of the result of this expression.
-         * `std::sqrt(magnSqr())`.
          */
         constexpr double magn() const
         {
             return std::sqrt(norm());
+        }
+
+        /**
+         * @brief Calculate the reciprocal of this expression.
+         */
+        constexpr auto inv() const
+        {
+            return conj() / norm();
         }
     };
 

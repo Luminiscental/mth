@@ -454,8 +454,18 @@ TEST(Complex, CanDivide)
         << "complex float division was incorrect";
 }
 
+TEST(Complex, CanInvert)
+{
+    mth::icomp a{1, 3};
+    mth::icomp b{0, 1};
+
+    ASSERT_EQ(a / b, a * b.inv())
+        << "mth::tcomp_expr::inv was inconsistent with division";
+}
+
 // TODO: DRYify expression template boilerplate
 // TODO: Compount assignment operators
+// TODO: ostream << overloads
 
 int main(int argc, char** argv)
 {
