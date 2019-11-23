@@ -60,6 +60,10 @@ namespace mth
      * Leaving out the type prefix defaults to float, so `vec3` is `fvec3` and
      * so on.
      *
+     * This class also implements the compound assignment operators that
+     * `tvec_expr` does not since operations on `tvec_expr` change the type and
+     * so cannot be used in compound assignment.
+     *
      * @tparam T The element type of the vector.
      * @tparam N The dimension of the vector.
      */
@@ -120,6 +124,52 @@ namespace mth
         constexpr tvec(Ts... values) : _components{std::move(values)...}
         {
         }
+
+        // Compound assignment operators:
+
+        /**
+         * @brief Compound assignment operator for addition, adds the given
+         * vector expression to this vector.
+         *
+         * @tparam Vec The vector expression type to add.
+         * @param other The vector expression value to add.
+         */
+        template <
+            typename Vec,
+            typename = enable_if_vec_t<Vec>,
+            typename = std::enable_if_t<
+                std::is_same_v<tvec_elem_t<Vec>, T> && tvec_size_v<Vec> == N>>
+        constexpr tvec<T, N>& operator+=(Vec other);
+
+        /**
+         * @brief Compound assignment operator for addition, adds the given
+         * vector expression to this vector.
+         *
+         * @tparam Vec The vector expression type to add.
+         * @param other The vector expression value to add.
+         */
+        template <
+            typename Vec,
+            typename = enable_if_vec_t<Vec>,
+            typename = std::enable_if_t<
+                std::is_same_v<tvec_elem_t<Vec>, T> && tvec_size_v<Vec> == N>>
+        constexpr tvec<T, N>& operator-=(Vec other);
+
+        /**
+         * @brief Compound assignment operator for scalar multiplication, scales
+         * this vector by the given scalar.
+         *
+         * @param scalar The value to scale by.
+         */
+        constexpr tvec<T, N>& operator*=(T scalar);
+
+        /**
+         * @brief Compound assignment operator for scalar division, divides
+         * this vector by the given scalar.
+         *
+         * @param scalar The value to divide by.
+         */
+        constexpr tvec<T, N>& operator/=(T scalar);
 
         /**
          * @brief The `operator[]` to define this as a vector expression.
@@ -531,7 +581,8 @@ namespace mth
      * This base class contains almost all of the operations on vectors, such as
      * detailed component access and arithmetic operator overloads, equality
      * operator overloads. However, it does not provide iterator member
-     * functions, those are only accessible from a concrete `mth::tvec` value.
+     * functions or compound assignment operators, those are only accessible
+     * from a concrete `mth::tvec` value.
      *
      * @tparam Derived The type of the class deriving from this base for CRTP.
      * @tparam memoize Bool for whether the base class should handle memoizing
@@ -575,7 +626,9 @@ namespace mth
          * @return A concrete evaluation of the respective `tvec_cast`
          * expression.
          */
-        template <typename T>
+        template <
+            typename T,
+            typename = std::enable_if_t<!std::is_same_v<T, Elem>>>
         constexpr operator tvec<T, SIZE>() const
         {
             return tvec{static_cast<tvec_cast<T, Derived>>(*this)};
@@ -909,4 +962,36 @@ namespace mth
     using vec2 = fvec2;
     using vec3 = fvec3;
     using vec4 = fvec4;
+
+    // Compound assignment operator implementations:
+
+    template <typename T, size_t N>
+    template <typename Vec, typename, typename>
+    constexpr tvec<T, N>& tvec<T, N>::operator+=(Vec other)
+    {
+        *this = *this + other;
+        return *this;
+    }
+
+    template <typename T, size_t N>
+    template <typename Vec, typename, typename>
+    constexpr tvec<T, N>& tvec<T, N>::operator-=(Vec other)
+    {
+        *this = *this - other;
+        return *this;
+    }
+
+    template <typename T, size_t N>
+    constexpr tvec<T, N>& tvec<T, N>::operator*=(T scalar)
+    {
+        *this = *this * scalar;
+        return *this;
+    }
+
+    template <typename T, size_t N>
+    constexpr tvec<T, N>& tvec<T, N>::operator/=(T scalar)
+    {
+        *this = *this / scalar;
+        return *this;
+    }
 }

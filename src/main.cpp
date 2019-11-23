@@ -305,7 +305,26 @@ TEST(Vectors, CanStreamOut)
     ASSERT_EQ(first, second) << "vector displayed incorrectly";
 }
 
-// TODO: dot product, magnitude
+TEST(Vectors, HaveCompoundAssignment)
+{
+    mth::ivec3 r{1, 2, 3};
+
+    r += 2 * r;
+    ASSERT_EQ(r, (3 * mth::ivec3{1, 2, 3}))
+        << "compound assignment introduced errors";
+
+    r *= -1;
+    ASSERT_EQ(r, (-3 * mth::ivec3{1, 2, 3}))
+        << "compound assignment introduced errors";
+
+    r /= 2;
+    ASSERT_EQ(r, (mth::ivec3{-1, -3, -4}))
+        << "compound assignment introduced errors";
+
+    r -= mth::ivec3{1, 1, 0};
+    ASSERT_EQ(r, (mth::ivec3{-2, -4, -4}))
+        << "compound assignment introduced errors";
+}
 
 TEST(Complex, CanGetComponents)
 {
@@ -498,6 +517,8 @@ TEST(Complex, CanStreamOut)
 
 // TODO: DRYify expression template boilerplate
 // TODO: Compount assignment operators
+// TODO: dot product, magnitude
+// TODO: support same features as std::complex for mth::tcomp
 
 int main(int argc, char** argv)
 {
