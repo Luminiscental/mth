@@ -337,6 +337,114 @@ namespace mth
     };
 
     /**
+     * @brief Complex number expression for a scalar-complex product.
+     *
+     * @tparam Comp The complex number expression type.
+     */
+    template <typename Comp>
+    class tcomp_scale : public tcomp_expr<tcomp_scale<Comp>>
+    {
+    private:
+        Comp _comp;
+        tcomp_elem_t<Comp> _scalar;
+
+    public:
+        /**
+         * @brief Construct the product expression from its operands.
+         *
+         * @param comp The complex number expression.
+         * @param scalar The scalar to multiply by.
+         */
+        explicit constexpr tcomp_scale(Comp comp, tcomp_elem_t<Comp> scalar)
+            : _comp{std::move(comp)}, _scalar{std::move(scalar)}
+        {
+        }
+
+        /**
+         * @brief The real part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The real part of the product of the operands.
+         */
+        constexpr tcomp_elem_t<Comp> real() const
+        {
+            return _scalar * _comp.real();
+        }
+
+        /**
+         * @brief The imaginary part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The imaginary part of the product of the operands.
+         */
+        constexpr tcomp_elem_t<Comp> imag() const
+        {
+            return _scalar * _comp.imag();
+        }
+    };
+
+    template <typename Comp>
+    class tcomp_info<tcomp_scale<Comp>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Comp>;
+    };
+
+    /**
+     * @brief Complex number expression for a complex / scalar quotient.
+     *
+     * @tparam Comp The complex number expression type.
+     */
+    template <typename Comp>
+    class tcomp_reduce : public tcomp_expr<tcomp_reduce<Comp>>
+    {
+    private:
+        Comp _comp;
+        tcomp_elem_t<Comp> _scalar;
+
+    public:
+        /**
+         * @brief Construct the quotient expression from its operands.
+         *
+         * @param comp The complex number expression.
+         * @param scalar The scalar to multiply by.
+         */
+        explicit constexpr tcomp_reduce(Comp comp, tcomp_elem_t<Comp> scalar)
+            : _comp{std::move(comp)}, _scalar{std::move(scalar)}
+        {
+        }
+
+        /**
+         * @brief The real part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The real part of the quotient of the operands.
+         */
+        constexpr tcomp_elem_t<Comp> real() const
+        {
+            return _comp.real() / _scalar;
+        }
+
+        /**
+         * @brief The imaginary part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The imaginary part of the quotient of the operands.
+         */
+        constexpr tcomp_elem_t<Comp> imag() const
+        {
+            return _comp.imag() / _scalar;
+        }
+    };
+
+    template <typename Comp>
+    class tcomp_info<tcomp_reduce<Comp>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Comp>;
+    };
+
+    /**
      * @brief Complex number expression for a product of two complex numbers.
      *
      * @tparam Lhs The complex number expression type of the left side operand.
@@ -386,6 +494,61 @@ namespace mth
 
     template <typename Lhs, typename Rhs>
     class tcomp_info<tcomp_prod<Lhs, Rhs>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Lhs>;
+    };
+
+    /**
+     * @brief Complex number expression for a quotient of two complex numbers.
+     *
+     * @tparam Lhs The complex number expression type of the left side operand.
+     * @tparam Rhs The complex number expression type of the right side operand.
+     */
+    template <typename Lhs, typename Rhs>
+    class tcomp_quot : public tcomp_expr<tcomp_quot<Lhs, Rhs>>
+    {
+    private:
+        Lhs _lhs;
+        Rhs _rhs;
+
+    public:
+        /**
+         * @brief Construct the quotient expression from its operands.
+         *
+         * @param lhs The complex number expression of the left side operand.
+         * @param rhs The complex number expression of the right side operand.
+         */
+        explicit constexpr tcomp_quot(Lhs lhs, Rhs rhs)
+            : _lhs{std::move(lhs)}, _rhs{std::move(rhs)}
+        {
+        }
+
+        /**
+         * @brief The real part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The real part of the quotient of the operands.
+         */
+        constexpr tcomp_elem_t<Lhs> real() const
+        {
+            return (_lhs * _rhs.conj()).real() / _rhs.norm();
+        }
+
+        /**
+         * @brief The imaginary part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The imaginary part of the quotient of the operands.
+         */
+        constexpr tcomp_elem_t<Lhs> imag() const
+        {
+            return (_lhs * _rhs.conj()).imag() / _rhs.norm();
+        }
+    };
+
+    template <typename Lhs, typename Rhs>
+    class tcomp_info<tcomp_quot<Lhs, Rhs>>
     {
     public:
         using Elem = tcomp_elem_t<Lhs>;
@@ -538,7 +701,7 @@ namespace mth
          *
          * @return The square modulus of the result of this expression.
          */
-        constexpr Elem magnSqr() const
+        constexpr Elem norm() const
         {
             auto r = real();
             auto i = imag();
@@ -555,7 +718,7 @@ namespace mth
          */
         constexpr double magn() const
         {
-            return std::sqrt(magnSqr());
+            return std::sqrt(norm());
         }
     };
 
@@ -603,6 +766,51 @@ namespace mth
     constexpr auto operator*(Lhs lhs, Rhs rhs)
     {
         return tcomp_prod{std::move(lhs), std::move(rhs)};
+    }
+
+    template <
+        typename Comp,
+        typename  = enable_if_comp_t<Comp>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator*(tcomp_elem_t<Comp> lhs, Comp rhs)
+    {
+        return tcomp_scale{std::move(rhs), std::move(lhs)};
+    }
+    template <
+        typename Comp,
+        typename  = enable_if_comp_t<Comp>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator*(Comp lhs, tcomp_elem_t<Comp> rhs)
+    {
+        return rhs * lhs;
+    }
+
+    template <
+        typename Lhs,
+        typename Rhs,
+        typename  = enable_if_comps_t<Lhs, Rhs>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator/(Lhs lhs, Rhs rhs)
+    {
+        return tcomp_quot{std::move(lhs), std::move(rhs)};
+    }
+
+    template <
+        typename Comp,
+        typename  = enable_if_comp_t<Comp>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator/(Comp lhs, tcomp_elem_t<Comp> rhs)
+    {
+        return tcomp_reduce{std::move(lhs), std::move(rhs)};
+    }
+
+    template <
+        typename Comp,
+        typename  = enable_if_comp_t<Comp>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator/(tcomp_elem_t<Comp> lhs, Comp rhs)
+    {
+        return lhs * rhs.conj() / rhs.norm();
     }
 
     template <typename Elem>

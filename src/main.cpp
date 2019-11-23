@@ -398,9 +398,9 @@ TEST(Complex, CanFindModulus)
 {
     mth::dcomp z = {1.2, 2.9};
 
-    ASSERT_EQ(z.magnSqr(), 1.2 * 1.2 + 2.9 * 2.9)
+    ASSERT_EQ(z.norm(), 1.2 * 1.2 + 2.9 * 2.9)
         << "square modulus of a complex number was incorrect";
-    ASSERT_EQ(z.magn(), std::sqrt(z.magnSqr()))
+    ASSERT_EQ(z.magn(), std::sqrt(z.norm()))
         << "modulus of a complex number was incorrect";
 }
 
@@ -425,8 +425,37 @@ TEST(Complex, CanCast)
         << "casted complex number didn't cast correctly";
 }
 
-// TODO: mth::tcomp_expr::inv()
+TEST(Complex, ScalarArithmetic)
+{
+    mth::icomp z = {-5, 39};
+
+    ASSERT_EQ((12 * z).real(), -5 * 12)
+        << "scalar-complex product was incorrect";
+    ASSERT_EQ((z / 5).real(), -1) << "complex-scalar quotient was incorrect";
+
+    mth::comp w = {1.2f, 3.1f};
+
+    ASSERT_EQ(2.1f / w, (mth::comp{2.1f, 0.0f} / w))
+        << "scalar-complex quotient was inconsistent with complex division";
+}
+
+TEST(Complex, CanDivide)
+{
+    mth::icomp z{5, 10};
+    mth::icomp w{1, -2};
+
+    ASSERT_EQ(z / w, (mth::icomp{-3, 4}))
+        << "complex int division was incorrect";
+
+    mth::comp p{1.0f, -3.0f};
+    mth::comp q{2.0f, 7.0f};
+
+    ASSERT_EQ(p / q, p * q.conj() / q.norm())
+        << "complex float division was incorrect";
+}
+
 // TODO: DRYify expression template boilerplate
+// TODO: Compount assignment operators
 
 int main(int argc, char** argv)
 {

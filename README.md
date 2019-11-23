@@ -13,14 +13,18 @@ First, clone the repo and run cmake:
 ```
 $ git clone https://github.com/Luminiscental/mth
 $ cd mth && mkdir build && cd build
-$ cmake .. # Optionally pass -DTESTS=ON to run tests when building
+$ cmake ..
 ```
+
 Then run the generated build files, on mac/linux there should be a Makefile in the build directory
 that you can run with `make`. On windows there should be a Visual Studio solution file `mth.sln`;
 open this and build the solution.
 
 After building there should be a `libmth.a` or `mth.lib` file for linking into programs that use
 mth.
+
+To also run tests when building you can pass `-DTESTS=ON` to cmake, and to enable memoization of
+vector expressions pass `-DDEFAULT_MEMOIZE=ON`.
 
 ### Documentation:
 
