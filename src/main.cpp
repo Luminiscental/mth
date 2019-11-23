@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 #include <mth/comp.hpp>
 #include <mth/mth.hpp>
@@ -287,6 +288,23 @@ TEST(Vectors, CanCast)
         << "casted vector didn't cast correctly";
 }
 
+TEST(Vectors, CanStreamOut)
+{
+    std::ostringstream os;
+
+    os.str("");
+    os << mth::ivec4{1, 3, -2, 7} << ", " << mth::dvec2{1.1, -0.23};
+    auto first = os.str();
+
+    os.str("");
+    os << "(" << 1 << ", " << 3 << ", " << -2 << ", " << 7 << ")"
+       << ", "
+       << "(" << 1.1 << ", " << -0.23 << ")";
+    auto second = os.str();
+
+    ASSERT_EQ(first, second) << "vector displayed incorrectly";
+}
+
 // TODO: dot product, magnitude
 
 TEST(Complex, CanGetComponents)
@@ -463,9 +481,23 @@ TEST(Complex, CanInvert)
         << "mth::tcomp_expr::inv was inconsistent with division";
 }
 
+TEST(Complex, CanStreamOut)
+{
+    std::ostringstream os;
+
+    os.str("");
+    os << mth::icomp{2, 1} << ", " << mth::comp{1.2f, -0.1f};
+    auto first = os.str();
+
+    os.str("");
+    os << 2 << " + i " << 1 << ", " << 1.2f << " + i " << -0.1f;
+    auto second = os.str();
+
+    ASSERT_EQ(first, second) << "complex number displayed incorrectly";
+}
+
 // TODO: DRYify expression template boilerplate
 // TODO: Compount assignment operators
-// TODO: ostream << overloads
 
 int main(int argc, char** argv)
 {

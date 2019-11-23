@@ -870,6 +870,24 @@ namespace mth
         return !(lhs == rhs);
     }
 
+    template <
+        typename Vec,
+        typename = enable_if_vec_t<Vec>,
+        tvec_tag = tvec_tag::Dummy>
+    std::ostream& operator<<(std::ostream& ostream, Vec vec)
+    {
+        ostream << std::string{"("} << vec[0];
+
+        for (size_t i = 1; i < tvec_size_v<Vec>; i++)
+        {
+            ostream << std::string{", "} << vec[i];
+        }
+
+        ostream << std::string{")"};
+
+        return ostream;
+    }
+
     // aliases:
 
     using fvec2 = tvec<float, 2>;

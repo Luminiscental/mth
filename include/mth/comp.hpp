@@ -6,6 +6,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <ostream>
 
 namespace mth
 {
@@ -851,6 +852,15 @@ namespace mth
     constexpr auto operator!=(Lhs lhs, Rhs rhs)
     {
         return !(lhs == rhs);
+    }
+
+    template <
+        typename Comp,
+        typename  = enable_if_comp_t<Comp>,
+        tcomp_tag = tcomp_tag::Dummy>
+    std::ostream& operator<<(std::ostream& ostream, Comp comp)
+    {
+        return ostream << comp.real() << " + i " << comp.imag();
     }
 
     // aliases:
