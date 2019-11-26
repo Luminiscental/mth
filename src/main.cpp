@@ -474,6 +474,9 @@ TEST(Complex, ScalarArithmetic)
 
     ASSERT_EQ(2.1f / w, (mth::comp{2.1f, 0.0f} / w))
         << "scalar-complex quotient was inconsistent with complex division";
+
+    ASSERT_EQ(z + 3, z + mth::icomp{3, 0})
+        << "scalar addition to a complex number was incorrect";
 }
 
 TEST(Complex, CanDivide)
@@ -515,8 +518,22 @@ TEST(Complex, CanStreamOut)
     ASSERT_EQ(first, second) << "complex number displayed incorrectly";
 }
 
+TEST(Complex, HaveCompoundAssignment)
+{
+    mth::icomp r{1, 7};
+
+    r += -1 * r;
+    ASSERT_EQ(r, 0) << "compound assignment introduced errors";
+
+    r += r + 3;
+    ASSERT_EQ(r, 3) << "compound assignment introduced errors";
+
+    r *= mth::icomp{1, -1};
+    ASSERT_EQ(r, (mth::icomp{3, -3}))
+        << "compound assignment introduced errors";
+}
+
 // TODO: DRYify expression template boilerplate
-// TODO: Compount assignment operators
 // TODO: dot product, magnitude
 // TODO: support same features as std::complex for mth::tcomp
 

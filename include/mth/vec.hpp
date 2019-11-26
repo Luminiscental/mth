@@ -142,11 +142,11 @@ namespace mth
         constexpr tvec<T, N>& operator+=(Vec other);
 
         /**
-         * @brief Compound assignment operator for addition, adds the given
-         * vector expression to this vector.
+         * @brief Compound assignment operator for subtraction, subtracts the
+         * given vector expression from this vector.
          *
-         * @tparam Vec The vector expression type to add.
-         * @param other The vector expression value to add.
+         * @tparam Vec The vector expression type to subtract.
+         * @param other The vector expression value to subtract.
          */
         template <
             typename Vec,

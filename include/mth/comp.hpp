@@ -41,6 +41,10 @@ namespace mth
      * `ucomp` for `tcomp<unsigned int>`, `fcomp` for `tcomp<float>`. Leaving
      * out the type prefix defaults to float, so `comp` is `fcomp`;
      *
+     * This class also implements the compound assignment operators that
+     * `tcomp_expr` does not since operations on `tcomp_expr` change the type so
+     * cannot be used in compound assignment.
+     *
      * @tparam T The scalar type for the real and imaginary part of the value.
      */
     template <typename T>
@@ -79,6 +83,92 @@ namespace mth
         constexpr tcomp(Comp expr) : _real{expr.real()}, _imag{expr.imag()}
         {
         }
+
+        // Compound assignment operators:
+
+        /**
+         * @brief Compound assignment operator for addition, adds the given
+         * complex number expression to this complex number.
+         *
+         * @tparam Vec The complex number expression type to add.
+         * @param other The complex number expression value to add.
+         */
+        template <
+            typename Comp,
+            typename = enable_if_comp_t<Comp>,
+            typename = std::enable_if_t<std::is_same_v<tcomp_elem_t<Comp>, T>>>
+        constexpr tcomp<T>& operator+=(Comp other);
+
+        /**
+         * @brief Compound assignment operator for subtraction, subtracts the
+         * given complex number expression from this complex number.
+         *
+         * @tparam Vec The complex number expression type to subtract.
+         * @param other The complex number expression value to subtract.
+         */
+        template <
+            typename Comp,
+            typename = enable_if_comp_t<Comp>,
+            typename = std::enable_if_t<std::is_same_v<tcomp_elem_t<Comp>, T>>>
+        constexpr tcomp<T>& operator-=(Comp other);
+
+        /**
+         * @brief Compound assignment operator for multiplication, multiplies
+         * this complex number by the given complex number expression.
+         *
+         * @tparam Vec The complex number expression type to multiply by.
+         * @param other The complex number expression value to multiply by.
+         */
+        template <
+            typename Comp,
+            typename = enable_if_comp_t<Comp>,
+            typename = std::enable_if_t<std::is_same_v<tcomp_elem_t<Comp>, T>>>
+        constexpr tcomp<T>& operator*=(Comp other);
+
+        /**
+         * @brief Compound assignment operator for division, divides
+         * this complex number by the given complex number expression.
+         *
+         * @tparam Vec The complex number expression type to divide by.
+         * @param other The complex number expression value to divide by.
+         */
+        template <
+            typename Comp,
+            typename = enable_if_comp_t<Comp>,
+            typename = std::enable_if_t<std::is_same_v<tcomp_elem_t<Comp>, T>>>
+        constexpr tcomp<T>& operator/=(Comp other);
+
+        /**
+         * @brief Compound assignment operator for scalar addition, adds the
+         * given scalar value to this complex number.
+         *
+         * @param scalar The scalar value to add.
+         */
+        constexpr tcomp<T>& operator+=(T scalar);
+
+        /**
+         * @brief Compound assignment operator for scalar subtraction, subtracts
+         * the given scalar value to this complex number.
+         *
+         * @param scalar The scalar value to subtract.
+         */
+        constexpr tcomp<T>& operator-=(T scalar);
+
+        /**
+         * @brief Compound assignment operator for scalar multiplication,
+         * multiplies this complex number by the given scalar value.
+         *
+         * @param scalar The scalar value to multiply by.
+         */
+        constexpr tcomp<T>& operator*=(T scalar);
+
+        /**
+         * @brief Compound assignment operator for scalar division,
+         * divides this complex number by the given scalar value.
+         *
+         * @param scalar The scalar value to divide by.
+         */
+        constexpr tcomp<T>& operator/=(T scalar);
 
         /**
          * @brief Construct a concrete complex number given its real and
@@ -335,6 +425,149 @@ namespace mth
     {
     public:
         using Elem = tcomp_elem_t<Lhs>;
+    };
+
+    /**
+     * @brief Complex number expression for a scalar-complex sum.
+     *
+     * @tparam Comp The complex number expression type.
+     */
+    template <typename Comp>
+    class tcomp_shiftr : public tcomp_expr<tcomp_shiftr<Comp>>
+    {
+    private:
+        Comp _comp;
+        tcomp_elem_t<Comp> _scalar;
+
+    public:
+        /**
+         * @brief Construct the sum expression from its operands.
+         *
+         * @param comp The complex number expression.
+         * @param scalar The scalar to add.
+         */
+        explicit constexpr tcomp_shiftr(Comp comp, tcomp_elem_t<Comp> scalar)
+            : _comp{std::move(comp)}, _scalar{std::move(scalar)}
+        {
+        }
+
+        /**
+         * @brief The real part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The real part of the sum of the operands.
+         */
+        constexpr tcomp_elem_t<Comp> real() const
+        {
+            return _scalar + _comp.real();
+        }
+
+        /**
+         * @brief The imaginary part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The imaginary part of the sum of the operands.
+         */
+        constexpr tcomp_elem_t<Comp> imag() const
+        {
+            return _comp.imag();
+        }
+    };
+
+    /**
+     * @brief Complex number expression for a scalar-complex difference (scalar
+     * subtracted from complex).
+     *
+     * @tparam Comp The complex number expression type.
+     */
+    template <typename Comp>
+    class tcomp_shiftl : public tcomp_expr<tcomp_shiftl<Comp>>
+    {
+    private:
+        Comp _comp;
+        tcomp_elem_t<Comp> _scalar;
+
+    public:
+        /**
+         * @brief Construct the difference expression from its operands.
+         *
+         * @param comp The complex number expression.
+         * @param scalar The scalar to subtract.
+         */
+        explicit constexpr tcomp_shiftl(Comp comp, tcomp_elem_t<Comp> scalar)
+            : _comp{std::move(comp)}, _scalar{std::move(scalar)}
+        {
+        }
+
+        /**
+         * @brief The real part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The real part of the difference of the operands.
+         */
+        constexpr tcomp_elem_t<Comp> real() const
+        {
+            return _comp.real() - _scalar;
+        }
+
+        /**
+         * @brief The imaginary part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The imaginary part of the difference of the operands.
+         */
+        constexpr tcomp_elem_t<Comp> imag() const
+        {
+            return _comp.imag();
+        }
+    };
+
+    /**
+     * @brief Complex number expression for a complex-scalar difference (complex
+     * subtracted from scalar).
+     *
+     * @tparam Comp The complex number expression type.
+     */
+    template <typename Comp>
+    class tcomp_refl : public tcomp_expr<tcomp_refl<Comp>>
+    {
+    private:
+        Comp _comp;
+        tcomp_elem_t<Comp> _scalar;
+
+    public:
+        /**
+         * @brief Construct the difference expression from its operands.
+         *
+         * @param comp The complex number expression.
+         * @param scalar The scalar to subtract from.
+         */
+        explicit constexpr tcomp_refl(Comp comp, tcomp_elem_t<Comp> scalar)
+            : _comp{std::move(comp)}, _scalar{std::move(scalar)}
+        {
+        }
+
+        /**
+         * @brief The real part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The real part of the difference of the operands.
+         */
+        constexpr tcomp_elem_t<Comp> real() const
+        {
+            return _scalar - _comp.real();
+        }
+
+        /**
+         * @brief The imaginary part accessor needed to define this as a complex
+         * number expression.
+         *
+         * @return The imaginary part of the difference of the operands.
+         */
+        constexpr tcomp_elem_t<Comp> imag() const
+        {
+            return _comp.imag();
+        }
     };
 
     /**
@@ -749,6 +982,50 @@ namespace mth
     }
 
     template <
+        typename Comp,
+        typename T,
+        typename  = enable_if_comp_t<Comp>,
+        typename  = std::enable_if_t<std::is_same_v<tcomp_elem_t<Comp>, T>>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator+(Comp lhs, T rhs)
+    {
+        return tcomp_shiftr{std::move(lhs), std::move(rhs)};
+    }
+
+    template <
+        typename Comp,
+        typename T,
+        typename  = enable_if_comp_t<Comp>,
+        typename  = std::enable_if_t<std::is_same_v<tcomp_elem_t<Comp>, T>>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator+(T lhs, Comp rhs)
+    {
+        return rhs + lhs;
+    }
+
+    template <
+        typename Comp,
+        typename T,
+        typename  = enable_if_comp_t<Comp>,
+        typename  = std::enable_if_t<std::is_same_v<tcomp_elem_t<Comp>, T>>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator-(Comp lhs, T rhs)
+    {
+        return tcomp_shiftl{std::move(lhs), std::move(rhs)};
+    }
+
+    template <
+        typename Comp,
+        typename T,
+        typename  = enable_if_comp_t<Comp>,
+        typename  = std::enable_if_t<std::is_same_v<tcomp_elem_t<Comp>, T>>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator-(T lhs, Comp rhs)
+    {
+        return tcomp_refl{std::move(lhs), std::move(rhs)};
+    }
+
+    template <
         typename Lhs,
         typename Rhs,
         typename  = enable_if_comps_t<Lhs, Rhs>,
@@ -871,4 +1148,66 @@ namespace mth
     using ucomp = tcomp<unsigned int>;
 
     using comp = fcomp;
+
+    // Compound assignment operator implementations:
+
+    template <typename T>
+    template <typename Comp, typename, typename>
+    constexpr tcomp<T>& tcomp<T>::operator+=(Comp other)
+    {
+        *this = *this + other;
+        return *this;
+    }
+
+    template <typename T>
+    template <typename Comp, typename, typename>
+    constexpr tcomp<T>& tcomp<T>::operator-=(Comp other)
+    {
+        *this = *this - other;
+        return *this;
+    }
+
+    template <typename T>
+    template <typename Comp, typename, typename>
+    constexpr tcomp<T>& tcomp<T>::operator*=(Comp other)
+    {
+        *this = *this * other;
+        return *this;
+    }
+
+    template <typename T>
+    template <typename Comp, typename, typename>
+    constexpr tcomp<T>& tcomp<T>::operator/=(Comp other)
+    {
+        *this = *this / other;
+        return *this;
+    }
+
+    template <typename T>
+    constexpr tcomp<T>& tcomp<T>::operator+=(T scalar)
+    {
+        *this = *this + scalar;
+        return *this;
+    }
+
+    template <typename T>
+    constexpr tcomp<T>& tcomp<T>::operator-=(T scalar)
+    {
+        *this = *this - scalar;
+        return *this;
+    }
+
+    template <typename T>
+    constexpr tcomp<T>& tcomp<T>::operator*=(T scalar)
+    {
+        *this = *this * scalar;
+        return *this;
+    }
+
+    template <typename T>
+    constexpr tcomp<T>& tcomp<T>::operator/=(T scalar)
+    {
+        *this = *this / scalar;
+        return *this;
+    }
 }
