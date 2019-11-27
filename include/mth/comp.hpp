@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <ostream>
 
+#include <mth/mth.hpp>
+
 namespace mth
 {
     template <typename Derived>
@@ -474,6 +476,13 @@ namespace mth
         }
     };
 
+    template <typename Comp>
+    class tcomp_info<tcomp_shiftr<Comp>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Comp>;
+    };
+
     /**
      * @brief Complex number expression for a scalar-complex difference (scalar
      * subtracted from complex).
@@ -522,6 +531,13 @@ namespace mth
         }
     };
 
+    template <typename Comp>
+    class tcomp_shiftl<tcomp_shiftl<Comp>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Comp>;
+    };
+
     /**
      * @brief Complex number expression for a complex-scalar difference (complex
      * subtracted from scalar).
@@ -568,6 +584,13 @@ namespace mth
         {
             return _comp.imag();
         }
+    };
+
+    template <typename Comp>
+    class tcomp_info<tcomp_refl<Comp>>
+    {
+    public:
+        using Elem = tcomp_elem_t<Comp>;
     };
 
     /**
@@ -885,7 +908,10 @@ namespace mth
          * @return A concrete evaluation of the respective `tcomp_cast`
          * expression.
          */
-        template <typename T>
+        template <
+            typename T,
+            typename =
+                std::enable_if_t<!std::is_same_v<T, tcomp_elem_t<Derived>>>>
         constexpr operator tcomp<T>() const
         {
             return tcomp{static_cast<tcomp_cast<T, Derived>>(*this)};
@@ -1105,6 +1131,18 @@ namespace mth
         return lhs.real() == rhs.real() && lhs.imag() == rhs.imag();
     }
 
+    template <typename Elem>
+    constexpr auto operator==(tcomp<Elem> lhs, Elem rhs)
+    {
+        return lhs.real() == rhs && iszero(lhs.imag());
+    }
+
+    template <typename Elem>
+    constexpr auto operator==(Elem lhs, tcomp<Elem> rhs)
+    {
+        return rhs == lhs;
+    }
+
     template <
         typename Lhs,
         typename Rhs,
@@ -1115,8 +1153,38 @@ namespace mth
         return tcomp{lhs} == tcomp{rhs};
     }
 
+    template <
+        typename Comp,
+        typename  = enable_if_comp_t<Comp>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator==(Comp lhs, tcomp_elem_t<Comp> rhs)
+    {
+        return tcomp{lhs} == rhs;
+    }
+
+    template <
+        typename Comp,
+        typename  = enable_if_comp_t<Comp>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator==(tcomp_elem_t<Comp> lhs, Comp rhs)
+    {
+        return rhs == lhs;
+    }
+
     template <typename Elem>
     constexpr auto operator!=(tcomp<Elem> lhs, tcomp<Elem> rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <typename Elem>
+    constexpr auto operator!=(tcomp<Elem> lhs, Elem rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <typename Elem>
+    constexpr auto operator!=(Elem lhs, tcomp<Elem> rhs)
     {
         return !(lhs == rhs);
     }
@@ -1127,6 +1195,24 @@ namespace mth
         typename  = enable_if_comps_t<Lhs, Rhs>,
         tcomp_tag = tcomp_tag::Dummy>
     constexpr auto operator!=(Lhs lhs, Rhs rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <
+        typename Comp,
+        typename  = enable_if_comp_t<Comp>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator!=(Comp lhs, tcomp_elem_t<Comp> rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <
+        typename Comp,
+        typename  = enable_if_comp_t<Comp>,
+        tcomp_tag = tcomp_tag::Dummy>
+    constexpr auto operator!=(tcomp_elem_t<Comp> lhs, Comp rhs)
     {
         return !(lhs == rhs);
     }

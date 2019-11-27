@@ -475,7 +475,7 @@ TEST(Complex, ScalarArithmetic)
     ASSERT_EQ(2.1f / w, (mth::comp{2.1f, 0.0f} / w))
         << "scalar-complex quotient was inconsistent with complex division";
 
-    ASSERT_EQ(z + 3, z + mth::icomp{3, 0})
+    ASSERT_EQ(z + 3, (z + mth::icomp{3, 0}))
         << "scalar addition to a complex number was incorrect";
 }
 
