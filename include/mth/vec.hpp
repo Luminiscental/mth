@@ -577,6 +577,49 @@ namespace mth
     };
 
     /**
+     * @brief A namespace to hold "static" functions relating to
+     * `mth::tvec_expr`.
+     */
+    namespace vec
+    {
+        template <size_t... Ns, typename Lhs, typename Rhs>
+        constexpr auto dotHelper(std::index_sequence<Ns...>, Lhs lhs, Rhs rhs);
+
+        /**
+         * @brief Calculate the dot product of two vector expressions.
+         *
+         */
+        template <
+            typename Lhs,
+            typename Rhs,
+            typename = enable_if_vecs_t<Lhs, Rhs>,
+            typename = std::enable_if_t<tvec_size_v<Lhs> == tvec_size_v<Rhs>>>
+        constexpr auto dot(Lhs lhs, Rhs rhs);
+
+        /**
+         * @brief Map a function over a list of vector expressions.
+         *
+         * This is the functional concept of mapping; a function f mapped over
+         * vectors `a = {a0, a1, ...}, b = {b0, b1, ...}, c = {c0, c1, ...}` is
+         * essentially the vector `{f(a0, b0, c0), f(a1, b1, c1), ...}`.
+         *
+         * The pack of vectors to map over must be non-empty.
+         *
+         * @tparam Func The type of the function to map.
+         * @tparam Vecs Parameter pack of vector expression types to be mapped
+         * over.
+         * @param f The function value to map.
+         * @param vecs The vectors to map over.
+         * @return A vector expression for the result of mapping `f` over
+         * `vecs`.
+         */
+        template <
+            typename Func,
+            typename... Vecs,
+            typename = enable_if_vecs_t<Vecs...>>
+        constexpr auto map(Func f, Vecs... vecs);
+    }
+    /**
      * @brief The base vector expression class, used for the CRTP pattern.
      *
      * This base class contains almost all of the operations on vectors, such as
@@ -787,6 +830,21 @@ namespace mth
         }
 
         /**
+         * @brief Calculate the dot product with another vector expression.
+         * Delegates to `mth::vec::dot`.
+         *
+         * @tparam Vec The vector expression type of the vector to dot with.
+         * @param other The vector to dot with.
+         * @return The dot product of this with other.
+         */
+        template <typename Vec>
+        constexpr auto dot(Vec other)
+        {
+            Derived copy = static_cast<Derived const&>(*this);
+            return vec::dot(std::move(copy), std::move(other));
+        }
+
+        /**
          * @brief Member function specializing `mth::vec::map` to the single
          * parameter case.
          *
@@ -807,33 +865,24 @@ namespace mth
         }
     };
 
-    /**
-     * @brief A namespace to hold "static" functions relating to
-     * `mth::tvec_expr`.
-     */
     namespace vec
     {
-        /**
-         * @brief Map a function over a list of vector expressions.
-         *
-         * This is the functional concept of mapping; a function f mapped over
-         * vectors `a = {a0, a1, ...}, b = {b0, b1, ...}, c = {c0, c1, ...}` is
-         * essentially the vector `{f(a0, b0, c0), f(a1, b1, c1), ...}`.
-         *
-         * The pack of vectors to map over must be non-empty.
-         *
-         * @tparam Func The type of the function to map.
-         * @tparam Vecs Parameter pack of vector expression types to be mapped
-         * over.
-         * @param f The function value to map.
-         * @param vecs The vectors to map over.
-         * @return A vector expression for the result of mapping `f` over
-         * `vecs`.
-         */
-        template <
-            typename Func,
-            typename... Vecs,
-            typename = enable_if_vecs_t<Vecs...>>
+        template <size_t... Ns, typename Lhs, typename Rhs>
+        constexpr auto dotHelper(std::index_sequence<Ns...>, Lhs lhs, Rhs rhs)
+        {
+            return ((lhs.get(Ns) * rhs.get(Ns)) + ...);
+        }
+
+        template <typename Lhs, typename Rhs, typename, typename>
+        constexpr auto dot(Lhs lhs, Rhs rhs)
+        {
+            return dotHelper(
+                std::make_index_sequence<tvec_size_v<Lhs>>{},
+                std::move(lhs),
+                std::move(rhs));
+        }
+
+        template <typename Func, typename... Vecs, typename>
         constexpr auto map(Func f, Vecs... vecs)
         {
             return tvec_map{std::move(f), std::move(vecs)...};

@@ -342,6 +342,17 @@ TEST(Vectors, CanFindMagnitude)
         << "magnitude was not casted correctly";
 }
 
+TEST(Vectors, HaveDotProduct)
+{
+    mth::vec3 a = {1.1f, 0.0f, -2.5f};
+    mth::vec3 b = {0.2f, 0.7f, 1.7f};
+
+    ASSERT_EQ(a.dot(b), mth::vec::dot(a, b))
+        << "different dot implementations were incompatible";
+    ASSERT_EQ(mth::vec::dot(a, b), 1.1f * 0.2f + 0.0f * 0.7f + (-2.5f) * 1.7f)
+        << "dot product was calculated incorrectly";
+}
+
 TEST(Complex, CanGetComponents)
 {
     mth::comp z{2.0f, 3.0f};
@@ -554,7 +565,6 @@ TEST(Complex, HaveCompoundAssignment)
 }
 
 // TODO: DRYify expression template boilerplate
-// TODO: dot product
 // TODO: support same features as std::complex for mth::tcomp
 
 int main(int argc, char** argv)
