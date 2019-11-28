@@ -970,15 +970,16 @@ namespace mth
         }
 
         /**
-         * @brief Calculate the modulus of this expression. The calculation is
-         * done as a double for generality, directly equivalent to
-         * `std::sqrt(magnSqr())`.
+         * @brief Calculate the modulus (or absolute value) of this expression.
+         *
+         * The calculation is done as a double for generality, directly
+         * equivalent to `std::sqrt(static_cast<double>(norm()))`.
          *
          * @return The modulus of the result of this expression.
          */
-        constexpr double magn() const
+        constexpr double abs() const
         {
-            return std::sqrt(norm());
+            return std::sqrt(static_cast<double>(norm()));
         }
 
         /**

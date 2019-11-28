@@ -10,6 +10,7 @@
 #endif
 
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <unordered_map>
 
@@ -603,6 +604,12 @@ namespace mth
         // memoized elements
         mutable std::unordered_map<size_t, Elem> _memos;
 
+        template <size_t... Ns>
+        constexpr Elem normHelper(std::index_sequence<Ns...>) const
+        {
+            return ((component<Ns>() * component<Ns>()) + ...);
+        }
+
     public:
         // Casts:
 
@@ -754,6 +761,30 @@ namespace mth
         }
 
         // transforms / calculations:
+
+        /**
+         * @brief Calculate the square magnitude of this vector. The result
+         * stays in the type of the elements.
+         *
+         * @return The square magnitude of the vector expression.
+         */
+        constexpr Elem norm() const
+        {
+            return normHelper(std::make_index_sequence<SIZE>{});
+        }
+
+        /**
+         * @brief Calculate the magnitude (or length) of this vector.
+         *
+         * The calculation is done as a double for generality, directly
+         * equivalent to `std::sqrt(static_cast<double>(norm()))`.
+         *
+         * @return The magnitude (or length) of this vector.
+         */
+        constexpr double magn() const
+        {
+            return std::sqrt(static_cast<double>(norm()));
+        }
 
         /**
          * @brief Member function specializing `mth::vec::map` to the single

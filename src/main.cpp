@@ -326,6 +326,22 @@ TEST(Vectors, HaveCompoundAssignment)
         << "compound assignment introduced errors";
 }
 
+TEST(Vectors, CanFindMagnitude)
+{
+    mth::tvec<double, 6> a = {1.1, 0.0, -9.12, 3.15, 2.0, -0.05};
+
+    ASSERT_EQ(
+        a.norm(),
+        1.1 * 1.1 + 0.0 * 0.0 + 9.12 * 9.12 + 3.15 * 3.15 + 2.0 * 2.0
+            + 0.05 * 0.05)
+        << "norm was calculated incorrectly";
+    ASSERT_EQ(a.magn(), std::sqrt(a.norm())) << "magnitude was incorrect";
+
+    mth::ivec2 b = {1, -7};
+    ASSERT_EQ(b.magn(), std::sqrt(static_cast<double>(b.norm())))
+        << "magnitude was not casted correctly";
+}
+
 TEST(Complex, CanGetComponents)
 {
     mth::comp z{2.0f, 3.0f};
@@ -437,8 +453,12 @@ TEST(Complex, CanFindModulus)
 
     ASSERT_EQ(z.norm(), 1.2 * 1.2 + 2.9 * 2.9)
         << "square modulus of a complex number was incorrect";
-    ASSERT_EQ(z.magn(), std::sqrt(z.norm()))
+    ASSERT_EQ(z.abs(), std::sqrt(z.norm()))
         << "modulus of a complex number was incorrect";
+
+    mth::icomp w = {1, -3};
+    ASSERT_EQ(w.abs(), std::sqrt(static_cast<double>(w.norm())))
+        << "modulus was not casted correctly";
 }
 
 TEST(Complex, HaveEquality)
@@ -534,7 +554,7 @@ TEST(Complex, HaveCompoundAssignment)
 }
 
 // TODO: DRYify expression template boilerplate
-// TODO: dot product, magnitude
+// TODO: dot product
 // TODO: support same features as std::complex for mth::tcomp
 
 int main(int argc, char** argv)
