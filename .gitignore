@@ -93,3 +93,4 @@ build
 .clang
 .todo
 docs/
+.clangd
