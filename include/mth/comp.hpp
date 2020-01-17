@@ -983,6 +983,20 @@ namespace mth
         }
 
         /**
+         * @brief Calculate the argument of this expression.
+         *
+         * The calculation is done as a double for generality, calling
+         * `std::atan2` for doubles.
+         *
+         * @return The argument of the result of this expression.
+         */
+        constexpr double arg() const
+        {
+            return std::atan2(
+                static_cast<double>(real()), static_cast<double>(imag()));
+        }
+
+        /**
          * @brief Calculate the reciprocal of this expression.
          */
         constexpr auto inv() const
@@ -1296,5 +1310,65 @@ namespace mth
     {
         *this = *this / scalar;
         return *this;
+    }
+}
+
+// cmath overloads
+namespace std
+{
+    template <
+        typename Comp,
+        typename       = mth::enable_if_comp_t<Comp>,
+        mth::tcomp_tag = mth::tcomp_tag::Dummy>
+    mth::dcomp sqrt(Comp z)
+    {
+        auto arg  = 0.5 * z.arg();
+        auto magn = std::sqrt(z.abs());
+
+        return magn * mth::dcomp{std::cos(arg), std::sin(arg)};
+    }
+
+    template <
+        typename Comp,
+        typename       = mth::enable_if_comp_t<Comp>,
+        mth::tcomp_tag = mth::tcomp_tag::Dummy>
+    mth::dcomp exp(Comp z)
+    {
+        double a = z.real();
+        double b = z.imag();
+
+        return std::exp(a) * mth::dcomp{std::cos(b), std::sin(b)};
+    }
+
+    template <
+        typename Comp,
+        typename       = mth::enable_if_comp_t<Comp>,
+        mth::tcomp_tag = mth::tcomp_tag::Dummy>
+    mth::dcomp log(Comp z)
+    {
+        auto arg  = z.arg();
+        auto magn = z.abs();
+
+        return std::log(magn) + mth::dcomp{0, arg};
+    }
+
+    template <
+        typename Comp,
+        typename       = mth::enable_if_comp_t<Comp>,
+        mth::tcomp_tag = mth::tcomp_tag::Dummy>
+    mth::dcomp cos(Comp z)
+    {
+        mth::dcomp ix = mth::dcomp{0, 1} * z;
+        return (std::exp(ix) + std::exp(-ix)) / 2.0;
+    }
+
+    template <
+        typename Comp,
+        typename       = mth::enable_if_comp_t<Comp>,
+        mth::tcomp_tag = mth::tcomp_tag::Dummy>
+    mth::dcomp sin(Comp z)
+    {
+        mth::dcomp ix = mth::dcomp{0, 1} * z;
+        return (std::exp(ix) - std::exp(-ix)) / 2.0;
     }
 }

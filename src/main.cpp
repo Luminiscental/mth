@@ -564,6 +564,13 @@ TEST(Complex, HaveCompoundAssignment)
         << "compound assignment introduced errors";
 }
 
+TEST(Complex, CanFindArgument)
+{
+    mth::icomp z = {1, -3};
+
+    ASSERT_EQ(z.arg(), std::atan2(1.0, -3.0)) << "argument was incorrect";
+}
+
 // TODO: DRYify expression template boilerplate
 // TODO: support same features as std::complex for mth::tcomp
 

@@ -91,5 +91,6 @@ tags
 
 build
 .clang
+.clangd
 .todo
 docs/
